@@ -1,11 +1,11 @@
 version: '1'
 services:
-  tienda-ms-usuarios:
+  tienda-ms-productos:
     build:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "8092:8092"
+      - "8093:8093"
     environment:
       - spring.datasource.url=jdbc:oracle:thin:@vocgyi3vv1p3nvr8_tp?TNS_ADMIN=/app/wallet/
       - spring.datasource.username=BDFS3_TIENDA

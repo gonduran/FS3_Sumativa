@@ -1,4 +1,4 @@
-package com.example.tienda_ms_usuarios.model;
+package com.example.tienda_ms_productos.model;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -15,13 +15,13 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.*;
 
 @Entity
-@Table(name = "Rol")
+@Table(name = "Categoria")
 @JsonIgnoreProperties("usuarios")
-public class Rol extends RepresentationModel<Rol> {
+public class Categoria extends RepresentationModel<Categoria> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "idRol", nullable = false)
+    @Column(name = "idCategoria", nullable = false)
     private Long id;
 
     @NotBlank(message = "No puede ingresar nombre vacio")
@@ -29,8 +29,8 @@ public class Rol extends RepresentationModel<Rol> {
     @Column(name = "nombre", nullable = false)
     private String nombre;
 
-    @ManyToMany(mappedBy = "roles", fetch = FetchType.EAGER)
-    private Set<Usuario> usuarios = new HashSet<>();
+    @ManyToMany(mappedBy = "categorias", fetch = FetchType.EAGER)
+    private Set<Producto> productos = new HashSet<>();
 
     // Getters y setters
 
@@ -50,11 +50,11 @@ public class Rol extends RepresentationModel<Rol> {
         this.nombre = nombre;
     }
 
-    public Set<Usuario> getUsuarios() {
-        return usuarios;
+    public Set<Producto> getProductos() {
+        return productos;
     }
 
-    public void setUsuarios(Set<Usuario> usuarios) {
-        this.usuarios = usuarios;
+    public void setProductos(Set<Producto> productos) {
+        this.productos = productos;
     }
 }

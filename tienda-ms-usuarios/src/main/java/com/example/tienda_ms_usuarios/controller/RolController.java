@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
-import com.example.tienda_ms_usuarios.exception.UsuarioBadRequestException;
-import com.example.tienda_ms_usuarios.exception.UsuarioNotFoundException;
+import com.example.tienda_ms_usuarios.exception.BadRequestException;
+import com.example.tienda_ms_usuarios.exception.NotFoundException;
 import com.example.tienda_ms_usuarios.model.Rol;
 import com.example.tienda_ms_usuarios.service.RolService;
 import java.util.stream.Collectors;
@@ -67,7 +67,7 @@ public class RolController {
                 WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(this.getClass()).getAllRoles()).withRel("all-roles"));
         } else {
             log.error("No se encontró el rol con ID {}", idRol);
-            throw new UsuarioNotFoundException("No se encontró el rol con ID: " + idRol);
+            throw new NotFoundException("No se encontró el rol con ID: " + idRol);
         }
     }
 
@@ -78,7 +78,7 @@ public class RolController {
         Rol createRol = rolService.saveRol(rol);
         if (createRol == null) {
             log.error("Error al crear el rol {}", rol);
-            throw new UsuarioBadRequestException("Error al crear el rol");
+            throw new BadRequestException("Error al crear el rol");
         }
         return EntityModel.of(createRol,
             WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(this.getClass()).getRolById(createRol.getId())).withSelfRel(),
@@ -89,10 +89,10 @@ public class RolController {
     public EntityModel<Rol> updateRol(@PathVariable("idRol") Long idRol, @RequestBody Rol rol) {
         log.info("PUT /api/roles/{idRol}");
         log.info("Se ejecuta updateRol: {}", idRol);
-        Optional<Rol> historialMedicoFind = rolService.getRolById(idRol);
-        if (historialMedicoFind.isEmpty()) {
+        Optional<Rol> rolFind = rolService.getRolById(idRol);
+        if (rolFind.isEmpty()) {
             log.error("No se encontró el rol con ID {}", idRol);
-            throw new UsuarioNotFoundException("No se encontró el rol con ID: " + idRol);
+            throw new NotFoundException("No se encontró el rol con ID: " + idRol);
         }
         log.info("Se encontró y actualizo el rol con ID {}", idRol);
         Rol updateRol = rolService.updateRol(idRol, rol);
@@ -121,14 +121,14 @@ public class RolController {
             .body("Error en el servidor: " + e.getMessage());
     }
 
-    @ExceptionHandler(UsuarioNotFoundException.class)
-    public ResponseEntity<String> handleUsuarioNotFoundException(UsuarioNotFoundException e) {
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<String> handleUsuarioNotFoundException(NotFoundException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
             .body(e.getMessage());
     }
 
-    @ExceptionHandler(UsuarioBadRequestException.class)
-    public ResponseEntity<String> handleUsuarioBadRequestException(UsuarioBadRequestException e) {
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<String> handleUsuarioBadRequestException(BadRequestException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
             .body(e.getMessage());
     }

@@ -1,6 +1,5 @@
 package com.example.tienda_ms_usuarios.model;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -15,8 +14,6 @@ import jakarta.validation.constraints.*;
 import java.util.HashSet;
 import java.util.Set;
 import org.springframework.hateoas.RepresentationModel;
-
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
 @Table(name = "Usuario")
@@ -48,7 +45,6 @@ public class Usuario extends RepresentationModel<Usuario> {
         joinColumns = @JoinColumn(name = "idUsuario", nullable = false),
         inverseJoinColumns = @JoinColumn(name="idRol", nullable = false)
     )
-    //@JsonManagedReference
     private Set<Rol> roles = new HashSet<>();
 
     // Getters y setters

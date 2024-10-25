@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import com.example.tienda_ms_usuarios.model.Usuario;
-import com.example.tienda_ms_usuarios.exception.UsuarioBadRequestException;
-import com.example.tienda_ms_usuarios.exception.UsuarioNotFoundException;
+import com.example.tienda_ms_usuarios.exception.BadRequestException;
+import com.example.tienda_ms_usuarios.exception.NotFoundException;
 import com.example.tienda_ms_usuarios.service.UsuarioService;
 import java.util.stream.Collectors;
 import java.util.List;
@@ -39,7 +39,7 @@ public class UsuarioController {
     @GetMapping
     public CollectionModel<EntityModel<Usuario>> getAllUsuarios() {
         List<Usuario> usuarios = usuarioService.getAllUsuarios();
-        log.info("GET /usuarios");
+        log.info("GET /api/usuarios");
         log.info("Devuelve la informacion de todos los usuarios");
         List<EntityModel<Usuario>> usuariosResources = usuarios.stream()
             .map( usuario -> EntityModel.of(usuario,
@@ -58,7 +58,7 @@ public class UsuarioController {
     @GetMapping("/{idUsuario}")
     public EntityModel<Usuario> getUsuarioById(@PathVariable("idUsuario") Long idUsuario) {
         Optional<Usuario> usuario = usuarioService.getUsuarioById(idUsuario);
-        log.info("GET /usuarios/{idUsuario}");
+        log.info("GET /api/usuarios/{idUsuario}");
         log.info("Se ejecuta getUsuarioById: {}", idUsuario);
         if (usuario.isPresent()) {
             log.info("Se encontró el usuario con ID {}", idUsuario);
@@ -68,32 +68,32 @@ public class UsuarioController {
                 WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(this.getClass()).getAllUsuarios()).withRel("all-usuarios"));
         } else {
             log.error("No se encontró el usuario con ID {}", idUsuario);
-            throw new UsuarioBadRequestException("No se encontró el usuario con ID: " + idUsuario);
+            throw new BadRequestException("No se encontró el usuario con ID: " + idUsuario);
         }
     }
 
     @PostMapping
-    public EntityModel<Usuario> createUsuario(@Validated @RequestBody Usuario usuario) {
-        log.info("POST /usuarios");
+    public EntityModel<Usuario> saveUsuario(@Validated @RequestBody Usuario usuario) {
+        log.info("POST /api/usuarios");
         log.info("Se ejecuta createUsuario");
-        Usuario createUsuario = usuarioService.saveUsuario(usuario);
-        if (createUsuario == null) {
+        Usuario saveUsuario = usuarioService.saveUsuario(usuario);
+        if (saveUsuario == null) {
             log.error("Error al crear el usuario {}", usuario);
-            throw new UsuarioBadRequestException("Error al crear el usuario");
+            throw new BadRequestException("Error al crear el usuario");
         }
-        return EntityModel.of(createUsuario,
-            WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(this.getClass()).getUsuarioById(createUsuario.getId())).withSelfRel(),
+        return EntityModel.of(saveUsuario,
+            WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(this.getClass()).getUsuarioById(saveUsuario.getId())).withSelfRel(),
             WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(this.getClass()).getAllUsuarios()).withRel("all-usuarios"));
     }
     
     @PutMapping("/{idUsuario}")
     public EntityModel<Usuario> updateUsuario(@PathVariable("idUsuario") Long idUsuario, @RequestBody Usuario usuario) {
-        log.info("PUT /usuarios/{idUsuario}");
+        log.info("PUT /api/usuarios/{idUsuario}");
         log.info("Se ejecuta updateUsuario: {}", idUsuario);
         Optional<Usuario> usuarioFind = usuarioService.getUsuarioById(idUsuario);
         if (usuarioFind.isEmpty()) {
             log.error("No se encontró el usuario con ID {}", idUsuario);
-            throw new UsuarioNotFoundException("No se encontró el usuario con ID: " + idUsuario);
+            throw new NotFoundException("No se encontró el usuario con ID: " + idUsuario);
         }
         log.info("Se encontró y actualizo el usuario con ID {}", idUsuario);
         Usuario updateUsuario = usuarioService.updateUsuario(idUsuario, usuario);
@@ -105,7 +105,7 @@ public class UsuarioController {
 
     @DeleteMapping("/{idUsuario}")
     public ResponseEntity<Object> deleteUsuario(@PathVariable("idUsuario") Long idUsuario){
-        log.info("DELETE /usuarios/{idUsuario}");
+        log.info("DELETE /api/usuarios/{idUsuario}");
         Optional<Usuario> usuarioFind = usuarioService.getUsuarioById(idUsuario);
         if (usuarioFind.isEmpty()) {
             log.error("No se encontró el usuario con ID {}", idUsuario);
@@ -137,14 +137,14 @@ public class UsuarioController {
             .body("Error en el servidor: " + e.getMessage());
     }
 
-    @ExceptionHandler(UsuarioNotFoundException.class)
-    public ResponseEntity<String> handleUsuarioNotFoundException(UsuarioNotFoundException e) {
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<String> handleUsuarioNotFoundException(NotFoundException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
             .body(e.getMessage());
     }
 
-    @ExceptionHandler(UsuarioBadRequestException.class)
-    public ResponseEntity<String> handleUsuarioBadRequestException(UsuarioBadRequestException e) {
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<String> handleUsuarioBadRequestException(BadRequestException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
             .body(e.getMessage());
     }
