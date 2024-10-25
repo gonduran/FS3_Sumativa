@@ -122,13 +122,13 @@ public class RolController {
     }
 
     @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<String> handleUsuarioNotFoundException(NotFoundException e) {
+    public ResponseEntity<String> handleRolNotFoundException(NotFoundException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
             .body(e.getMessage());
     }
 
     @ExceptionHandler(BadRequestException.class)
-    public ResponseEntity<String> handleUsuarioBadRequestException(BadRequestException e) {
+    public ResponseEntity<String> handleRolBadRequestException(BadRequestException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
             .body(e.getMessage());
     }

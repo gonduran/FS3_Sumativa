@@ -122,13 +122,13 @@ public class CategoriaController {
     }
 
     @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<String> handleUsuarioNotFoundException(NotFoundException e) {
+    public ResponseEntity<String> handleCategoriaNotFoundException(NotFoundException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
             .body(e.getMessage());
     }
 
     @ExceptionHandler(BadRequestException.class)
-    public ResponseEntity<String> handleUsuarioBadRequestException(BadRequestException e) {
+    public ResponseEntity<String> handleCategoriaBadRequestException(BadRequestException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
             .body(e.getMessage());
     }
