@@ -88,9 +88,9 @@ public class ProductoServiceImpl implements ProductoService{
         // Eliminar el usuario
         productoRepository.delete(producto);
     }
-
+/*
     @Override
     public Producto getProductoByCategoria(Long id) {
         return productoRepository.findByCategoria(id);
-    }
+    } */
 }

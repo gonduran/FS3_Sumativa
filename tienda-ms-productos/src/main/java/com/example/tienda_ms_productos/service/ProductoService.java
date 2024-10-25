@@ -10,5 +10,5 @@ public interface ProductoService {
     Producto saveProducto(Producto producto);
     Producto updateProducto(Long id,Producto producto);
     void deleteProducto(Long id);
-    Producto getProductoByCategoria(Long id);
+    /*Producto getProductoByCategoria(Long id); */
 }
