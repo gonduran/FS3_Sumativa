@@ -16,7 +16,7 @@ import jakarta.validation.constraints.*;
 
 @Entity
 @Table(name = "Categoria")
-@JsonIgnoreProperties("usuarios")
+@JsonIgnoreProperties("productos")
 public class Categoria extends RepresentationModel<Categoria> {
 
     @Id

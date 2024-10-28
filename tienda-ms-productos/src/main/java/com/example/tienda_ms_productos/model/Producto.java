@@ -34,12 +34,11 @@ public class Producto extends RepresentationModel<Producto> {
     @Column(name= "descripcion", nullable = false, unique = true)
     private String descripcion;
 
-    @NotBlank(message = "No puede ingresar un precio vacio")
     @NotNull(message = "Precio obligatorio")
+    @DecimalMin(value = "0.0", inclusive = false, message = "El precio debe ser mayor que 0")
     @Column(name= "precio", nullable = false)
     private Double precio;
 
-    @NotBlank(message = "No puede ingresar un stock vacio")
     @NotNull(message = "Stock obligatorio")
     @Column(name= "stock", nullable = false)
     private Double stock;
