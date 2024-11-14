@@ -1,0 +1,66 @@
+<!-- Main content -->
+<main class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <h2>Perfil Cliente</h2>
+            <form [formGroup]="profileForm" (ngSubmit)="onSubmit()">
+                <div class="mb-3">
+                    <label for="clientName" class="form-label">Nombre:</label>
+                    <input type="text" class="form-control" id="clientName" name="clientName" formControlName="clientName">
+                    <div *ngIf="profileForm.get('clientName')?.invalid && profileForm.get('clientName')?.touched" class="text-danger">
+                        Nombre es obligatorio.
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="clientSurname" class="form-label">Apellidos:</label>
+                    <input type="text" class="form-control" id="clientSurname" name="clientSurname" formControlName="clientSurname">
+                    <div *ngIf="profileForm.get('clientSurname')?.invalid && profileForm.get('clientSurname')?.touched" class="text-danger">
+                        Apellidos es obligatorio.
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="email" class="form-label">Correo Electrónico:</label>
+                    <input type="email" class="form-control" id="email" name="email" formControlName="email">
+                    <div *ngIf="profileForm.get('email')?.invalid && profileForm.get('email')?.touched" class="text-danger">
+                        <small *ngIf="profileForm.get('email')?.errors?.['required']">Correo Electrónico es obligatorio.</small>
+                        <small *ngIf="profileForm.get('email')?.errors?.['email']">Formato de correo electrónico incorrecto.</small>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="password" class="form-label">Contraseña:</label>
+                    <input type="password" class="form-control" id="password" name="password" formControlName="password">
+                    <small class="form-text text-muted">Déjelo en blanco si no desea cambiar la contraseña</small>
+                    <div *ngIf="profileForm.get('password')?.invalid && profileForm.get('password')?.touched" class="text-danger">
+                        <small *ngIf="profileForm.get('password')?.errors?.['pattern']">La contraseña debe tener entre 6 y 18 caracteres, al menos un número y una letra mayúscula.</small>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="confirmPassword" class="form-label">Confirmar Contraseña:</label>
+                    <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" formControlName="confirmPassword">
+                    <div *ngIf="profileForm.hasError('mismatch') && profileForm.get('confirmPassword')?.touched" class="text-danger">
+                        Las contraseñas no coinciden.
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="birthdate" class="form-label">Fecha de Nacimiento:</label>
+                    <input type="date" class="form-control" id="birthdate" name="birthdate" formControlName="birthdate">
+                    <div *ngIf="profileForm.get('birthdate')?.invalid && profileForm.get('birthdate')?.touched" class="text-danger">
+                        Fecha de Nacimiento es obligatoria.
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="dispatchAddress" class="form-label">Dirección de Despacho:</label>
+                    <input type="text" class="form-control" id="dispatchAddress" name="dispatchAddress" formControlName="dispatchAddress">
+                </div>
+                <br/>
+                <button type="submit" class="btn btn-primary" [disabled]="profileForm.invalid">Actualizar Perfil</button>
+                <button type="button" class="btn btn-secondary" (click)="onReset()">Limpiar</button>
+            </form>
+        </div>
+    </div>
+</main>
+
+<!-- Loading Screen -->
+<div id="loading-screen" class="d-flex justify-content-center align-items-center">
+    <div class="loader"></div>
+</div>
