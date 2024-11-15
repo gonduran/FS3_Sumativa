@@ -7,65 +7,42 @@
         </div>
     </div>
     <div class="row mt-4">
-        <!-- Sección de Papelería -->
+        <!-- Categoria Papelería -->
         <div class="col-md-4 mb-4">
             <div class="card">
-                <img src="assets/images/libreria2.webp" class="card-img-top" alt="Papelería">
+                <img src="assets/images/cuaderno2.webp" class="card-img-top" alt="Papelería">
                 <div class="card-body">
                     <h5 class="card-title">Papelería</h5>
                     <p class="card-text">Cuadernos, libretas y agendas.</p>
-                    <a routerLink="/product-catalog" class="btn btn-primary">Ver Catálogo</a>
+                    <a [routerLink]="['/product-catalog']" [queryParams]="{ filter: 'Papelería' }" class="btn btn-primary">Ver Papelería</a>
                 </div>
             </div>
         </div>
         
-        <!-- Sección de Material de Oficina -->
+        <!-- Categoria Oficina -->
         <div class="col-md-4 mb-4">
             <div class="card">
-                <img src="assets/images/libreria2.webp" class="card-img-top" alt="Material de Oficina">
+                <img src="assets/images/archivador.webp" class="card-img-top" alt="Oficina">
                 <div class="card-body">
-                    <h5 class="card-title">Material de Oficina</h5>
-                    <p class="card-text">Artículos de escritorio, organizadores, lápices, archivadores y mucho más.</p>
-                    <a routerLink="/product-catalog" class="btn btn-primary">Ver Catálogo</a>
+                    <h5 class="card-title">Oficina</h5>
+                    <p class="card-text">Artículos de escritorio, organizadores y archivadores.</p>
+                    <a [routerLink]="['/product-catalog']" [queryParams]="{ filter: 'Oficina' }" class="btn btn-primary">Ver Oficina</a>
                 </div>
             </div>
         </div>
         
-        <!-- Sección de Tecnología de Impresión -->
+        <!-- Categoria Impresión -->
         <div class="col-md-4 mb-4">
             <div class="card">
-                <img src="assets/images/libreria2.webp" class="card-img-top" alt="Impresión y Sublimación">
+                <img src="assets/images/tintahp.webp" class="card-img-top" alt="Impresión">
                 <div class="card-body">
                     <h5 class="card-title">Impresión</h5>
                     <p class="card-text">Articulos de impresión, tintas y papeles.</p>
-                    <a routerLink="/product-catalog" class="btn btn-primary">Ver Catálogo</a>
+                    <a [routerLink]="['/product-catalog']" [queryParams]="{ filter: 'Impresión' }" class="btn btn-primary">Ver Impresión</a>
                 </div>
             </div>
         </div>
         
-        <!-- Sección de Mochilas y Accesorios -->
-        <div class="col-md-4 mb-4">
-            <div class="card">
-                <img src="assets/images/libreria2.webp" class="card-img-top" alt="Mochilas y Accesorios">
-                <div class="card-body">
-                    <h5 class="card-title">Mochilas y Accesorios</h5>
-                    <p class="card-text">Mochilas, estuches, maletines y accesorios para la oficina y el estudio.</p>
-                    <a routerLink="/product-catalog" class="btn btn-primary">Ver Catálogo</a>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Sección de Regalos Corporativos -->
-        <div class="col-md-4 mb-4">
-            <div class="card">
-                <img src="assets/images/libreria2.webp" class="card-img-top" alt="Regalos Corporativos">
-                <div class="card-body">
-                    <h5 class="card-title">Regalos Corporativos</h5>
-                    <p class="card-text">Regalos personalizados para empresas, con opciones de grabado y estampado.</p>
-                    <a routerLink="/product-catalog" class="btn btn-primary">Ver Catálogo</a>
-                </div>
-            </div>
-        </div>
     </div>
 </main>
 

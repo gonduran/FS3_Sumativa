@@ -24,7 +24,7 @@ export const routes: Routes = [
     { path: 'cart', component: CartComponent },
     { path: 'home', component: HomeComponent },
     { path: 'product-catalog', component: ProductCatalogComponent },
-    { path: 'product-detail', component: ProductDetailComponent },
+    { path: 'product-detail/:title', component: ProductDetailComponent },
     //auth
     { path: 'login', component: LoginComponent },
     { path: 'logout', component: LogoutComponent },
