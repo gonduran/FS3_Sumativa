@@ -4,7 +4,7 @@ import { RouterModule } from '@angular/router';
 import { isPlatformBrowser } from '@angular/common';
 import { NavigationService } from '../../services/navigation.service';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { CustomersService } from '../../services/customers.service';
+import { UsersService } from '../../services/users.service';
 import { Renderer2, ElementRef } from '@angular/core';
 import { CryptoService } from '../../services/crypto.service';
 import { Router } from '@angular/router';
@@ -26,7 +26,7 @@ export class ProfileComponent implements OnInit, AfterViewInit {
    * @param {NavigationService} navigationService - Servicio de navegación.
    * @param {Object} platformId - Identificador de la plataforma.
    * @param {FormBuilder} fb - Constructor de formularios reactivos.
-   * @param {CustomersService} customersService - Servicio de clientes.
+   * @param {UsersService} usersService - Servicio de clientes.
    * @param {Renderer2} renderer - Servicio de renderizado.
    * @param {ElementRef} el - Referencia al elemento HTML.
    * @param {CryptoService} cryptoService - Servicio de encriptación.
@@ -36,16 +36,24 @@ export class ProfileComponent implements OnInit, AfterViewInit {
     private navigationService: NavigationService,
     @Inject(PLATFORM_ID) private platformId: Object,
     private fb: FormBuilder,
-    private customersService: CustomersService,
+    private usersService: UsersService,
     private renderer: Renderer2,
     private el: ElementRef,
     private cryptoService: CryptoService,
     private router: Router) { 
       this.profileForm = this.fb.group({
-      clientName: ['', Validators.required],
-      clientSurname: ['', Validators.required],
+      name: ['', [Validators.required, Validators.minLength(2)]],
+      surname: ['', [Validators.required, Validators.minLength(2)]],
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.pattern('(?=.*[A-Z])(?=.*\\d)[A-Za-z\\d]{6,18}$')]],
+      password: [
+        '',
+        [
+          Validators.required,
+          Validators.minLength(6),
+          Validators.maxLength(18),
+          Validators.pattern(/^(?=.*[A-Z])(?=.*\d)(?=.*[#$!%*?&])[A-Za-z\d$!%*?&]{6,18}$/),
+        ],
+      ],
       confirmPassword: [''],
       birthdate: ['', Validators.required],
       dispatchAddress: ['']
@@ -130,16 +138,16 @@ export class ProfileComponent implements OnInit, AfterViewInit {
         return;
       }
 
-      const clientName = this.profileForm.value.clientName;
-      const clientSurname = this.profileForm.value.clientSurname;
+      const name = this.profileForm.value.name;
+      const surname = this.profileForm.value.surname;
       const email = this.profileForm.value.email;
       const password = this.profileForm.value.password;
       const birthdate = this.formatToStorageDate(this.profileForm.value.birthdate);
       const dispatchAddress = this.profileForm.value.dispatchAddress;
 
-      const updateExitoso = this.customersService.updateCustomer(clientName, clientSurname, email, password, birthdate, dispatchAddress, 'client');
+      const updateExitoso = this.usersService.updateUser(name, surname, email, password, birthdate, dispatchAddress, 'client');
       if (updateExitoso) {
-        console.log('Actualizacion exitosa:', { clientName, clientSurname, email, password, birthdate, dispatchAddress });
+        console.log('Actualizacion exitosa:', { name, surname, email, password, birthdate, dispatchAddress });
         alert('Actualizacion exitosa!');
       } else {
         console.log('Error en la actualización.');
@@ -157,8 +165,8 @@ export class ProfileComponent implements OnInit, AfterViewInit {
    */
   onReset(): void {
     this.profileForm.reset({
-      clientName: '',
-      clientSurname: '',
+      name: '',
+      surname: '',
       email: '',
       password: '',
       confirmPassword: '',
@@ -174,14 +182,14 @@ export class ProfileComponent implements OnInit, AfterViewInit {
    * @return {void}
    */
   loadClientData(): void {
-    if (this.customersService.isLocalStorageAvailable()) {
+    if (this.usersService.isLocalStorageAvailable()) {
       const userData = JSON.parse(localStorage.getItem('loggedInClient') || '{}');
       if (userData) {
         console.log('Cliente logueado:', { userData });
         
         this.profileForm.patchValue({
-          clientName: userData.clientName || '',
-          clientSurname: userData.clientSurname || '',
+          name: userData.name || '',
+          surname: userData.surname || '',
           email: userData.email || '',
           password: '',
           confirmPassword: '',

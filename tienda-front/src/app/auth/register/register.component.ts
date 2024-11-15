@@ -4,7 +4,7 @@ import { RouterModule } from '@angular/router';
 import { isPlatformBrowser } from '@angular/common';
 import { NavigationService } from '../../services/navigation.service';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { CustomersService } from '../../services/customers.service';
+import { UsersService } from '../../services/users.service';
 import { Renderer2, ElementRef } from '@angular/core';
 import { CryptoService } from '../../services/crypto.service';
 import { Router } from '@angular/router';
@@ -26,7 +26,7 @@ export class RegisterComponent implements OnInit, AfterViewInit {
    * @param {NavigationService} navigationService - Servicio de navegación.
    * @param {Object} platformId - Identificador de la plataforma.
    * @param {FormBuilder} fb - Constructor de formularios reactivos.
-   * @param {CustomersService} customersService - Servicio de clientes.
+   * @param {UsersService} usersService - Servicio de clientes.
    * @param {Renderer2} renderer - Servicio de renderizado.
    * @param {ElementRef} el - Referencia al elemento HTML.
    * @param {CryptoService} cryptoService - Servicio de encriptación.
@@ -36,16 +36,24 @@ export class RegisterComponent implements OnInit, AfterViewInit {
     private navigationService: NavigationService,
     @Inject(PLATFORM_ID) private platformId: Object,
     private fb: FormBuilder,
-    private customersService: CustomersService,
+    private usersService: UsersService,
     private renderer: Renderer2,
     private el: ElementRef,
     private cryptoService: CryptoService,
     private router: Router) { 
       this.registerForm = this.fb.group({
-      clientName: ['', Validators.required],
-      clientSurname: ['', Validators.required],
+      name: ['', [Validators.required, Validators.minLength(2)]],
+      surname: ['', [Validators.required, Validators.minLength(2)]],
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.pattern('(?=.*[A-Z])(?=.*\\d)[A-Za-z\\d]{6,18}$')]],
+      password: [
+        '',
+        [
+          Validators.required,
+          Validators.minLength(6),
+          Validators.maxLength(18),
+          Validators.pattern(/^(?=.*[A-Z])(?=.*\d)(?=.*[#$!%*?&])[A-Za-z\d$!%*?&]{6,18}$/),
+        ],
+      ],
       confirmPassword: ['', Validators.required],
       birthdate: ['', Validators.required],
       dispatchAddress: ['']
@@ -127,16 +135,16 @@ export class RegisterComponent implements OnInit, AfterViewInit {
         return;
       }
 
-      const clientName = this.registerForm.value.clientName;
-      const clientSurname = this.registerForm.value.clientSurname;
+      const name = this.registerForm.value.name;
+      const surname = this.registerForm.value.surname;
       const email = this.registerForm.value.email;
       const password = this.cryptoService.encrypt(this.registerForm.value.password);
       const birthdate = this.formatToStorageDate(this.registerForm.value.birthdate);
       const dispatchAddress = this.registerForm.value.dispatchAddress;
 
-      const registroExitoso = this.customersService.registerCustomer(clientName, clientSurname, email, password, birthdate, dispatchAddress, 'client');
+      const registroExitoso = this.usersService.registerUser(name, surname, email, password, birthdate, dispatchAddress, 'client');
       if (registroExitoso) {
-        console.log('Registro exitoso:', { clientName, clientSurname, email, password, birthdate, dispatchAddress });
+        console.log('Registro exitoso:', { name, surname, email, password, birthdate, dispatchAddress });
         alert('Registro exitoso!');
         this.registerForm.reset();
       } else {
@@ -155,8 +163,8 @@ export class RegisterComponent implements OnInit, AfterViewInit {
    */
   onReset(): void {
     this.registerForm.reset({
-      clientName: '',
-      clientSurname: '',
+      name: '',
+      surname: '',
       email: '',
       password: '',
       confirmPassword: '',

@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { isPlatformBrowser } from '@angular/common';
 import { NavigationService } from '../../services/navigation.service';
-import { CustomersService } from '../../services/customers.service';
+import { UsersService } from '../../services/users.service';
 import { OrdersService } from '../../services/orders.service';
 import { Router } from '@angular/router';
 
@@ -27,7 +27,7 @@ export class CartComponent implements OnInit, AfterViewInit {
   constructor(
     private navigationService: NavigationService,
     @Inject(PLATFORM_ID) private platformId: Object,
-    private customersService: CustomersService,
+    private usersService: UsersService,
     private ordersService: OrdersService,
     private router: Router) { }
 
@@ -55,7 +55,7 @@ export class CartComponent implements OnInit, AfterViewInit {
   totalAmount: number = 0;
 
   loadCart(): void {
-    if (this.customersService.isLocalStorageAvailable()) {
+    if (this.usersService.isLocalStorageAvailable()) {
       this.cart = JSON.parse(localStorage.getItem('carts') || '[]');
     }
     this.calculateTotal();
@@ -80,7 +80,7 @@ export class CartComponent implements OnInit, AfterViewInit {
   checkout(): void {
     if (this.checkLoginStateCheckout()){
       //Registrar orden
-      const email = this.customersService.getLoggedInClientEmail();
+      const email = this.usersService.getLoggedInClientEmail();
       const total = this.totalAmount;
       const id = this.ordersService.registerOrders(email, total);
 
@@ -96,7 +96,7 @@ export class CartComponent implements OnInit, AfterViewInit {
 
   checkLoginStateCheckout(): boolean {
     if (isPlatformBrowser(this.platformId)) {
-      if (this.customersService.checkLoginState()) {
+      if (this.usersService.checkLoginState()) {
         //Esta logueado, se permite checkout
         console.log('Esta logueado, se permite checkout.');
         return true;

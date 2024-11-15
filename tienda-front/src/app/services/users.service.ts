@@ -25,6 +25,33 @@ export class UsersService {
     } else {
       this.users = [];
     }
+    // Verifica y carga el usuario admin si no existe
+    this.loadAdminUser();
+  }
+
+  private loadAdminUser(): void {
+    if (this.isLocalStorageAvailable()) {
+      const usersSaved = localStorage.getItem(this.storageKey);
+      this.users = usersSaved ? JSON.parse(usersSaved) : [];
+  
+      const adminExists = this.users.some(user => user.rol === 'admin');
+      if (!adminExists) {
+        const adminUser: User = new UserBuilder()
+          .setName('Admin')
+          .setSurname('Tienda')
+          .setEmail('admin@puente-magico.cl')
+          .setPassword(this.cryptoService.encrypt('P4ss2511%'))
+          .setBirthdate('01-01-2000')
+          .setDispatchAddress('')
+          .setRol('admin')
+          .build();
+        this.users.push(adminUser);
+        localStorage.setItem(this.storageKey, JSON.stringify(this.users));
+        console.log('Usuario admin cargado correctamente');
+      }
+    } else {
+      console.warn('localStorage no está disponible');
+    }
   }
 
   /**
@@ -239,6 +266,14 @@ export class UsersService {
       return loggedInUser ? loggedInUser.email : '';
     }
     return '';
+  }
+
+  getLoggedInClient(): User | null {
+    if (this.isLocalStorageAvailable()) {
+      const loggedInUser = localStorage.getItem('loggedInClient');
+      return loggedInUser ? JSON.parse(loggedInUser) : null;
+    }
+    return null;
   }
 
   /**

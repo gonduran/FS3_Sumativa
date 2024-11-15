@@ -4,7 +4,7 @@ import { RouterModule } from '@angular/router';
 import { isPlatformBrowser } from '@angular/common';
 import { NavigationService } from '../../services/navigation.service';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { CustomersService } from '../../services/customers.service';
+import { UsersService } from '../../services/users.service';
 import { Renderer2, ElementRef } from '@angular/core';
 import { Router } from '@angular/router';
 
@@ -22,7 +22,7 @@ export class RecoverPasswordComponent implements OnInit, AfterViewInit {
     private navigationService: NavigationService,
     @Inject(PLATFORM_ID) private platformId: Object,
 	  private fb: FormBuilder,
-    private customersService: CustomersService,
+    private usersService: UsersService,
     private renderer: Renderer2,
     private el: ElementRef,
     private router: Router) { 
@@ -55,7 +55,7 @@ export class RecoverPasswordComponent implements OnInit, AfterViewInit {
       const email = this.recoverPasswordForm.value.email;
 
       //localStorage.setItem('user', JSON.stringify(userData));
-      const clienteEncontrado = this.customersService.findCustomer(email);
+      const clienteEncontrado = this.usersService.findUser(email);
       if (clienteEncontrado) {
         console.log('Cliente encontrado:', { email });
         alert('Se ha enviado un enlace de recuperación de contraseña a su correo electrónico.!');

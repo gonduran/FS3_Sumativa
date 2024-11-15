@@ -33,7 +33,7 @@ export const routes: Routes = [
     { path: 'register', component: RegisterComponent },
     //user
     { path: 'add-user', component: AddUserComponent },
-    { path: 'edit-user', component: EditUserComponent },
+    { path: 'edit-user/:id', component: EditUserComponent },
     { path: 'list-user', component: ListUserComponent },
     //product
     { path: 'add-product', component: AddProductComponent },

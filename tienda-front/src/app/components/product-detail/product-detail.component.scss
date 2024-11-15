@@ -35,3 +35,10 @@
 }
 
 .hidetext { -webkit-text-security: disc; /* Default */ }
+
+.card-img-top,
+.product-image {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}

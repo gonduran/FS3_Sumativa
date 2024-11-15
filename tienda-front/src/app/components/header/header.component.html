@@ -28,9 +28,11 @@
         <li class="nav-item" *ngIf="!isLoggedIn">
         <a class="nav-link" routerLink="/register">Registro Cliente</a>
         </li>
+        <!-- 
         <li class="nav-item" *ngIf="!isLoggedIn">
         <a class="nav-link" routerLink="/recover-password">Recuperar Contraseña</a>
         </li>
+        -->
     
         <!-- User-Only Links -->
         <li class="nav-item" *ngIf="isLoggedIn && userRole === 'client'">

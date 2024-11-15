@@ -5,16 +5,16 @@
             <h2>Perfil Cliente</h2>
             <form [formGroup]="profileForm" (ngSubmit)="onSubmit()">
                 <div class="mb-3">
-                    <label for="clientName" class="form-label">Nombre:</label>
-                    <input type="text" class="form-control" id="clientName" name="clientName" formControlName="clientName">
-                    <div *ngIf="profileForm.get('clientName')?.invalid && profileForm.get('clientName')?.touched" class="text-danger">
+                    <label for="name" class="form-label">Nombre:</label>
+                    <input type="text" class="form-control" id="name" name="name" formControlName="name">
+                    <div *ngIf="profileForm.get('name')?.invalid && profileForm.get('name')?.touched" class="text-danger">
                         Nombre es obligatorio.
                     </div>
                 </div>
                 <div class="mb-3">
-                    <label for="clientSurname" class="form-label">Apellidos:</label>
-                    <input type="text" class="form-control" id="clientSurname" name="clientSurname" formControlName="clientSurname">
-                    <div *ngIf="profileForm.get('clientSurname')?.invalid && profileForm.get('clientSurname')?.touched" class="text-danger">
+                    <label for="surname" class="form-label">Apellidos:</label>
+                    <input type="text" class="form-control" id="surname" name="surname" formControlName="surname">
+                    <div *ngIf="profileForm.get('surname')?.invalid && profileForm.get('surname')?.touched" class="text-danger">
                         Apellidos es obligatorio.
                     </div>
                 </div>
@@ -31,7 +31,12 @@
                     <input type="password" class="form-control" id="password" name="password" formControlName="password">
                     <small class="form-text text-muted">Déjelo en blanco si no desea cambiar la contraseña</small>
                     <div *ngIf="profileForm.get('password')?.invalid && profileForm.get('password')?.touched" class="text-danger">
-                        <small *ngIf="profileForm.get('password')?.errors?.['pattern']">La contraseña debe tener entre 6 y 18 caracteres, al menos un número y una letra mayúscula.</small>
+                        <small *ngIf="profileForm.get('password')?.errors?.['required']">Contraseña es obligatoria.</small>
+                        <small *ngIf="profileForm.get('password')?.errors?.['minlength']">La contraseña debe tener al menos 6 caracteres.</small>
+                        <small *ngIf="profileForm.get('password')?.errors?.['maxlength']">La contraseña no debe exceder 18 caracteres.</small>
+                        <small *ngIf="profileForm.get('password')?.errors?.['pattern']">
+                          La contraseña debe incluir al menos un número, una letra mayúscula y un carácter especial ($!%*?&).
+                        </small>
                     </div>
                 </div>
                 <div class="mb-3">

@@ -2,7 +2,6 @@ import { Component, OnInit, AfterViewInit, Inject, PLATFORM_ID } from '@angular/
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { NavigationService } from '../../services/navigation.service';
-import { CustomersService } from '../../services/customers.service';
 import { OrdersService } from '../../services/orders.service';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ProductService } from '../../services/product.service'; // Servicio para obtener datos del producto
@@ -24,7 +23,6 @@ export class ProductDetailComponent implements OnInit, AfterViewInit {
   constructor(
     private navigationService: NavigationService,
     @Inject(PLATFORM_ID) private platformId: Object,
-    private customersService: CustomersService,
     private router: Router,
     private ordersService: OrdersService,
     private fb: FormBuilder,

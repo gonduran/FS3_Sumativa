@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { isPlatformBrowser } from '@angular/common';
 import { NavigationService } from '../../services/navigation.service';
-import { CustomersService } from '../../services/customers.service';
+import { UsersService } from '../../services/users.service';
 
 @Component({
   selector: 'app-logout',
@@ -17,7 +17,7 @@ export class LogoutComponent implements OnInit, AfterViewInit {
   constructor(
     private navigationService: NavigationService,
     @Inject(PLATFORM_ID) private platformId: Object,
-    private customersService: CustomersService
+    private usersService: UsersService
   ) { }
 
   ngOnInit(): void {
@@ -38,6 +38,6 @@ export class LogoutComponent implements OnInit, AfterViewInit {
         });
       });
     }
-    this.customersService.logout();
+    this.usersService.logout();
   }
 }

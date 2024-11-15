@@ -4,7 +4,7 @@ import { RouterModule } from '@angular/router';
 import { isPlatformBrowser } from '@angular/common';
 import { NavigationService } from '../../services/navigation.service';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { CustomersService } from '../../services/customers.service';
+import { UsersService } from '../../services/users.service';
 import { Renderer2, ElementRef } from '@angular/core';
 import { CryptoService } from '../../services/crypto.service';
 import { Router } from '@angular/router';
@@ -23,7 +23,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
     private navigationService: NavigationService,
     @Inject(PLATFORM_ID) private platformId: Object,
 	  private fb: FormBuilder,
-    private customersService: CustomersService,
+    private usersService: UsersService,
     private renderer: Renderer2,
     private el: ElementRef,
     private cryptoService: CryptoService,
@@ -57,19 +57,42 @@ export class LoginComponent implements OnInit, AfterViewInit {
     if (this.loginForm.valid) {
       const email = this.loginForm.value.email;
       const password = this.loginForm.value.password;
-
-      //localStorage.setItem('user', JSON.stringify(userData));
-      const loginExitoso = this.customersService.iniciarSesion(email, password);
+  
+      const loginExitoso = this.usersService.iniciarSesion(email, password);
       if (loginExitoso) {
-        console.log('Inicio de sesión exitoso:', { email });
-        alert('Inicio de sesión exitoso!');
-        // Redirigir al perfil del usuario
-        this.router.navigate(['/profile']);
+        const loggedInUser = this.usersService.getLoggedInClient();
+  
+        if (loggedInUser) { // Asegurarse de que loggedInUser no sea null
+          console.log('Inicio de sesión exitoso:', { email, rol: loggedInUser.rol });
+          alert('Inicio de sesión exitoso!');
+  
+          // Redirigir según el rol del usuario
+          switch (loggedInUser.rol) {
+            case 'client':
+              this.router.navigate(['/profile']);
+              break;
+            case 'user':
+              this.router.navigate(['/list-product']);
+              break;
+            case 'admin':
+              this.router.navigate(['/list-user']);
+              break;
+            default:
+              console.warn('Rol desconocido:', loggedInUser.rol);
+              alert('Rol desconocido, contacte al administrador.');
+          }
+        } else {
+          console.error('No se pudo recuperar el usuario logueado.');
+          alert('Error al recuperar la información del usuario. Por favor, inicie sesión nuevamente.');
+          this.router.navigate(['/login']);
+        }
       } else {
         console.log('Error en el inicio de sesión.');
+        alert('Email o contraseña incorrectos.');
       }
     } else {
-      console.log('Formulario invalido');
+      console.log('Formulario inválido.');
+      alert('Por favor, complete los campos correctamente.');
     }
   }
 }
