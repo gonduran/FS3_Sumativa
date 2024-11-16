@@ -27,4 +27,22 @@ export class AuthService {
   getUserRole(): Observable<string | null> {
     return this.userRole.asObservable();
   }
+
+  validateAuthentication(): boolean {
+    const isLoggedIn = this.isAuthenticated.getValue();
+    const role = this.userRole.getValue();
+  
+    if (!isLoggedIn) {
+      console.warn('Usuario no autenticado. Redirigiendo a la página de inicio de sesión.');
+      return false;
+    }
+  
+    if (!role) {
+      console.warn('Rol de usuario no definido. Redirigiendo a la página de inicio de sesión.');
+      return false;
+    }
+  
+    console.log(`Usuario autenticado con rol: ${role}`);
+    return true;
+  }
 }

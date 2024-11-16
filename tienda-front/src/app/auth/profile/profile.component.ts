@@ -8,6 +8,7 @@ import { UsersService } from '../../services/users.service';
 import { Renderer2, ElementRef } from '@angular/core';
 import { CryptoService } from '../../services/crypto.service';
 import { Router } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-profile',
@@ -40,6 +41,7 @@ export class ProfileComponent implements OnInit, AfterViewInit {
     private renderer: Renderer2,
     private el: ElementRef,
     private cryptoService: CryptoService,
+    private authService: AuthService,
     private router: Router) { 
       this.profileForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(2)]],
@@ -67,6 +69,9 @@ export class ProfileComponent implements OnInit, AfterViewInit {
    * @return {void}
    */
   ngOnInit(): void {
+    if (!this.authService.validateAuthentication()) {
+      this.router.navigate(['/login']);
+    }
     this.loadClientData();
   }
 
