@@ -1,1 +1,44 @@
-<p>list-product works!</p>
+<div class="container mt-5">
+    <h2>Lista de Productos</h2>
+  
+    <!-- Botón para agregar un producto -->
+    <div class="text-end mb-3">
+      <button class="btn btn-primary" [routerLink]="['/add-product']">Agregar Producto</button>
+    </div>
+  
+    <!-- Tabla de productos -->
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Imagen</th>
+          <th>Nombre</th>
+          <th>Categoría</th>
+          <th>Precio</th>
+          <th>Stock</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let product of products; let i = index">
+          <td>{{ i + 1 }}</td>
+          <td>
+            <img [src]="product.image" alt="{{ product.title }}" class="product-image">
+          </td>
+          <td>{{ product.title }}</td>
+          <td>{{ product.category }}</td>
+          <td>{{ product.price | currency:'CLP':'symbol-narrow':'1.0-0' }}</td>
+          <td>{{ product.stock }}</td>
+          <td>
+            <button class="btn btn-sm btn-info me-2" [routerLink]="['/edit-product', product.id]">Editar</button>
+            <button class="btn btn-sm btn-danger" (click)="deleteProduct(product.id)">Eliminar</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  
+    <!-- Mensaje cuando no hay productos -->
+    <div *ngIf="products.length === 0" class="text-center text-muted mt-4">
+      <p>No hay productos disponibles.</p>
+    </div>
+  </div>

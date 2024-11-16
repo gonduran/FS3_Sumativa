@@ -27,7 +27,7 @@
           <td>{{ user.rol }}</td>
           <td>
             <!-- Botón para editar usuario -->
-            <button class="btn btn-primary btn-sm me-2" [routerLink]="['/edit-user', i]" [queryParams]="{ email: user.email }">
+            <button class="btn btn-warning btn-sm" [routerLink]="['/edit-user', user.email]">
               <i class="bi bi-pencil"></i> Editar
             </button>
   

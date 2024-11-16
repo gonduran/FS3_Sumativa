@@ -8,7 +8,7 @@ export class ProductService {
     'Papelería': [
       { title: 'Agenda 2025', price: 6490, category: 'Papelería', image: 'assets/images/agenda2025.webp', detailLink: '/product-detail/Agenda 2025', description: 'Agenda anual 2025 con diseño exclusivo.', features: ['Tamaño A5', 'Papel reciclado', 'Cubierta dura'] },
       { title: 'Cuaderno 120 Hojas', price: 5990, category: 'Papelería', image: 'assets/images/cuaderno1.webp', detailLink: '/product-detail/Cuaderno 120 Hojas', description: 'Cuaderno ideal para estudiantes.', features: ['Tamaño A4', '120 hojas', 'Cubierta blanda'] },
-      { title: 'Cuaderno 150 hojas', price: 6990, category: 'Papelería', image: 'assets/images/cuaderno2.webp', detailLink: '/product-detail/Cuaderno 150 hojas', description: 'Perfecto para tus apuntes.', features: ['Tamaño carta', '150 hojas', 'Líneas y cuadriculado'] },
+      { title: 'Cuaderno 150 hojas', price: 6990, category: 'Papelería', image: 'assets/images/cuaderno2.webp', detailLink: '/product-detail/Cuaderno 150 hojas', description: 'Cuaderno perfecto para tus apuntes.', features: ['Tamaño carta', '150 hojas', 'Líneas y cuadriculado'] },
       { title: 'Block Sketching', price: 6990, category: 'Papelería', image: 'assets/images/blocksketching.webp', detailLink: '/product-detail/Block Sketching', description: 'Ideal para tus bocetos.', features: ['Papel de alta calidad', 'Formato A3', '50 hojas'] }
     ],
     'Oficina': [

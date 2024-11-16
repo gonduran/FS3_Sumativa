@@ -41,11 +41,14 @@ export class EditUserComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.userId = this.route.snapshot.paramMap.get('id');
+    this.userId = this.route.snapshot.paramMap.get('id'); // Obtiene el parámetro de la URL
     if (this.userId) {
-      const user = this.usersService.getUsers().find(u => u.email === this.userId);
+      const user = this.usersService.getUsers().find(u => u.email === this.userId); // Busca el usuario por email
       if (user) {
-        this.editUserForm.patchValue(user);
+        this.editUserForm.patchValue(user); // Pone los valores del usuario en el formulario
+      } else {
+        console.error('Usuario no encontrado');
+        this.router.navigate(['/list-user']); // Redirige si no encuentra el usuario
       }
     }
   }

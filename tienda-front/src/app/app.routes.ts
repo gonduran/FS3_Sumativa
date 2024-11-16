@@ -37,6 +37,6 @@ export const routes: Routes = [
     { path: 'list-user', component: ListUserComponent },
     //product
     { path: 'add-product', component: AddProductComponent },
-    { path: 'edit-product', component: EditProductComponent },
+    { path: 'edit-product/:id', component: EditProductComponent },
     { path: 'list-product', component: ListProductComponent }
 ];
