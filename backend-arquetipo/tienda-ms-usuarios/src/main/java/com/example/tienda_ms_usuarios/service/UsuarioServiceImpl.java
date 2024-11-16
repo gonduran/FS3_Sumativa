@@ -84,8 +84,11 @@ public class UsuarioServiceImpl implements UsuarioService {
 
             // Actualizar los datos básicos del usuario
             usuario.setNombre(usuarioDetalles.getNombre());
+            usuario.setApellido(usuarioDetalles.getApellido());
             usuario.setEmail(usuarioDetalles.getEmail());
             usuario.setPassword(usuarioDetalles.getPassword());
+            usuario.setFechaNacimiento(usuarioDetalles.getFechaNacimiento());
+            usuario.setDireccion(usuarioDetalles.getDireccion());
 
             // Actualizar los roles del usuario
             Set<Rol> rolesActualizados = new HashSet<>();
