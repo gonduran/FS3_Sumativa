@@ -41,7 +41,7 @@
                 <img [src]="product.image" class="card-img-top" [alt]="product.title">
                 <div class="card-body">
                     <h5 class="card-title">{{ product.title }}</h5>
-                    <p class="card-text">{{ product.price | currency:'CLP':'-narrow':'1.0-0' }}</p>
+                    <p class="card-text">{{ product.price | currency:'CLP':'symbol-narrow':'1.0-0' }}</p>
                     <a [routerLink]="['/product-detail', product.title]" class="btn btn-primary">Ver Detalles</a>
                 </div>
             </div>

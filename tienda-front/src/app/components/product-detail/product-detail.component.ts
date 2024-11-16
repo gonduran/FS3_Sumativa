@@ -72,6 +72,12 @@ export class ProductDetailComponent implements OnInit, AfterViewInit {
         total
       });
       // Lógica adicional para agregar al carrito
+      const registroExitoso = this.ordersService.registerCarts(this.selectedProduct.title, this.selectedProduct.image, this.selectedProduct.price, quantity, total);
+      if (registroExitoso) {
+        console.log('Registro exitoso.');
+      } else {
+        console.log('Error en el registro.');
+      }
     }
   }
 }
