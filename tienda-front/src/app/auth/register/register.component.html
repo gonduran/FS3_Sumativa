@@ -1,0 +1,70 @@
+<!-- Main content -->
+<main class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <h2>Registro Cliente</h2>
+            <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+                <div class="mb-3">
+                    <label for="name" class="form-label">Nombre:</label>
+                    <input type="text" class="form-control" id="name" name="name" formControlName="name">
+                    <div *ngIf="registerForm.get('name')?.invalid && registerForm.get('name')?.touched" class="text-danger">
+                        Nombre es obligatorio.
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="surname" class="form-label">Apellidos:</label>
+                    <input type="text" class="form-control" id="surname" name="surname" formControlName="surname">
+                    <div *ngIf="registerForm.get('surname')?.invalid && registerForm.get('surname')?.touched" class="text-danger">
+                        Apellidos es obligatorio.
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="email" class="form-label">Correo Electrónico:</label>
+                    <input type="email" class="form-control" id="email" name="email" formControlName="email">
+                    <div *ngIf="registerForm.get('email')?.invalid && registerForm.get('email')?.touched" class="text-danger">
+                        <small *ngIf="registerForm.get('email')?.errors?.['required']">Correo Electrónico es obligatorio.</small>
+                        <small *ngIf="registerForm.get('email')?.errors?.['email']">Formato de correo electrónico incorrecto.</small>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="password" class="form-label">Contraseña:</label>
+                    <input type="password" class="form-control" id="password" name="password" formControlName="password">
+                    <div *ngIf="registerForm.get('password')?.invalid && registerForm.get('password')?.touched" class="text-danger">
+                        <small *ngIf="registerForm.get('password')?.errors?.['required']">Contraseña es obligatoria.</small>
+                        <small *ngIf="registerForm.get('password')?.errors?.['minlength']">La contraseña debe tener al menos 6 caracteres.</small>
+                        <small *ngIf="registerForm.get('password')?.errors?.['maxlength']">La contraseña no debe exceder 18 caracteres.</small>
+                        <small *ngIf="registerForm.get('password')?.errors?.['pattern']">
+                          La contraseña debe incluir al menos un número, una letra mayúscula y un carácter especial ($!%*?&).
+                        </small>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="confirmPassword" class="form-label">Confirmar Contraseña:</label>
+                    <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" formControlName="confirmPassword">
+                    <div *ngIf="registerForm.hasError('mismatch') && registerForm.get('confirmPassword')?.touched" class="text-danger">
+                        Las contraseñas no coinciden.
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="birthdate" class="form-label">Fecha de Nacimiento:</label>
+                    <input type="date" class="form-control" id="birthdate" name="birthdate" formControlName="birthdate">
+                    <div *ngIf="registerForm.get('birthdate')?.invalid && registerForm.get('birthdate')?.touched" class="text-danger">
+                        Fecha de Nacimiento es obligatoria.
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="dispatchAddress" class="form-label">Dirección:</label>
+                    <input type="text" class="form-control" id="dispatchAddress" name="dispatchAddress" formControlName="dispatchAddress">
+                </div>
+                <br/>
+                <button type="submit" class="btn btn-primary" [disabled]="registerForm.invalid">Registrar</button>
+                <button type="button" class="btn btn-secondary" (click)="onReset()">Limpiar</button>
+            </form>
+        </div>
+    </div>
+</main>
+
+<!-- Loading Screen -->
+<div id="loading-screen" class="d-flex justify-content-center align-items-center">
+    <div class="loader"></div>
+</div>

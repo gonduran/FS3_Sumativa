@@ -1,0 +1,60 @@
+services:
+  tienda-ms-usuarios:
+    image: tienda-ms-usuarios
+    container_name: tienda_ms_usuarios
+    build:
+      context: ./tienda-ms-usuarios
+      dockerfile: Dockerfile
+    ports:
+      - "8092:8092"
+    environment:
+      # Configuraciones de base de datos
+      SPRING_DATASOURCE_URL: jdbc:oracle:thin:@vocgyi3vv1p3nvr8_tp?TNS_ADMIN=/app/wallet/
+      SPRING_DATASOURCE_USERNAME: BDFS3_USUARIOS
+      SPRING_DATASOURCE_PASSWORD: ClaseFullStack3-
+    networks:
+      - tienda_network
+    restart: always
+
+  tienda-ms-productos:
+    image: tienda-ms-productos
+    container_name: tienda_ms_productos
+    build:
+      context: ./tienda-ms-productos
+      dockerfile: Dockerfile
+    ports:
+      - "8093:8093"
+    environment:
+      # Configuraciones de base de datos
+      SPRING_DATASOURCE_URL: jdbc:oracle:thin:@vocgyi3vv1p3nvr8_tp?TNS_ADMIN=/app/wallet/
+      SPRING_DATASOURCE_USERNAME: BDFS3_PRODUCTOS
+      SPRING_DATASOURCE_PASSWORD: ClaseFullStack3-
+    networks:
+      - tienda_network
+    restart: always
+
+  tienda-front:
+    # Configuración básica del contenedor
+    image: tienda-front
+    container_name: tienda_front
+    build:
+      context: ../tienda-front
+      dockerfile: Dockerfile
+    # Configuración de red y dependencias
+    ports:
+      - "80:80"
+    networks:
+      - tienda_network
+    depends_on:
+      - tienda-ms-usuarios
+    # Configuración de reinicio
+    restart: always
+    # Variables de entorno
+    environment:
+      # Configuración de comunicación
+      BACKEND_URL: http://backend:8092/libros
+
+networks:
+  tienda_network:
+    driver: bridge
+    name: tienda_network

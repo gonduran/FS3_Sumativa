@@ -1,0 +1,79 @@
+<div class="container mt-5">
+    <h2>Editar Usuario</h2>
+    <form [formGroup]="editUserForm" (ngSubmit)="onSubmit()">
+      <div class="mb-3">
+        <label for="name" class="form-label">Nombre</label>
+        <input
+          type="text"
+          id="name"
+          class="form-control"
+          formControlName="name"
+          required
+        />
+        <div *ngIf="editUserForm.get('name')?.invalid && editUserForm.get('name')?.touched" class="text-danger">
+          <small *ngIf="editUserForm.get('name')?.errors?.['required']">Nombre es obligatorio.</small>
+        </div>
+      </div>
+  
+      <div class="mb-3">
+        <label for="surname" class="form-label">Apellido</label>
+        <input
+          type="text"
+          id="surname"
+          class="form-control"
+          formControlName="surname"
+          required
+        />
+        <div *ngIf="editUserForm.get('surname')?.invalid && editUserForm.get('surname')?.touched" class="text-danger">
+          <small *ngIf="editUserForm.get('surname')?.errors?.['required']">Apellido es obligatorio.</small>
+        </div>
+      </div>
+  
+      <div class="mb-3">
+        <label for="email" class="form-label">Correo Electrónico</label>
+        <input
+          type="email"
+          id="email"
+          class="form-control"
+          formControlName="email"
+          required
+          readonly
+        />
+      </div>
+  
+      <div class="mb-3">
+        <label for="password" class="form-label">Contraseña</label>
+        <input
+          type="password"
+          id="password"
+          class="form-control"
+          formControlName="password"
+        />
+        <div *ngIf="editUserForm.get('password')?.invalid && editUserForm.get('password')?.touched" class="text-danger">
+            <small *ngIf="editUserForm.get('password')?.errors?.['required']">Contraseña es obligatoria.</small>
+            <small *ngIf="editUserForm.get('password')?.errors?.['minlength']">La contraseña debe tener al menos 6 caracteres.</small>
+            <small *ngIf="editUserForm.get('password')?.errors?.['maxlength']">La contraseña no debe exceder 18 caracteres.</small>
+            <small *ngIf="editUserForm.get('password')?.errors?.['pattern']">
+              La contraseña debe incluir al menos un número, una letra mayúscula y un carácter especial ($!%*?&).
+            </small>
+        </div>
+      </div>
+  
+      <div class="mb-3">
+        <label for="rol" class="form-label">Rol</label>
+        <select id="rol" class="form-control" formControlName="rol" required>
+          <option value="client">Cliente</option>
+          <option value="user">Usuario</option>
+          <option value="admin">Administrador</option>
+        </select>
+      </div>
+  
+      <button type="submit" class="btn btn-primary" [disabled]="editUserForm.invalid">Guardar Cambios</button>
+      <button type="button" class="btn btn-secondary" (click)="goBack()">Cancelar</button>
+    </form>
+  </div>
+
+<!-- Loading Screen -->
+<div id="loading-screen" class="d-flex justify-content-center align-items-center">
+  <div class="loader"></div>
+</div>
