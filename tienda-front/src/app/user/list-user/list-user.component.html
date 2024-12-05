@@ -21,10 +21,10 @@
     </thead>
     <tbody>
       <tr *ngFor="let user of users; let i = index">
-        <td>{{ user.name }}</td>
-        <td>{{ user.surname }}</td>
+        <td>{{ user.nombre }}</td>
+        <td>{{ user.apellido }}</td>
         <td>{{ user.email }}</td>
-        <td>{{ user.rol }}</td>
+        <!-- <td>{{ user.rol }}</td> -->
         <td>
           <!-- Botón para editar usuario -->
           <button class="btn btn-warning btn-sm me-2" [routerLink]="['/edit-user', user.email]">

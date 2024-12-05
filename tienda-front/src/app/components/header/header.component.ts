@@ -12,7 +12,7 @@ import { AuthService } from '../../services/auth.service';
 })
 export class HeaderComponent implements OnInit {
   isLoggedIn: boolean = false;
-  userRole: string | null = null;
+  userRole: number | null = null;
 
   constructor(private authService: AuthService) {}
 

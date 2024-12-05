@@ -53,43 +53,50 @@ export class LoginComponent implements OnInit, AfterViewInit {
     }
   }
 
-  onSubmit() {
+  onSubmit(): void {
     if (this.loginForm.valid) {
       const email = this.loginForm.value.email;
       const password = this.loginForm.value.password;
   
-      const loginExitoso = this.usersService.iniciarSesion(email, password);
-      if (loginExitoso) {
-        const loggedInUser = this.usersService.getLoggedInClient();
+      // Llama al método iniciarSesion que retorna un Observable<boolean>
+      this.usersService.iniciarSesion(email, password).subscribe({
+        next: (loginExitoso: boolean) => {
+          if (loginExitoso) {
+            const loggedInUser = this.usersService.getLoggedInClient();
   
-        if (loggedInUser) { // Asegurarse de que loggedInUser no sea null
-          console.log('Inicio de sesión exitoso:', { email, rol: loggedInUser.rol });
-          alert('Inicio de sesión exitoso!');
+            if (loggedInUser) { // Asegurarse de que loggedInUser no sea null
+              alert('Inicio de sesión exitoso!');
   
-          // Redirigir según el rol del usuario
-          switch (loggedInUser.rol) {
-            case 'client':
-              this.router.navigate(['/profile']);
-              break;
-            case 'user':
-              this.router.navigate(['/list-product']);
-              break;
-            case 'admin':
-              this.router.navigate(['/list-user']);
-              break;
-            default:
-              console.warn('Rol desconocido:', loggedInUser.rol);
-              alert('Rol desconocido, contacte al administrador.');
+              // Redirigir según el rol del usuario
+              switch (loggedInUser.roles[0].id) {
+                case 3: // Client
+                  this.router.navigate(['/profile']);
+                  break;
+                case 2: // User
+                  this.router.navigate(['/list-product']);
+                  break;
+                case 1: // Admin
+                  this.router.navigate(['/list-user']);
+                  break;
+                default:
+                  console.warn('Rol desconocido:', loggedInUser.roles[0].id);
+                  alert('Rol desconocido, contacte al administrador.');
+              }
+            } else {
+              console.error('No se pudo recuperar el usuario logueado.');
+              alert('Error al recuperar la información del usuario. Por favor, inicie sesión nuevamente.');
+              this.router.navigate(['/login']);
+            }
+          } else {
+            console.log('Error en el inicio de sesión.');
+            alert('Email o contraseña incorrectos.');
           }
-        } else {
-          console.error('No se pudo recuperar el usuario logueado.');
-          alert('Error al recuperar la información del usuario. Por favor, inicie sesión nuevamente.');
-          this.router.navigate(['/login']);
-        }
-      } else {
-        console.log('Error en el inicio de sesión.');
-        alert('Email o contraseña incorrectos.');
-      }
+        },
+        error: (error) => {
+          console.error('Error en el inicio de sesión:', error);
+          alert('Ocurrió un error al intentar iniciar sesión. Por favor, intente nuevamente.');
+        },
+      });
     } else {
       console.log('Formulario inválido.');
       alert('Por favor, complete los campos correctamente.');

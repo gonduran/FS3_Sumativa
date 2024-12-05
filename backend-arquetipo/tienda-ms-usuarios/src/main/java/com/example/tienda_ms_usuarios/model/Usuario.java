@@ -11,7 +11,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.*;
-
+import com.fasterxml.jackson.annotation.JsonFormat;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -46,6 +46,7 @@ public class Usuario extends RepresentationModel<Usuario> {
     @Column(name= "password", nullable = false)
     private String password;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy", timezone = "UTC")
     @Column(name= "fechaNacimiento", nullable = true)
     private Date fechaNacimiento;
 

@@ -65,7 +65,7 @@ public class UsuarioServiceImplTest {
     }
 
     @Test
-    void testSaveUsuario() {
+    void testSaveUsuario() throws Exception {
         Rol rol = new Rol();
         rol.setId(1L);
         Set<Rol> roles = new HashSet<>();

@@ -150,7 +150,7 @@ export class ProfileComponent implements OnInit, AfterViewInit {
       const birthdate = this.formatToStorageDate(this.profileForm.value.birthdate);
       const dispatchAddress = this.profileForm.value.dispatchAddress;
 
-      const updateExitoso = this.usersService.updateUser(name, surname, email, password, birthdate, dispatchAddress, 'client');
+      const updateExitoso = this.usersService.updateUser(name, surname, email, password, birthdate, dispatchAddress, 3);
       if (updateExitoso) {
         console.log('Actualizacion exitosa:', { name, surname, email, password, birthdate, dispatchAddress });
         alert('Actualizacion exitosa!');
