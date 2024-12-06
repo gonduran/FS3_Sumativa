@@ -9,40 +9,45 @@
   </div>
 
   <!-- Tabla de usuarios -->
-  <table class="table table-hover">
-    <thead>
-      <tr>
-        <th>Nombre</th>
-        <th>Apellido</th>
-        <th>Email</th>
-        <th>Rol</th>
-        <th>Acciones</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let user of users; let i = index">
-        <td>{{ user.nombre }}</td>
-        <td>{{ user.apellido }}</td>
-        <td>{{ user.email }}</td>
-        <!-- <td>{{ user.rol }}</td> -->
-        <td>
-          <!-- Botón para editar usuario -->
-          <button class="btn btn-warning btn-sm me-2" [routerLink]="['/edit-user', user.email]">
-            <i class="bi bi-pencil"></i> Editar
-          </button>
-
-          <!-- Botón para eliminar usuario -->
-          <button class="btn btn-danger btn-sm" (click)="deleteUser(user.email)">
-            <i class="bi bi-trash"></i> Eliminar
-          </button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
-
-  <!-- Mensaje si no hay usuarios -->
-  <div *ngIf="users.length === 0" class="alert alert-info mt-4">
-    No hay usuarios registrados.
+  <div *ngIf="users.length > 0; else noUsers">
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>Apellido</th>
+          <th>Email</th>
+          <th>Roles</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let user of users">
+          <td>{{ user.id }}</td>
+          <td>{{ user.nombre }}</td>
+          <td>{{ user.apellido }}</td>
+          <td>{{ user.email }}</td>
+          <td>
+            <span *ngFor="let role of user.roles; let isLast = last">
+              {{ role.nombre }}<span *ngIf="!isLast">, </span>
+            </span>
+          </td>
+          <td>
+            <button class="btn btn-warning btn-sm" [routerLink]="['/edit-user', user.id]">
+              Editar
+            </button>
+            <button class="btn btn-danger btn-sm" (click)="deleteUser(user.id)">
+              Eliminar
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div>
+    <ng-template #noUsers>
+      <div class="alert alert-info">No hay usuarios registrados.</div>
+    </ng-template>
   </div>
 </div>
 

@@ -4,14 +4,14 @@ import { AuthService } from './auth.service';
 import { UserBuilder, User } from '../builder/user.builder';
 import { environment } from '../../environments/environment';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { catchError, map, Observable, of } from 'rxjs';
+import { catchError, map, Observable, of, throwError } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UsersService {
-  private storageKey = 'users';
-  private users: User[] = [];
+  //private storageKey = 'users';
+  //private users: User[] = [];
   private apiUrlUsuario = environment.apiUsuarios;
 
   /**
@@ -24,22 +24,22 @@ export class UsersService {
     private authService: AuthService,
     private http: HttpClient
   ) {
-    if (this.isLocalStorageAvailable()) {
+    /*if (this.isLocalStorageAvailable()) {
       const usersSaved = localStorage.getItem('users');
       this.users = usersSaved ? JSON.parse(usersSaved) : [];
     } else {
       this.users = [];
     }
     // Verifica y carga el usuario admin si no existe
-    this.loadAdminUser();
+    this.loadAdminUser();*/
   }
 
   private loadAdminUser(): void {
-    if (this.isLocalStorageAvailable()) {
+    /*if (this.isLocalStorageAvailable()) {
       const usersSaved = localStorage.getItem(this.storageKey);
       this.users = usersSaved ? JSON.parse(usersSaved) : [];
 
-      /*const adminExists = this.users.some(user => user.rol === '1');
+      const adminExists = this.users.some(user => user.rol === '1');
       if (!adminExists) {
         const adminUser: User = new UserBuilder()
           .setNombre('Admin')
@@ -53,10 +53,10 @@ export class UsersService {
         this.users.push(adminUser);
         localStorage.setItem(this.storageKey, JSON.stringify(this.users));
         console.log('Usuario admin cargado correctamente');
-      }*/
+      }
     } else {
       console.warn('localStorage no está disponible');
-    }
+    }*/
   }
 
   /**
@@ -111,7 +111,10 @@ export class UsersService {
       .setPassword(password)
       .setFechaNacimiento(birthdate)
       .setDireccion(dispatchAddress)
-      .setRoles([{ id: roleId }])
+      .setRoles([{
+        id: roleId,
+        nombre: ''
+      }])
       .build();
 
     console.log('Usuario que se intenta registrar:', newUser);
@@ -169,7 +172,10 @@ export class UsersService {
       .setPassword(password)
       .setFechaNacimiento(birthdate)
       .setDireccion(dispatchAddress)
-      .setRoles([{ id: roleId }])
+      .setRoles([{
+        id: roleId,
+        nombre: ''
+      }])
       .build();
 
     console.log('Usuario que se intenta actualizar:', updatedUser);
@@ -383,7 +389,7 @@ export class UsersService {
    * @return {boolean} - Retorna true si el cliente fue encontrado, de lo contrario false.
    */
   findUser(email: string): boolean {
-    console.log('Buscando cliente:', { email });
+    /*console.log('Buscando cliente:', { email });
     const user = this.users.find(user => user.email === email);
     if (user) {
       this.mostrarAlerta('Cliente encontrado.', 'success');
@@ -393,17 +399,31 @@ export class UsersService {
       this.mostrarAlerta('Cliente no encontrado.', 'danger');
       console.log('Cliente no encontrado.');
       return false;
-    }
+    }*/
+    return true;
   }
 
   /**
-   * @description 
-   * Obtiene la lista de todos los clientes.
-   * 
-   * @return {User[]} - Un array de objetos User.
+   * @description
+   * Obtiene la lista de todos los usuarios desde el backend.
+   *
+   * @return {Observable<User[]>} - Un Observable que emite un array de objetos User.
    */
-  getUsers(): User[] {
-    return JSON.parse(localStorage.getItem(this.storageKey) || '[]');
+  //getUsers(): Observable<User[]> {
+  //  console.log('Intentando obtener usuarios');
+  //  return this.http.get<User[]>(`${this.apiUrlUsuario}`);
+  //}
+  getUsers(): Observable<User[]> {
+    return this.http.get<User[]>(`${this.apiUrlUsuario}`).pipe(
+      map((response) => {
+        console.log('Respuesta del backend:', response);
+        return response;
+      }),
+      catchError((error) => {
+        console.error('Error al obtener usuarios:', error);
+        return throwError(() => error);
+      })
+    );
   }
 
   /**
@@ -415,8 +435,8 @@ export class UsersService {
    */
   addClient(client: User): void {
     const users = this.getUsers();
-    users.push(client);
-    localStorage.setItem(this.storageKey, JSON.stringify(users));
+    //users.push(client);
+    //localStorage.setItem(this.storageKey, JSON.stringify(users));
   }
 
   /**
@@ -429,20 +449,23 @@ export class UsersService {
    */
   updateClient(index: number, updatedClient: User): void {
     const users = this.getUsers();
-    users[index] = updatedClient;
-    localStorage.setItem(this.storageKey, JSON.stringify(users));
+    //users[index] = updatedClient;
+    //localStorage.setItem(this.storageKey, JSON.stringify(users));
   }
 
   /**
    * @description 
-   * Elimina un cliente de la lista y de localStorage.
+   * Elimina un usuario de la lista y de BD.
    * 
-   * @param {number} index - El índice del cliente a eliminar.
-   * @return {void}
+   * @param {number} id - El id del usuario a eliminar.
+   * @return {Observable<boolean>}
    */
-  deleteClient(index: number): void {
-    const users = this.getUsers();
-    users.splice(index, 1);
-    localStorage.setItem(this.storageKey, JSON.stringify(users));
+  //deleteClient(index: number): void {
+  //const users = this.getUsers();
+  //users.splice(index, 1);
+  //localStorage.setItem(this.storageKey, JSON.stringify(users));
+  //}
+  deleteUser(id: number): Observable<boolean> {
+    return this.http.delete<boolean>(`${this.apiUrlUsuario}/delete/${id}`);
   }
 }

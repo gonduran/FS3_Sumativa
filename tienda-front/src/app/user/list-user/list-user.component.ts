@@ -11,7 +11,7 @@ import { AuthService } from '../../services/auth.service';
   standalone: true,
   imports: [CommonModule, RouterModule],
   templateUrl: './list-user.component.html',
-  styleUrls: ['./list-user.component.scss']
+  styleUrls: ['./list-user.component.scss'],
 })
 export class ListUserComponent implements OnInit, AfterViewInit {
   users: User[] = [];
@@ -22,21 +22,20 @@ export class ListUserComponent implements OnInit, AfterViewInit {
     private userService: UsersService,
     private authService: AuthService,
     private router: Router
-  ) {
-  }
+  ) {}
 
   ngOnInit(): void {
     if (!this.authService.validateAuthentication()) {
       this.router.navigate(['/login']);
+      return;
     }
-    // Obtiene los usuarios directamente del servicio
-    this.users = this.userService.getUsers();
+    this.loadUsers();
   }
 
   ngAfterViewInit(): void {
     if (isPlatformBrowser(this.platformId)) {
       const links = document.querySelectorAll('a');
-      links.forEach(link => {
+      links.forEach((link) => {
         link.addEventListener('click', (event: Event) => {
           event.preventDefault();
           const target = event.target as HTMLElement;
@@ -50,6 +49,42 @@ export class ListUserComponent implements OnInit, AfterViewInit {
   }
 
   /**
+   * Carga la lista de usuarios desde el backend.
+   */
+  loadUsers(): void {
+    console.log('Ejecutando loadUsers...');
+    this.userService.getUsers().subscribe({
+      next: (usersData: any) => {
+        console.log("Datos recibidos del backend:", usersData);
+  
+        // Verifica si la estructura de los datos contiene `_embedded.usuarioList`
+        const usersArray = usersData?._embedded?.usuarioList;
+  
+        if (Array.isArray(usersArray)) {
+          // Usa UserBuilder para construir los usuarios
+          this.users = usersArray.map((userData) =>
+            new UserBuilder()
+              .setId(userData.id)
+              .setNombre(userData.nombre)
+              .setApellido(userData.apellido)
+              .setEmail(userData.email)
+              .setFechaNacimiento(userData.fechaNacimiento)
+              .setDireccion(userData.direccion)
+              .setRoles(userData.roles)
+              .build()
+          );
+          console.log("Usuarios cargados:", this.users);
+        } else {
+          console.error("Estructura inesperada o datos vacíos:", usersData);
+        }
+      },
+      error: (err) => {
+        console.error("Error al cargar usuarios:", err);
+      },
+    });
+  }
+
+  /**
    * Edita la información del usuario.
    * @param user Usuario seleccionado para editar.
    */
@@ -60,14 +95,23 @@ export class ListUserComponent implements OnInit, AfterViewInit {
 
   /**
    * Elimina un usuario.
-   * @param email Correo del usuario a eliminar.
+   * @param id Id del usuario a eliminar.
    */
-  deleteUser(email: string): void {
-    const index = this.users.findIndex(user => user.email === email);
-    if (index !== -1) {
-      this.users.splice(index, 1);
-      localStorage.setItem('users', JSON.stringify(this.users));
-      alert(`Usuario con correo ${email} eliminado.`);
-    }
+  deleteUser(id: number): void {
+    this.userService.deleteUser(id).subscribe({
+      next: (success: boolean) => {
+        if (success) {
+          // Filtra el usuario eliminado de la lista local
+          this.users = this.users.filter(user => user.id !== id);
+          alert(`Usuario con ID ${id} eliminado.`);
+        } else {
+          alert(`Error al intentar eliminar el usuario con ID ${id}.`);
+        }
+      },
+      error: (error) => {
+        console.error('Error al eliminar el usuario:', error);
+        alert(`Error inesperado al eliminar el usuario con ID ${id}.`);
+      }
+    });
   }
 }
