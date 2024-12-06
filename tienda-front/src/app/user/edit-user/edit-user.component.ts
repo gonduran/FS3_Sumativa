@@ -57,6 +57,7 @@ export class EditUserComponent implements OnInit {
     if (this.editUserForm.valid) {
       const updatedUser = this.editUserForm.getRawValue();
       this.usersService.updateUser(
+        0,
         updatedUser.name,
         updatedUser.surname,
         updatedUser.email,

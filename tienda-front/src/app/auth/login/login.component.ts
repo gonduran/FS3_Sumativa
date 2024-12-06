@@ -6,7 +6,6 @@ import { NavigationService } from '../../services/navigation.service';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { UsersService } from '../../services/users.service';
 import { Renderer2, ElementRef } from '@angular/core';
-import { CryptoService } from '../../services/crypto.service';
 import { Router } from '@angular/router';
 
 @Component({
@@ -26,7 +25,6 @@ export class LoginComponent implements OnInit, AfterViewInit {
     private usersService: UsersService,
     private renderer: Renderer2,
     private el: ElementRef,
-    private cryptoService: CryptoService,
     private router: Router) { 
       this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],

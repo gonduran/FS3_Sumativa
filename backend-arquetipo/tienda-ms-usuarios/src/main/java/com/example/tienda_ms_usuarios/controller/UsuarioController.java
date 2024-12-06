@@ -163,7 +163,7 @@ public class UsuarioController {
      * @return EntityModel<Usuario> - Usuario actualizado con enlaces HATEOAS.
      */
     @PutMapping("/update/{idUsuario}")
-    public EntityModel<Usuario> updateUsuario(@PathVariable("idUsuario") Long idUsuario, @RequestBody Usuario usuario) {
+    public EntityModel<Usuario> updateUsuario(@PathVariable("idUsuario") Long idUsuario, @RequestBody Usuario usuario) throws Exception {
         log.info("PUT /api/usuarios/update/{} - Se ejecuta updateUsuario", idUsuario);
         Optional<Usuario> usuarioFind = usuarioService.getUsuarioById(idUsuario);
 
@@ -216,15 +216,26 @@ public class UsuarioController {
      * @return ResponseEntity<Object> - Mensaje de éxito o error en la validación.
      */
     @PostMapping("/login")
-    public ResponseEntity<Object> validarUsuario(@RequestParam String usuario, @RequestParam String password) throws Exception {
+    public EntityModel<Usuario> validarUsuario(@RequestParam String usuario, @RequestParam String password) throws Exception {
         log.info("POST /api/usuarios/login - Se ejecuta validarUsuario");
         boolean esValido = usuarioService.validarUsuario(usuario, password);
 
         if (esValido) {
-            return ResponseEntity.ok().body("Usuario y contraseña válidos");
+            Usuario usuarioFind = usuarioService.getUsuarioByEmail(usuario);
+    
+            if (usuarioFind != null) {
+                Long idUsuario = usuarioFind.getId();
+                return EntityModel.of(usuarioFind,
+                WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(this.getClass()).getUsuarioById(idUsuario)).withSelfRel(),
+                WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(this.getClass()).deleteUsuario(idUsuario)).withRel("delete"),
+                WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(this.getClass()).getAllUsuarios()).withRel("all-usuarios"));
+            } else {
+                log.error("Usuario o contraseña incorrectos.");
+                throw new BadRequestException("Usuario o contraseña incorrectos.");
+            }
         } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(new ErrorResponse("Usuario o contraseña incorrectos."));
+            log.error("Usuario o contraseña incorrectos.");
+            throw new BadRequestException("Usuario o contraseña incorrectos.");
         }
     }
 

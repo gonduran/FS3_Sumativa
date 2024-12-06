@@ -85,7 +85,7 @@ public class UsuarioServiceImpl implements UsuarioService {
      * @return Usuario - Usuario actualizado si existe; null en caso contrario.
      */
     @Override
-    public Usuario updateUsuario(Long id, Usuario usuarioDetalles) {
+    public Usuario updateUsuario(Long id, Usuario usuarioDetalles) throws Exception {
         if (usuarioRepository.existsById(id)) {
             // Buscar el usuario por su ID
             Usuario usuario = usuarioRepository.findById(id)
@@ -95,9 +95,16 @@ public class UsuarioServiceImpl implements UsuarioService {
             usuario.setNombre(usuarioDetalles.getNombre());
             usuario.setApellido(usuarioDetalles.getApellido());
             usuario.setEmail(usuarioDetalles.getEmail());
-            usuario.setPassword(usuarioDetalles.getPassword());
             usuario.setFechaNacimiento(usuarioDetalles.getFechaNacimiento());
             usuario.setDireccion(usuarioDetalles.getDireccion());
+
+            if (usuarioDetalles.getPassword() != null && !usuarioDetalles.getPassword().isEmpty()) {
+                // Cifrar la contraseña solo si se proporciona una nueva
+                String encryptedPassword = AESUtil.encrypt(usuarioDetalles.getPassword());
+                usuario.setPassword(encryptedPassword);
+            } else {
+                usuario.setPassword(usuario.getPassword());
+            }
 
             // Actualizar los roles del usuario
             Set<Rol> rolesActualizados = new HashSet<>();

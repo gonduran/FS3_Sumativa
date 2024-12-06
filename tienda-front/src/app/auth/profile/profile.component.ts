@@ -6,7 +6,6 @@ import { NavigationService } from '../../services/navigation.service';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { UsersService } from '../../services/users.service';
 import { Renderer2, ElementRef } from '@angular/core';
-import { CryptoService } from '../../services/crypto.service';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 
@@ -30,7 +29,6 @@ export class ProfileComponent implements OnInit, AfterViewInit {
    * @param {UsersService} usersService - Servicio de clientes.
    * @param {Renderer2} renderer - Servicio de renderizado.
    * @param {ElementRef} el - Referencia al elemento HTML.
-   * @param {CryptoService} cryptoService - Servicio de encriptación.
    * @param {Router} router - Servicio de enrutamiento.
    */
   constructor(
@@ -40,17 +38,15 @@ export class ProfileComponent implements OnInit, AfterViewInit {
     private usersService: UsersService,
     private renderer: Renderer2,
     private el: ElementRef,
-    private cryptoService: CryptoService,
     private authService: AuthService,
-    private router: Router) { 
-      this.profileForm = this.fb.group({
+    private router: Router) {
+    this.profileForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(2)]],
       surname: ['', [Validators.required, Validators.minLength(2)]],
       email: ['', [Validators.required, Validators.email]],
       password: [
         '',
         [
-          Validators.required,
           Validators.minLength(6),
           Validators.maxLength(18),
           Validators.pattern(/^(?=.*[A-Z])(?=.*\d)(?=.*[#$!%*?&])[A-Za-z\d$!%*?&]{6,18}$/),
@@ -59,7 +55,7 @@ export class ProfileComponent implements OnInit, AfterViewInit {
       confirmPassword: [''],
       birthdate: ['', Validators.required],
       dispatchAddress: ['']
-      }, { validator: this.passwordMatchValidator });
+    }, { validator: this.passwordMatchValidator });
   }
 
   /**
@@ -105,10 +101,16 @@ export class ProfileComponent implements OnInit, AfterViewInit {
    * @return {null | Object} - Retorna null si las contraseñas coinciden o no se proporcionan, de lo contrario un objeto con el error.
    */
   passwordMatchValidator(form: FormGroup) {
-    if (!(form.get('password')?.value === '')) {
-      return form.get('password')?.value === form.get('confirmPassword')?.value ? null : { mismatch: true };
+    const password = form.get('password')?.value;
+    const confirmPassword = form.get('confirmPassword')?.value;
+
+    // Si ambos están vacíos, la validación pasa.
+    if (!password && !confirmPassword) {
+      return null;
     }
-    return null;
+
+    // Si se proporcionan, deben coincidir.
+    return password === confirmPassword ? null : { mismatch: true };
   }
 
   /**
@@ -139,7 +141,7 @@ export class ProfileComponent implements OnInit, AfterViewInit {
     if (this.profileForm.valid) {
       const age = this.calculateAge(this.profileForm.value.birthdate);
       if (age < 13) {
-        alert('Debe tener al menos 13 años para registrarse.');
+        alert('Debe tener al menos 13 años para actualizar el perfil.');
         return;
       }
 
@@ -150,15 +152,29 @@ export class ProfileComponent implements OnInit, AfterViewInit {
       const birthdate = this.formatToStorageDate(this.profileForm.value.birthdate);
       const dispatchAddress = this.profileForm.value.dispatchAddress;
 
-      const updateExitoso = this.usersService.updateUser(name, surname, email, password, birthdate, dispatchAddress, 3);
-      if (updateExitoso) {
-        console.log('Actualizacion exitosa:', { name, surname, email, password, birthdate, dispatchAddress });
-        alert('Actualizacion exitosa!');
-      } else {
-        console.log('Error en la actualización.');
-      }
+      const loggedInUser = JSON.parse(localStorage.getItem('loggedInUser') || '{}');
+      const userId = loggedInUser.id; // ID del usuario
+
+      this.usersService
+        .updateUser(userId, name, surname, email, password, birthdate, dispatchAddress, 3)
+        .subscribe({
+          next: (updateExitoso: boolean) => {
+            if (updateExitoso) {
+              console.log('Actualización exitosa:', { name, surname, email, password, birthdate, dispatchAddress });
+              alert('Actualización exitosa!');
+            } else {
+              console.log('Error en la actualización.');
+              alert('Error en la actualización. Verifique los datos e inténtelo nuevamente.');
+            }
+          },
+          error: (error) => {
+            console.error('Error inesperado en la actualización:', error);
+            alert('Ocurrió un error inesperado. Inténtelo nuevamente.');
+          },
+        });
     } else {
-      console.log('Formulario invalido');
+      alert('Por favor complete todos los campos correctamente.');
+      console.log('Formulario inválido');
     }
   }
 
@@ -188,21 +204,52 @@ export class ProfileComponent implements OnInit, AfterViewInit {
    */
   loadClientData(): void {
     if (this.usersService.isLocalStorageAvailable()) {
-      const userData = JSON.parse(localStorage.getItem('loggedInClient') || '{}');
-      if (userData) {
-        console.log('Cliente logueado:', { userData });
-        
-        this.profileForm.patchValue({
-          name: userData.name || '',
-          surname: userData.surname || '',
-          email: userData.email || '',
-          password: '',
-          confirmPassword: '',
-          birthdate: userData.birthdate ? this.formatToFormDate(userData.birthdate) : '',
-          dispatchAddress: userData.dispatchAddress || ''
-        });
+      try {
+        const userData = JSON.parse(localStorage.getItem('loggedInUser') || '{}');
+
+        if (userData && Object.keys(userData).length > 0) {
+          console.log('Cliente logueado:', userData);
+
+          this.profileForm.patchValue({
+            name: userData.nombre || '',
+            surname: userData.apellido || '',
+            email: userData.email || '',
+            password: '', // No se debe cargar por seguridad
+            confirmPassword: '',
+            birthdate: userData.fechaNacimiento ? this.formatToFormDate(userData.fechaNacimiento) : '',
+            dispatchAddress: userData.direccion || ''
+          });
+        } else {
+          console.warn('No se encontraron datos del usuario en localStorage.');
+        }
+      } catch (error) {
+        console.error('Error al cargar datos del cliente desde localStorage:', error);
       }
     }
+  }
+
+  /**
+   * @description 
+   * Obtener el id usuario logueado.
+   * 
+   * @return {number}
+   */
+  getIdUserData(): number {
+    if (this.usersService.isLocalStorageAvailable()) {
+      try {
+        const userData = JSON.parse(localStorage.getItem('loggedInUser') || '{}');
+
+        if (userData && Object.keys(userData).length > 0) {
+          console.log('Cliente logueado:', userData);
+          return userData.id;
+        } else {
+          console.warn('No se encontraron datos del usuario en localStorage.');
+        }
+      } catch (error) {
+        console.error('Error al cargar datos del cliente desde localStorage:', error);
+      }
+    }
+    return 0;
   }
 
   /**

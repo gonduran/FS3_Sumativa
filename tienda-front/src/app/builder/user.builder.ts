@@ -3,6 +3,7 @@ export interface Rol {
 }
 
 export interface User {
+    id: number;
     nombre: string;
     apellido: string;
     email: string;
@@ -13,6 +14,7 @@ export interface User {
 }
 
 export class UserBuilder {
+    private id: number = 0;
     private nombre: string = '';
     private apellido: string = '';
     private email: string = '';
@@ -20,6 +22,11 @@ export class UserBuilder {
     private fechaNacimiento: string = '';
     private direccion: string = '';
     private roles: Rol[] = [];
+
+    public setId(id: number): UserBuilder {
+        this.id = id;
+        return this;
+    }
 
     public setNombre(nombre: string): UserBuilder {
         this.nombre = nombre;
@@ -58,6 +65,7 @@ export class UserBuilder {
 
     public build(): User {
         return {
+            id: this.id,
             nombre: this.nombre,
             apellido: this.apellido,
             email: this.email,

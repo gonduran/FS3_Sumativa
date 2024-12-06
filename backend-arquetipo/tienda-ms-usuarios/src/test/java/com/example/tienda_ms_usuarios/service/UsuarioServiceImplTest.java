@@ -84,7 +84,7 @@ public class UsuarioServiceImplTest {
     }
 
     @Test
-    void testUpdateUsuario_Found() {
+    void testUpdateUsuario_Found() throws Exception {
         Usuario existingUsuario = new Usuario();
         existingUsuario.setId(1L);
 
@@ -102,7 +102,7 @@ public class UsuarioServiceImplTest {
     }
 
     @Test
-    void testUpdateUsuario_NotFound() {
+    void testUpdateUsuario_NotFound() throws Exception {
         when(usuarioRepository.existsById(1L)).thenReturn(false);
         
         Usuario result = usuarioService.updateUsuario(1L, new Usuario());

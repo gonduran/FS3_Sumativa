@@ -6,7 +6,6 @@ import { NavigationService } from '../../services/navigation.service';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { UsersService } from '../../services/users.service';
 import { Renderer2, ElementRef } from '@angular/core';
-import { CryptoService } from '../../services/crypto.service';
 import { Router } from '@angular/router';
 
 @Component({
@@ -39,7 +38,6 @@ export class RegisterComponent implements OnInit, AfterViewInit {
     private usersService: UsersService,
     private renderer: Renderer2,
     private el: ElementRef,
-    private cryptoService: CryptoService,
     private router: Router) {
     this.registerForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(2)]],
@@ -122,11 +120,11 @@ export class RegisterComponent implements OnInit, AfterViewInit {
   }
 
   /**
- * @description 
- * Maneja el envío del formulario de registro. Realiza las validaciones y registra al cliente.
- * 
- * @return {void}
- */
+   * @description 
+   * Maneja el envío del formulario de registro. Realiza las validaciones y registra al cliente.
+   * 
+   * @return {void}
+   */
   onSubmit(): void {
     if (this.registerForm.valid) {
       const age = this.calculateAge(this.registerForm.value.birthdate);

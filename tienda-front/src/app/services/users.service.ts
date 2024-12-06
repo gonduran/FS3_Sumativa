@@ -138,17 +138,20 @@ export class UsersService {
 
   /**
    * @description 
-   * Actualiza un cliente existente.
+   * Actualiza un usuario existente en el backend y maneja posibles errores.
    * 
-   * @param {string} clientName - Nombre del cliente.
-   * @param {string} clientSurname - Apellido del cliente.
-   * @param {string} email - Correo electrónico del cliente.
-   * @param {string} password - Contraseña del cliente.
-   * @param {string} birthdate - Fecha de nacimiento del cliente.
-   * @param {string} dispatchAddress - Dirección de envío del cliente.
-   * @return {boolean} - Retorna true si el cliente fue actualizado exitosamente, de lo contrario false.
+   * @param {number} id - ID del usuario a actualizar.
+   * @param {string} name - Nombre del usuario.
+   * @param {string} surname - Apellido del usuario.
+   * @param {string} email - Correo electrónico del usuario.
+   * @param {string} password - Contraseña del usuario.
+   * @param {string} birthdate - Fecha de nacimiento del usuario.
+   * @param {string} dispatchAddress - Dirección de envío del usuario.
+   * @param {number} roleId - ID del rol del usuario.
+   * @return {Observable<boolean>} - Retorna true si el usuario fue actualizado exitosamente, de lo contrario false.
    */
   updateUser(
+    id: number,
     name: string,
     surname: string,
     email: string,
@@ -156,40 +159,39 @@ export class UsersService {
     birthdate: string,
     dispatchAddress: string,
     roleId: number
-  ): boolean {
-    console.log('Intentando actualizar cliente:', { name, surname, email, birthdate, dispatchAddress, roleId });
-    const userExisting = this.userExists(email);
-    if (userExisting) {
-      const loggedInClient = JSON.parse(localStorage.getItem('loggedInClient') || 'null');
-      const clientIndex = this.users.findIndex(user => user.email === loggedInClient.email);
-      if (clientIndex !== -1) {
-        const passwordToUse = password ? this.cryptoService.encrypt(password) : loggedInClient.password;
-        const updatedUser = new UserBuilder()
-          .setNombre(name)
-          .setApellido(surname)
-          .setEmail(email)
-          .setPassword(passwordToUse)
-          .setFechaNacimiento(birthdate)
-          .setDireccion(dispatchAddress)
-          .setRoles([{ id: roleId }])
-          .build();
+  ): Observable<boolean> {
+    console.log('Intentando actualizar usuario:', { id, name, surname, email, birthdate, dispatchAddress, roleId });
 
-        this.users[clientIndex] = updatedUser;
-        localStorage.setItem('users', JSON.stringify(this.users));
-        localStorage.setItem('loggedInClient', JSON.stringify(updatedUser));
+    const updatedUser = new UserBuilder()
+      .setNombre(name)
+      .setApellido(surname)
+      .setEmail(email)
+      .setPassword(password)
+      .setFechaNacimiento(birthdate)
+      .setDireccion(dispatchAddress)
+      .setRoles([{ id: roleId }])
+      .build();
 
-        this.mostrarAlerta('Cliente actualizado exitosamente.', 'success');
-        console.log('Cliente actualizado exitosamente:', updatedUser);
-        return true;
-      } else {
-        this.mostrarAlerta('Error al actualizar el perfil cliente.', 'danger');
-        console.log('Error al actualizar el perfil cliente:', email);
-        return false;
-      }
-    }
-    this.mostrarAlerta('Cliente no actualizado.', 'danger');
-    console.log('Cliente no actualizado:', email);
-    return false;
+    console.log('Usuario que se intenta actualizar:', updatedUser);
+
+    return this.http.put<User>(`${this.apiUrlUsuario}/update/${id}`, updatedUser).pipe(
+      map((response: User) => {
+        console.log('Usuario actualizado exitosamente:', response);
+        localStorage.setItem('loggedInUser', JSON.stringify(response));
+        this.mostrarAlerta('Usuario actualizado exitosamente.', 'success');
+        return true; // Indica éxito
+      }),
+      catchError((error) => {
+        console.error('Error al actualizar el usuario:', error);
+
+        if (error.status === 400 && error.error && typeof error.error === 'string' && error.error.includes('No se encontró el usuario')) {
+          this.mostrarAlerta('El usuario no existe.', 'danger');
+        } else {
+          this.mostrarAlerta('Ocurrió un error al actualizar el usuario.', 'danger');
+        }
+        return of(false); // Indica falla
+      })
+    );
   }
 
   /**
@@ -203,20 +205,30 @@ export class UsersService {
   iniciarSesion(email: string, password: string): Observable<boolean> {
     console.log('Intentando iniciar sesión:', { email, password });
 
-    // Crear el params para enviar al backend
+    // Crear los parámetros para enviar al backend
     const params = new HttpParams()
-    .set('usuario', email)
-    .set('password', password);
+      .set('usuario', email)
+      .set('password', password);
 
-    return this.http.post<User>(`${this.apiUrlUsuario}/login`, null, { params }).pipe(
-      map((response: User) => {
-        console.log('Inicio de sesión exitoso:', response);
+    return this.http.post<any>(`${this.apiUrlUsuario}/login`, null, { params }).pipe(
+      map((response: any) => {
+        console.log('Respuesta del backend:', response);
 
-        // Almacenar el estado de sesión del usuario
-        this.setLoginState(response);
+        // Construir el usuario utilizando UserBuilder
+        const user = new UserBuilder()
+          .setId(response.id)
+          .setNombre(response.nombre)
+          .setApellido(response.apellido)
+          .setEmail(response.email)
+          .setPassword('') // No se incluye la contraseña del backend por seguridad
+          .setFechaNacimiento(response.fechaNacimiento || '') // Si aplica
+          .setDireccion(response.direccion || '') // Si aplica
+          .setRoles(response.roles || []) // Manejar roles enviados desde el backend
+          .build();
 
-        // Realizar cualquier lógica adicional necesaria, como cargar roles
-        this.authService.login(response.roles[0].id);
+        // Guardar el estado del usuario en el cliente
+        this.setLoginState(user);
+        this.authService.login(user.roles[0].id);
 
         this.mostrarAlerta('Inicio de sesión exitoso.', 'success');
         return true;
@@ -231,7 +243,7 @@ export class UsersService {
           this.mostrarAlerta('Ocurrió un error al intentar iniciar sesión.', 'danger');
         }
 
-        return of(false); // Devuelve `false` en caso de error
+        return of(false);
       })
     );
   }
@@ -316,8 +328,8 @@ export class UsersService {
    */
   checkLoginState(): boolean {
     if (this.isLocalStorageAvailable()) {
-      const loggedInClient = JSON.parse(localStorage.getItem('loggedInClient') || 'null');
-      return loggedInClient !== null;
+      const loggedInUser = JSON.parse(localStorage.getItem('loggedInUser') || 'null');
+      return loggedInUser !== null;
     }
     return false;
   }
@@ -330,15 +342,21 @@ export class UsersService {
    */
   getLoggedInClientEmail(): string {
     if (this.isLocalStorageAvailable()) {
-      const loggedInUser = JSON.parse(localStorage.getItem('loggedInClient') || '');
+      const loggedInUser = JSON.parse(localStorage.getItem('loggedInUser') || '');
       return loggedInUser ? loggedInUser.email : '';
     }
     return '';
   }
 
+  /**
+   * @description 
+   * Obtiene el usuario logueado.
+   * 
+   * @return {user} - Retorna el usuario logueado.
+   */
   getLoggedInClient(): User | null {
     if (this.isLocalStorageAvailable()) {
-      const loggedInUser = localStorage.getItem('loggedInClient');
+      const loggedInUser = localStorage.getItem('loggedInUser');
       return loggedInUser ? JSON.parse(loggedInUser) : null;
     }
     return null;
@@ -346,20 +364,20 @@ export class UsersService {
 
   /**
    * @description 
-   * Cierra la sesión del cliente.
+   * Cierra la sesión del usuario.
    * 
    */
   logout(): void {
     if (this.isLocalStorageAvailable()) {
-      console.log('Logout cliente.');
-      localStorage.removeItem('loggedInClient');
+      console.log('Logout usuario.');
+      localStorage.removeItem('loggedInUser');
       this.authService.logout();
     }
   }
 
   /**
    * @description 
-   * Busca un cliente por su correo electrónico.
+   * Busca un usuario por su correo electrónico.
    * 
    * @param {string} email - El correo electrónico del cliente.
    * @return {boolean} - Retorna true si el cliente fue encontrado, de lo contrario false.
