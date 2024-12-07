@@ -98,7 +98,7 @@ export class EditProductComponent implements OnInit {
       const updatedProduct = new ProductBuilder()
         .setId(formData.id)
         .setTitle(formData.title)
-        .setCategorias([{ id: Number(formData.category), nombre: '' }])
+        .setCategorias([{ id: Number(formData.category), nombre: '', descripcion: '' }])
         .setPrice(formData.price)
         .setStock(formData.stock)
         .setImage(formData.image || 'assets/images/no_imagen.jpg') // Imagen por defecto si está vacía

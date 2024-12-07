@@ -1,52 +1,32 @@
-<!-- Main content -->
 <main class="container mt-5">
     <div class="row justify-content-center">
-        <div class="col-md-12 text-center">
-            <h1>Bienvenidos a Tienda Puente Mágico</h1>
-            <p class="lead">Descubre nuestra variedad en artículos de librería, impresión y herramientas de oficina. Personaliza tus proyectos y organiza tu espacio con nuestros productos de alta calidad.</p>
-        </div>
+      <div class="col-md-12 text-center">
+        <h1>Bienvenidos a Tienda Puente Mágico</h1>
+        <p class="lead">
+          Descubre nuestra variedad en artículos de librería, impresión y herramientas de oficina. Personaliza tus proyectos y organiza tu espacio con nuestros productos de alta calidad.
+        </p>
+      </div>
     </div>
     <div class="row mt-4">
-        <!-- Categoria Papelería -->
-        <div class="col-md-4 mb-4">
-            <div class="card">
-                <img src="assets/images/cuaderno2.webp" class="card-img-top" alt="Papelería">
-                <div class="card-body">
-                    <h5 class="card-title">Papelería</h5>
-                    <p class="card-text">Cuadernos, libretas y agendas.</p>
-                    <a [routerLink]="['/product-catalog']" [queryParams]="{ filter: 'Papelería' }" class="btn btn-primary">Ver Papelería</a>
-                </div>
-            </div>
+      <div *ngFor="let product of productsByCategory" class="col-md-4 mb-4">
+        <div class="card">
+          <img [src]="product.imagenProducto" class="card-img-top" [alt]="product.nombreCategoria" />
+          <div class="card-body">
+            <h5 class="card-title">{{ product.nombreCategoria }}</h5>
+            <p class="card-text">{{ product.descripcionCategoria }}</p>
+            <a
+              [routerLink]="['/product-catalog']"
+              [queryParams]="{ filter: product.nombreCategoria }"
+              class="btn btn-primary"
+              >Ver {{ product.nombreCategoria }}</a
+            >
+          </div>
         </div>
-        
-        <!-- Categoria Oficina -->
-        <div class="col-md-4 mb-4">
-            <div class="card">
-                <img src="assets/images/archivador.webp" class="card-img-top" alt="Oficina">
-                <div class="card-body">
-                    <h5 class="card-title">Oficina</h5>
-                    <p class="card-text">Artículos de escritorio, organizadores y archivadores.</p>
-                    <a [routerLink]="['/product-catalog']" [queryParams]="{ filter: 'Oficina' }" class="btn btn-primary">Ver Oficina</a>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Categoria Impresión -->
-        <div class="col-md-4 mb-4">
-            <div class="card">
-                <img src="assets/images/tintahp.webp" class="card-img-top" alt="Impresión">
-                <div class="card-body">
-                    <h5 class="card-title">Impresión</h5>
-                    <p class="card-text">Articulos de impresión, tintas y papeles.</p>
-                    <a [routerLink]="['/product-catalog']" [queryParams]="{ filter: 'Impresión' }" class="btn btn-primary">Ver Impresión</a>
-                </div>
-            </div>
-        </div>
-        
+      </div>
     </div>
-</main>
-
-<!-- Loading Screen -->
-<div id="loading-screen" class="d-flex justify-content-center align-items-center">
+  </main>
+  
+  <!-- Loading Screen -->
+  <div id="loading-screen" class="d-flex justify-content-center align-items-center">
     <div class="loader"></div>
-</div>
+  </div>

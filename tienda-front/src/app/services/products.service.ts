@@ -1,15 +1,15 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
-import { map, catchError } from 'rxjs/operators';
-import { Product, ProductBuilder } from '../builder/product.builder';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { Observable, of, throwError } from 'rxjs';
+import { map, catchError, tap } from 'rxjs/operators';
+import { Product, ProductBuilder, ProductByCategory } from '../builder/product.builder';
 import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ProductsService {
-  private apiUrProducts = environment.apiProductos;
+  private apiUrlProducts = environment.apiProductos;
 
   constructor(private http: HttpClient) { }
 
@@ -19,7 +19,7 @@ export class ProductsService {
    * @returns Observable<Product[]> Lista de productos.
    */
   getAllProducts(): Observable<Product[]> {
-    return this.http.get<{ _embedded?: { productoList?: any[] } }>(`${this.apiUrProducts}/productos`).pipe(
+    return this.http.get<{ _embedded?: { productoList?: any[] } }>(`${this.apiUrlProducts}/productos`).pipe(
       map(response => {
         // Validar si la estructura es la esperada
         if (response && response._embedded && Array.isArray(response._embedded.productoList)) {
@@ -53,7 +53,7 @@ export class ProductsService {
    * @returns Observable<Product> El producto correspondiente.
    */
   getProductById(id: number): Observable<Product> {
-    return this.http.get<any>(`${this.apiUrProducts}/productos/${id}`).pipe(
+    return this.http.get<any>(`${this.apiUrlProducts}/productos/${id}`).pipe(
       map(product =>
         new ProductBuilder()
           .setId(product.id)
@@ -79,7 +79,7 @@ export class ProductsService {
    * @returns Observable<Product> El producto creado.
    */
   createProduct(product: Product): Observable<Product> {
-    return this.http.post<Product>(`${this.apiUrProducts}/productos`, product).pipe(
+    return this.http.post<Product>(`${this.apiUrlProducts}/productos`, product).pipe(
       map(response => response),
       catchError(error => {
         console.error('Error al crear producto:', error);
@@ -96,7 +96,7 @@ export class ProductsService {
    * @returns Observable<Product> El producto actualizado.
    */
   updateProduct(id: number, product: Product): Observable<Product> {
-    return this.http.put<Product>(`${this.apiUrProducts}/productos/${id}`, product).pipe(
+    return this.http.put<Product>(`${this.apiUrlProducts}/productos/${id}`, product).pipe(
       map(response => response),
       catchError(error => {
         console.error('Error al actualizar producto:', error);
@@ -112,7 +112,7 @@ export class ProductsService {
    * @returns Observable<void> Indica si la operación fue exitosa.
    */
   deleteProduct(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrProducts}/productos/${id}`).pipe(
+    return this.http.delete<void>(`${this.apiUrlProducts}/productos/${id}`).pipe(
       catchError(error => {
         console.error('Error al eliminar producto:', error);
         throw error;
@@ -120,23 +120,38 @@ export class ProductsService {
     );
   }
 
-    /**
+  /**
    * Obtiene todas las categorías desde el backend.
    *
    * @returns Observable<{ id: number; nombre: string }[]> Lista de categorías.
    */
-    getAllCategories(): Observable<{ id: number; nombre: string }[]> {
-      return this.http.get<{ _embedded: { categoriaList: any[] } }>(`${this.apiUrProducts}/categorias`).pipe(
-        map((response) =>
-          response._embedded.categoriaList.map((category) => ({
-            id: category.id,
-            nombre: category.nombre,
-          }))
-        ),
-        catchError((error) => {
-          console.error('Error al obtener categorías:', error);
-          throw error;
+  getAllCategories(): Observable<{ id: number; nombre: string }[]> {
+    return this.http.get<{ _embedded: { categoriaList: any[] } }>(`${this.apiUrlProducts}/categorias`).pipe(
+      map((response) =>
+        response._embedded.categoriaList.map((category) => ({
+          id: category.id,
+          nombre: category.nombre,
+          descripcion: category.descripcion,
+        }))
+      ),
+      catchError((error) => {
+        console.error('Error al obtener categorías:', error);
+        throw error;
+      })
+    );
+  }
+
+  getProductsByCategory(): Observable<ProductByCategory[]> {
+    return this.http
+      .get<ProductByCategory[]>(`${this.apiUrlProducts}/productos/product-by-category`)
+      .pipe(
+        tap((response) => {
+          console.log('Respuesta del backend:', response);
+        }),
+        catchError((error: HttpErrorResponse) => {
+          console.error('Error al obtener productos por categoría:', error);
+          return throwError(() => new Error('Error al cargar productos por categoría'));
         })
       );
-    }
+  }
 }

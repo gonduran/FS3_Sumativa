@@ -1,6 +1,16 @@
+export interface ProductByCategory {
+  idCategoria: number;
+  nombreCategoria: string;
+  descripcionCategoria: string;
+  idProducto: number;
+  nombreProducto: string;
+  imagenProducto: string;
+}
+
 export interface Categoria {
   id: number;
   nombre: string;
+  descripcion: string;
 }
 
 export interface Product {

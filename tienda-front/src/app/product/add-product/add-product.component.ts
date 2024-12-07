@@ -42,7 +42,7 @@ export class AddProductComponent implements OnInit {
     this.productsService.getAllCategories().subscribe({
       next: (data) => {
         console.log('Categorías cargadas:', data);
-        this.categories = data;
+        //this.categories = data;
       },
       error: (err) => {
         console.error('Error al cargar categorías:', err);
@@ -63,7 +63,7 @@ export class AddProductComponent implements OnInit {
 
       const newProduct = new ProductBuilder()
         .setTitle(formData.title)
-        .setCategorias([{ id: Number(formData.category), nombre: '' }])
+        .setCategorias([{ id: Number(formData.category), nombre: '', descripcion: '' }])
         .setPrice(formData.price)
         .setStock(formData.stock)
         .setImage(imageValue)
