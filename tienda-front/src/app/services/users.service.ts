@@ -347,30 +347,30 @@ export class UsersService {
     }
   }
 
-/**
- * @description
- * Busca un usuario por su correo electrónico utilizando el backend.
- *
- * @param {string} email - El correo electrónico del usuario.
- * @return {Observable<User | null>} - Retorna el usuario si se encuentra, de lo contrario null.
- */
-findUser(email: string): Observable<User | null> {
-  const params = new HttpParams().set('email', email);
-  console.log('Buscando usuario con email:', email);
-  
-  return this.http.get<User>(`${this.apiUrlUsuario}/find`, { params }).pipe(
-    map((user: User) => {
-      console.log('Usuario encontrado:', user);
-      this.mostrarAlerta('Usuario encontrado.', 'success');
-      return user; // Retorna el usuario encontrado
-    }),
-    catchError((error) => {
-      console.error('Error al buscar el usuario:', error);
-      this.mostrarAlerta('Usuario no encontrado.', 'danger');
-      return of(null); // Devuelve `null` en caso de error
-    })
-  );
-}
+  /**
+   * @description
+   * Busca un usuario por su correo electrónico utilizando el backend.
+   *
+   * @param {string} email - El correo electrónico del usuario.
+   * @return {Observable<User | null>} - Retorna el usuario si se encuentra, de lo contrario null.
+   */
+  findUser(email: string): Observable<User | null> {
+    const params = new HttpParams().set('email', email);
+    console.log('Buscando usuario con email:', email);
+
+    return this.http.get<User>(`${this.apiUrlUsuario}/find`, { params }).pipe(
+      map((user: User) => {
+        console.log('Usuario encontrado:', user);
+        this.mostrarAlerta('Usuario encontrado.', 'success');
+        return user; // Retorna el usuario encontrado
+      }),
+      catchError((error) => {
+        console.error('Error al buscar el usuario:', error);
+        this.mostrarAlerta('Usuario no encontrado.', 'danger');
+        return of(null); // Devuelve `null` en caso de error
+      })
+    );
+  }
 
   /**
    * @description

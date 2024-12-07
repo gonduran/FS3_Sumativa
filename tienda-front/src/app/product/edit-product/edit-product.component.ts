@@ -3,7 +3,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { RouterModule, Router, ActivatedRoute } from '@angular/router';
 import { ProductsService } from '../../services/products.service';
 import { ProductBuilder } from '../../builder/product.builder';
-import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-edit-product',
@@ -14,7 +14,8 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 })
 export class EditProductComponent implements OnInit {
   editProductForm: FormGroup;
-  productId: string | null = null;
+  categories: { id: number; nombre: string }[] = [];
+  productId: number | null = null;
 
   constructor(
     private fb: FormBuilder,
@@ -23,6 +24,7 @@ export class EditProductComponent implements OnInit {
     private route: ActivatedRoute
   ) {
     this.editProductForm = this.fb.group({
+      id: [{ value: 0, disabled: true }],
       title: ['', [Validators.required, Validators.minLength(3)]],
       category: ['', [Validators.required]],
       price: [0, [Validators.required, Validators.min(0.01)]],
@@ -33,43 +35,94 @@ export class EditProductComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.productId = this.route.snapshot.paramMap.get('id');
+    this.productId = Number(this.route.snapshot.paramMap.get('id'));
     if (this.productId) {
-      /*const product = this.productsService.getProducts().find(p => p.id === this.productId);
-      if (product) {
-        this.editProductForm.patchValue(product);
-      } else {
-        alert('Producto no encontrado.');
-        this.goBack();
-      }*/
+      this.loadProduct();
+    } else {
+      alert('ID de producto no válido.');
+      this.goBack();
     }
+    this.loadCategories();
   }
 
+  /**
+   * Carga las categorías desde el backend.
+   */
+  loadCategories(): void {
+    this.productsService.getAllCategories().subscribe({
+      next: (data) => {
+        console.log('Categorías cargadas:', data);
+        this.categories = data;
+      },
+      error: (err) => {
+        console.error('Error al cargar categorías:', err);
+        alert('Ocurrió un error al cargar las categorías. Inténtelo nuevamente.');
+      },
+    });
+  }
+
+  /**
+   * Carga los datos del producto desde el backend.
+   */
+  loadProduct(): void {
+    this.productsService.getProductById(this.productId!).subscribe({
+      next: (product) => {
+        console.log('Producto cargado:', product);
+        this.editProductForm.patchValue({
+          id: product.id,
+          title: product.nombre,
+          category: product.categorias[0]?.id,
+          price: product.precio,
+          stock: product.stock,
+          image: product.imagen,
+          description: product.descripcion,
+        });
+      },
+      error: (err) => {
+        console.error('Error al cargar el producto:', err);
+        alert('No se pudo cargar el producto. Inténtelo nuevamente.');
+        this.goBack();
+      },
+    });
+  }
+
+  /**
+   * Maneja el envío del formulario para actualizar un producto.
+   */
   onSubmit(): void {
     if (this.editProductForm.valid) {
-      const formValues = this.editProductForm.value;
-  
+      const formData = this.editProductForm.getRawValue();
+      formData.id = this.productId;
+
+      // Usando ProductBuilder para construir el producto
       const updatedProduct = new ProductBuilder()
-        .setId(this.productId || '') // Asegúrate de que el ID del producto esté configurado
-        .setTitle(formValues.title)
-        .setDescription(formValues.description)
-        .setPrice(formValues.price)
-        .setCategory(formValues.category)
-        .setStock(formValues.stock)
-        .setImage(formValues.image)
+        .setId(formData.id)
+        .setTitle(formData.title)
+        .setCategorias([{ id: Number(formData.category), nombre: '' }])
+        .setPrice(formData.price)
+        .setStock(formData.stock)
+        .setImage(formData.image || 'assets/images/no_imagen.jpg') // Imagen por defecto si está vacía
+        .setDescription(formData.description)
         .build();
-  
-      /*const success = this.productsService.updateProduct(updatedProduct);
-  
-      if (success) {
-        alert('Producto actualizado correctamente.');
-        this.router.navigate(['/list-product']);
-      } else {
-        alert('Error al actualizar el producto.');
-      }*/
+
+      this.productsService.updateProduct(this.productId!, updatedProduct).subscribe({
+        next: () => {
+          alert('Producto actualizado correctamente.');
+          this.router.navigate(['/list-product']);
+        },
+        error: (err) => {
+          console.error('Error al actualizar el producto:', err);
+          alert('Ocurrió un error al actualizar el producto. Inténtelo nuevamente.');
+        },
+      });
+    } else {
+      alert('Por favor complete todos los campos correctamente.');
     }
   }
 
+  /**
+   * Regresa a la lista de productos.
+   */
   goBack(): void {
     this.router.navigate(['/list-product']);
   }

@@ -19,7 +19,7 @@ export class ProductsService {
    * @returns Observable<Product[]> Lista de productos.
    */
   getAllProducts(): Observable<Product[]> {
-    return this.http.get<{ _embedded?: { productoList?: any[] } }>(this.apiUrProducts).pipe(
+    return this.http.get<{ _embedded?: { productoList?: any[] } }>(`${this.apiUrProducts}/productos`).pipe(
       map(response => {
         // Validar si la estructura es la esperada
         if (response && response._embedded && Array.isArray(response._embedded.productoList)) {
@@ -29,7 +29,7 @@ export class ProductsService {
               .setTitle(product.nombre)
               .setDescription(product.descripcion)
               .setPrice(product.precio)
-              .setCategory(product.categorias?.[0]?.nombre || 'Sin categoría')
+              .setCategorias(product.categorias)
               .setImage(product.imagen)
               .setStock(product.stock)
               .build()
@@ -52,16 +52,16 @@ export class ProductsService {
    * @param id ID del producto.
    * @returns Observable<Product> El producto correspondiente.
    */
-  getProductById(id: string): Observable<Product> {
-    return this.http.get<any>(`${this.apiUrProducts}/${id}`).pipe(
+  getProductById(id: number): Observable<Product> {
+    return this.http.get<any>(`${this.apiUrProducts}/productos/${id}`).pipe(
       map(product =>
         new ProductBuilder()
           .setId(product.id)
-          .setTitle(product.title)
-          .setDescription(product.description)
-          .setPrice(product.price)
-          .setCategory(product.category)
-          .setImage(product.image)
+          .setTitle(product.nombre)
+          .setDescription(product.descripcion)
+          .setPrice(product.precio)
+          .setCategorias(product.categorias)
+          .setImage(product.imagen)
           .setStock(product.stock)
           .build()
       ),
@@ -79,7 +79,7 @@ export class ProductsService {
    * @returns Observable<Product> El producto creado.
    */
   createProduct(product: Product): Observable<Product> {
-    return this.http.post<Product>(this.apiUrProducts, product).pipe(
+    return this.http.post<Product>(`${this.apiUrProducts}/productos`, product).pipe(
       map(response => response),
       catchError(error => {
         console.error('Error al crear producto:', error);
@@ -95,8 +95,8 @@ export class ProductsService {
    * @param product Datos actualizados del producto.
    * @returns Observable<Product> El producto actualizado.
    */
-  updateProduct(id: string, product: Product): Observable<Product> {
-    return this.http.put<Product>(`${this.apiUrProducts}/${id}`, product).pipe(
+  updateProduct(id: number, product: Product): Observable<Product> {
+    return this.http.put<Product>(`${this.apiUrProducts}/productos/${id}`, product).pipe(
       map(response => response),
       catchError(error => {
         console.error('Error al actualizar producto:', error);
@@ -111,12 +111,32 @@ export class ProductsService {
    * @param id ID del producto a eliminar.
    * @returns Observable<void> Indica si la operación fue exitosa.
    */
-  deleteProduct(id: string): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrProducts}/${id}`).pipe(
+  deleteProduct(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrProducts}/productos/${id}`).pipe(
       catchError(error => {
         console.error('Error al eliminar producto:', error);
         throw error;
       })
     );
   }
+
+    /**
+   * Obtiene todas las categorías desde el backend.
+   *
+   * @returns Observable<{ id: number; nombre: string }[]> Lista de categorías.
+   */
+    getAllCategories(): Observable<{ id: number; nombre: string }[]> {
+      return this.http.get<{ _embedded: { categoriaList: any[] } }>(`${this.apiUrProducts}/categorias`).pipe(
+        map((response) =>
+          response._embedded.categoriaList.map((category) => ({
+            id: category.id,
+            nombre: category.nombre,
+          }))
+        ),
+        catchError((error) => {
+          console.error('Error al obtener categorías:', error);
+          throw error;
+        })
+      );
+    }
 }
