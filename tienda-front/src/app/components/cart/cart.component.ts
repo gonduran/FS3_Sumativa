@@ -80,7 +80,7 @@ export class CartComponent implements OnInit, AfterViewInit {
   checkout(): void {
     if (this.checkLoginStateCheckout()){
       //Registrar orden
-      const email = this.usersService.getLoggedInClientEmail();
+      const email = this.usersService.getLoggedInUserEmail();
       const total = this.totalAmount;
       const id = this.ordersService.registerOrders(email, total);
 

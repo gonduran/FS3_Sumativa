@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { CryptoService } from './crypto.service';
 import { AuthService } from './auth.service';
 import { UserBuilder, User } from '../builder/user.builder';
 import { environment } from '../../environments/environment';
@@ -10,53 +9,19 @@ import { catchError, map, Observable, of, throwError } from 'rxjs';
   providedIn: 'root'
 })
 export class UsersService {
-  //private storageKey = 'users';
-  //private users: User[] = [];
   private apiUrlUsuario = environment.apiUsuarios;
 
   /**
    * @description 
-   * Constructor del servicio. Carga los clientes desde localStorage.
+   * Constructor del servicio. 
    * 
    * @param {CryptoService} cryptoService - Servicio de encriptación.
    */
-  constructor(private cryptoService: CryptoService,
+  constructor(
     private authService: AuthService,
     private http: HttpClient
   ) {
-    /*if (this.isLocalStorageAvailable()) {
-      const usersSaved = localStorage.getItem('users');
-      this.users = usersSaved ? JSON.parse(usersSaved) : [];
-    } else {
-      this.users = [];
-    }
-    // Verifica y carga el usuario admin si no existe
-    this.loadAdminUser();*/
-  }
 
-  private loadAdminUser(): void {
-    /*if (this.isLocalStorageAvailable()) {
-      const usersSaved = localStorage.getItem(this.storageKey);
-      this.users = usersSaved ? JSON.parse(usersSaved) : [];
-
-      const adminExists = this.users.some(user => user.rol === '1');
-      if (!adminExists) {
-        const adminUser: User = new UserBuilder()
-          .setNombre('Admin')
-          .setApellido('Tienda')
-          .setEmail('admin@puente-magico.cl')
-          .setPassword(this.cryptoService.encrypt('P4ss2511%'))
-          .setFechaNacimiento('01-01-2000')
-          .setDireccion('')
-          .setRol('admin')
-          .build();
-        this.users.push(adminUser);
-        localStorage.setItem(this.storageKey, JSON.stringify(this.users));
-        console.log('Usuario admin cargado correctamente');
-      }
-    } else {
-      console.warn('localStorage no está disponible');
-    }*/
   }
 
   /**
@@ -91,7 +56,7 @@ export class UsersService {
    * @param birthdate - Fecha de nacimiento.
    * @param dispatchAddress - Dirección de envío.
    * @param roleId - Rol del usuario.
-   * @return {Observable<boolean>} - Retorna true si el cliente fue registrado exitosamente, de lo contrario false.
+   * @return {Observable<boolean>} - Retorna true si el usuario fue registrado exitosamente, de lo contrario false.
    */
   registerUser(
     name: string,
@@ -143,14 +108,14 @@ export class UsersService {
    * @description 
    * Actualiza un usuario existente en el backend y maneja posibles errores.
    * 
-   * @param {number} id - ID del usuario a actualizar.
-   * @param {string} name - Nombre del usuario.
-   * @param {string} surname - Apellido del usuario.
-   * @param {string} email - Correo electrónico del usuario.
-   * @param {string} password - Contraseña del usuario.
-   * @param {string} birthdate - Fecha de nacimiento del usuario.
-   * @param {string} dispatchAddress - Dirección de envío del usuario.
-   * @param {number} roleId - ID del rol del usuario.
+   * @param id - ID del usuario a actualizar.
+   * @param name - Nombre del usuario.
+   * @param surname - Apellido del usuario.
+   * @param email - Correo electrónico del usuario.
+   * @param password - Contraseña del usuario.
+   * @param birthdate - Fecha de nacimiento del usuario.
+   * @param dispatchAddress - Dirección de envío del usuario.
+   * @param roleId - ID del rol del usuario.
    * @return {Observable<boolean>} - Retorna true si el usuario fue actualizado exitosamente, de lo contrario false.
    */
   updateUser(
@@ -165,7 +130,8 @@ export class UsersService {
   ): Observable<boolean> {
     console.log('Intentando actualizar usuario:', { id, name, surname, email, birthdate, dispatchAddress, roleId });
 
-    const updatedUser = new UserBuilder()
+    const updatedUser: User = new UserBuilder()
+      .setId(id)
       .setNombre(name)
       .setApellido(surname)
       .setEmail(email)
@@ -202,10 +168,10 @@ export class UsersService {
 
   /**
    * @description 
-   * Inicia sesión de un cliente llamando al backend para la validación.
+   * Inicia sesión de un usuario llamando al backend para la validación.
    * 
-   * @param {string} email - Correo electrónico del cliente.
-   * @param {string} password - Contraseña del cliente.
+   * @param {string} email - Correo electrónico del usuario.
+   * @param {string} password - Contraseña del usuario.
    * @return {Observable<boolean>} - Retorna true si el inicio de sesión fue exitoso, de lo contrario false.
    */
   iniciarSesion(email: string, password: string): Observable<boolean> {
@@ -302,9 +268,9 @@ export class UsersService {
 
   /**
    * @description 
-   * Establece el estado de inicio de sesión del cliente utilizando localStorage.
+   * Establece el estado de inicio de sesión del usuario utilizando localStorage.
    * 
-   * @param {any} user - El cliente que ha iniciado sesión.
+   * @param {any} user - El usuario que ha iniciado sesión.
    */
   setLoginState(user: any): void {
     if (this.isLocalStorageAvailable() && user) {
@@ -328,9 +294,9 @@ export class UsersService {
 
   /**
    * @description 
-   * Verifica el estado de inicio de sesión del cliente.
+   * Verifica el estado de inicio de sesión del usuario.
    * 
-   * @return {boolean} - Retorna true si el cliente ha iniciado sesión, de lo contrario false.
+   * @return {boolean} - Retorna true si el usuario ha iniciado sesión, de lo contrario false.
    */
   checkLoginState(): boolean {
     if (this.isLocalStorageAvailable()) {
@@ -342,11 +308,11 @@ export class UsersService {
 
   /**
    * @description 
-   * Obtiene el correo electrónico del cliente logueado.
+   * Obtiene el correo electrónico del usuario logueado.
    * 
-   * @return {string} - Retorna el correo electrónico del cliente logueado.
+   * @return {string} - Retorna el correo electrónico del usuario logueado.
    */
-  getLoggedInClientEmail(): string {
+  getLoggedInUserEmail(): string {
     if (this.isLocalStorageAvailable()) {
       const loggedInUser = JSON.parse(localStorage.getItem('loggedInUser') || '');
       return loggedInUser ? loggedInUser.email : '';
@@ -360,7 +326,7 @@ export class UsersService {
    * 
    * @return {user} - Retorna el usuario logueado.
    */
-  getLoggedInClient(): User | null {
+  getLoggedInUser(): User | null {
     if (this.isLocalStorageAvailable()) {
       const loggedInUser = localStorage.getItem('loggedInUser');
       return loggedInUser ? JSON.parse(loggedInUser) : null;
@@ -381,27 +347,30 @@ export class UsersService {
     }
   }
 
-  /**
-   * @description 
-   * Busca un usuario por su correo electrónico.
-   * 
-   * @param {string} email - El correo electrónico del cliente.
-   * @return {boolean} - Retorna true si el cliente fue encontrado, de lo contrario false.
-   */
-  findUser(email: string): boolean {
-    /*console.log('Buscando cliente:', { email });
-    const user = this.users.find(user => user.email === email);
-    if (user) {
-      this.mostrarAlerta('Cliente encontrado.', 'success');
-      console.log('Cliente encontrado:', user);
-      return true;
-    } else {
-      this.mostrarAlerta('Cliente no encontrado.', 'danger');
-      console.log('Cliente no encontrado.');
-      return false;
-    }*/
-    return true;
-  }
+/**
+ * @description
+ * Busca un usuario por su correo electrónico utilizando el backend.
+ *
+ * @param {string} email - El correo electrónico del usuario.
+ * @return {Observable<User | null>} - Retorna el usuario si se encuentra, de lo contrario null.
+ */
+findUser(email: string): Observable<User | null> {
+  const params = new HttpParams().set('email', email);
+  console.log('Buscando usuario con email:', email);
+  
+  return this.http.get<User>(`${this.apiUrlUsuario}/find`, { params }).pipe(
+    map((user: User) => {
+      console.log('Usuario encontrado:', user);
+      this.mostrarAlerta('Usuario encontrado.', 'success');
+      return user; // Retorna el usuario encontrado
+    }),
+    catchError((error) => {
+      console.error('Error al buscar el usuario:', error);
+      this.mostrarAlerta('Usuario no encontrado.', 'danger');
+      return of(null); // Devuelve `null` en caso de error
+    })
+  );
+}
 
   /**
    * @description
@@ -409,10 +378,6 @@ export class UsersService {
    *
    * @return {Observable<User[]>} - Un Observable que emite un array de objetos User.
    */
-  //getUsers(): Observable<User[]> {
-  //  console.log('Intentando obtener usuarios');
-  //  return this.http.get<User[]>(`${this.apiUrlUsuario}`);
-  //}
   getUsers(): Observable<User[]> {
     return this.http.get<User[]>(`${this.apiUrlUsuario}`).pipe(
       map((response) => {
@@ -427,30 +392,18 @@ export class UsersService {
   }
 
   /**
-   * @description 
-   * Agrega un nuevo cliente a la lista y guarda en localStorage.
-   * 
-   * @param {User} client - El cliente a agregar.
-   * @return {void}
+   * Obtiene los datos de un usuario por su ID.
+   * @param id ID del usuario a obtener.
+   * @return {Observable<User>} Un Observable con los datos del usuario.
    */
-  addClient(client: User): void {
-    const users = this.getUsers();
-    //users.push(client);
-    //localStorage.setItem(this.storageKey, JSON.stringify(users));
-  }
-
-  /**
-   * @description 
-   * Actualiza un cliente existente.
-   * 
-   * @param {number} index - El índice del cliente a actualizar.
-   * @param {User} updatedClient - Los datos actualizados del cliente.
-   * @return {void}
-   */
-  updateClient(index: number, updatedClient: User): void {
-    const users = this.getUsers();
-    //users[index] = updatedClient;
-    //localStorage.setItem(this.storageKey, JSON.stringify(users));
+  getUserById(id: number): Observable<User> {
+    return this.http.get<User>(`${this.apiUrlUsuario}/${id}`).pipe(
+      map((response: User) => response),
+      catchError((error) => {
+        console.error('Error al obtener usuario:', error);
+        return throwError(() => error);
+      })
+    );
   }
 
   /**
@@ -460,11 +413,6 @@ export class UsersService {
    * @param {number} id - El id del usuario a eliminar.
    * @return {Observable<boolean>}
    */
-  //deleteClient(index: number): void {
-  //const users = this.getUsers();
-  //users.splice(index, 1);
-  //localStorage.setItem(this.storageKey, JSON.stringify(users));
-  //}
   deleteUser(id: number): Observable<boolean> {
     return this.http.delete<boolean>(`${this.apiUrlUsuario}/delete/${id}`);
   }

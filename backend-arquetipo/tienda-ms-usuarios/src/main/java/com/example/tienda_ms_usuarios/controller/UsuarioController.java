@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
  */
 @RestController
 @RequestMapping("/api/usuarios")
+@CrossOrigin(origins = "*")
 public class UsuarioController {
     private static final Logger log = LoggerFactory.getLogger(UsuarioController.class);
 

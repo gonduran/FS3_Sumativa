@@ -43,14 +43,14 @@ export class AddProductComponent implements OnInit {
         .setDescription(this.addProductForm.value.description)
         .build();
 
-      this.productsService.addProduct(
+      /*this.productsService.addProduct(
         newProduct.title,
         newProduct.description,
         newProduct.price,
         newProduct.category,
         newProduct.stock,
         newProduct.image
-      );
+      );*/
       alert('Producto agregado exitosamente.');
       this.router.navigate(['/list-product']);
     }

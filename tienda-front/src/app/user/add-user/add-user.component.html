@@ -1,79 +1,56 @@
 <main class="container mt-5">
-    <h2>Agregar Usuario</h2>
-    <form [formGroup]="addUserForm" (ngSubmit)="onSubmit()">
-      <div class="mb-3">
-        <label for="name" class="form-label">Nombre</label>
-        <input
-          type="text"
-          id="name"
-          class="form-control"
-          formControlName="name"
-          required
-        />
-        <div *ngIf="addUserForm.get('name')?.invalid && addUserForm.get('name')?.touched" class="text-danger">
-          <small>El nombre es obligatorio.</small>
-        </div>
+  <h2>Agregar Usuario</h2>
+  <form [formGroup]="addUserForm" (ngSubmit)="onSubmit()">
+    <div class="mb-3">
+      <label for="name" class="form-label">Nombre</label>
+      <input type="text" id="name" class="form-control" formControlName="name" required />
+      <div *ngIf="addUserForm.get('name')?.invalid && addUserForm.get('name')?.touched" class="text-danger">
+        <small>El nombre es obligatorio.</small>
       </div>
-  
-      <div class="mb-3">
-        <label for="surname" class="form-label">Apellido</label>
-        <input
-          type="text"
-          id="surname"
-          class="form-control"
-          formControlName="surname"
-          required
-        />
-        <div *ngIf="addUserForm.get('surname')?.invalid && addUserForm.get('surname')?.touched" class="text-danger">
-          <small>El apellido es obligatorio.</small>
-        </div>
-      </div>
-  
-      <div class="mb-3">
-        <label for="email" class="form-label">Correo Electrónico</label>
-        <input
-          type="email"
-          id="email"
-          class="form-control"
-          formControlName="email"
-          required
-        />
-        <div *ngIf="addUserForm.get('email')?.invalid && addUserForm.get('email')?.touched" class="text-danger">
-          <small>Correo electrónico inválido.</small>
-        </div>
-      </div>
-  
-      <div class="mb-3">
-        <label for="password" class="form-label">Contraseña</label>
-        <input
-          type="password"
-          id="password"
-          class="form-control"
-          formControlName="password"
-          required
-        />
-        <div *ngIf="addUserForm.get('password')?.invalid && addUserForm.get('password')?.touched" class="text-danger">
-            <small *ngIf="addUserForm.get('password')?.errors?.['required']">Contraseña es obligatoria.</small>
-            <small *ngIf="addUserForm.get('password')?.errors?.['minlength']">La contraseña debe tener al menos 6 caracteres.</small>
-            <small *ngIf="addUserForm.get('password')?.errors?.['maxlength']">La contraseña no debe exceder 18 caracteres.</small>
-            <small *ngIf="addUserForm.get('password')?.errors?.['pattern']">
-              La contraseña debe incluir al menos un número, una letra mayúscula y un carácter especial ($!%*?&).
-            </small>
-        </div>
-      </div>
+    </div>
 
-      <div class="mb-3">
-        <label for="rol" class="form-label">Rol</label>
-        <select id="rol" class="form-control" formControlName="rol" required>
-          <option value="user">Usuario</option>
-          <option value="admin">Administrador</option>
-        </select>
+    <div class="mb-3">
+      <label for="surname" class="form-label">Apellido</label>
+      <input type="text" id="surname" class="form-control" formControlName="surname" required />
+      <div *ngIf="addUserForm.get('surname')?.invalid && addUserForm.get('surname')?.touched" class="text-danger">
+        <small>El apellido es obligatorio.</small>
       </div>
-  
-      <button type="submit" class="btn btn-primary">Guardar Usuario</button>
-      <button type="button" class="btn btn-secondary" (click)="goBack()">Cancelar</button>
-    </form>
-  </main>
+    </div>
+
+    <div class="mb-3">
+      <label for="email" class="form-label">Correo Electrónico</label>
+      <input type="email" id="email" class="form-control" formControlName="email" required />
+      <div *ngIf="addUserForm.get('email')?.invalid && addUserForm.get('email')?.touched" class="text-danger">
+        <small>Correo electrónico inválido.</small>
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <label for="password" class="form-label">Contraseña</label>
+      <input type="password" id="password" class="form-control" formControlName="password" required />
+      <div *ngIf="addUserForm.get('password')?.invalid && addUserForm.get('password')?.touched" class="text-danger">
+        <small *ngIf="addUserForm.get('password')?.errors?.['required']">Contraseña es obligatoria.</small>
+        <small *ngIf="addUserForm.get('password')?.errors?.['minlength']">Debe tener al menos 6 caracteres.</small>
+        <small *ngIf="addUserForm.get('password')?.errors?.['maxlength']">No debe exceder 18 caracteres.</small>
+        <small *ngIf="addUserForm.get('password')?.errors?.['pattern']">
+          Debe incluir al menos un número, una letra mayúscula y un carácter especial ($!%*?&).
+        </small>
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <label for="rol" class="form-label">Rol</label>
+      <select id="rol" class="form-control" formControlName="rol" required>
+        <option value="3">Cliente</option>
+        <option value="2">Usuario</option>
+        <option value="1">Administrador</option>
+      </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Guardar Usuario</button>
+    <button type="button" class="btn btn-secondary" (click)="goBack()">Cancelar</button>
+  </form>
+</main>
 
 <!-- Loading Screen -->
 <div id="loading-screen" class="d-flex justify-content-center align-items-center">

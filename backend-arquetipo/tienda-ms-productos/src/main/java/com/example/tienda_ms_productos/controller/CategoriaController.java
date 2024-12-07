@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
  */
 @RestController
 @RequestMapping("/api/categorias")
+@CrossOrigin(origins = "*")
 public class CategoriaController {
     private static final Logger log = LoggerFactory.getLogger(CategoriaController.class);
 

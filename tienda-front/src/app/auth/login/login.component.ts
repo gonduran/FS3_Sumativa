@@ -60,7 +60,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
       this.usersService.iniciarSesion(email, password).subscribe({
         next: (loginExitoso: boolean) => {
           if (loginExitoso) {
-            const loggedInUser = this.usersService.getLoggedInClient();
+            const loggedInUser = this.usersService.getLoggedInUser();
   
             if (loggedInUser) { // Asegurarse de que loggedInUser no sea null
               alert('Inicio de sesión exitoso!');

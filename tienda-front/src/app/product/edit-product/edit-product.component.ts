@@ -35,13 +35,13 @@ export class EditProductComponent implements OnInit {
   ngOnInit(): void {
     this.productId = this.route.snapshot.paramMap.get('id');
     if (this.productId) {
-      const product = this.productsService.getProducts().find(p => p.id === this.productId);
+      /*const product = this.productsService.getProducts().find(p => p.id === this.productId);
       if (product) {
         this.editProductForm.patchValue(product);
       } else {
         alert('Producto no encontrado.');
         this.goBack();
-      }
+      }*/
     }
   }
 
@@ -59,14 +59,14 @@ export class EditProductComponent implements OnInit {
         .setImage(formValues.image)
         .build();
   
-      const success = this.productsService.updateProduct(updatedProduct);
+      /*const success = this.productsService.updateProduct(updatedProduct);
   
       if (success) {
         alert('Producto actualizado correctamente.');
         this.router.navigate(['/list-product']);
       } else {
         alert('Error al actualizar el producto.');
-      }
+      }*/
     }
   }
 
