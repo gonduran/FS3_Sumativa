@@ -1,0 +1,32 @@
+<main class="container mt-5">
+    <h2>Búsqueda de Productos</h2>
+
+    <!-- Campo de búsqueda -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <input type="text" class="form-control" placeholder="Ingrese el nombre del producto o categoría"
+                [(ngModel)]="filterText" />
+            <button class="btn btn-primary mt-2" (click)="searchProducts()">Buscar</button>
+        </div>
+    </div>
+
+    <!-- Mensaje de error o resultados vacíos -->
+    <div *ngIf="message" class="alert alert-info">{{ message }}</div>
+
+    <!-- Resultados de búsqueda -->
+    <div class="row">
+        <div *ngFor="let product of products" class="col-md-3 mb-4">
+            <div class="card">
+                <img [src]="product.imagen" class="card-img-top" [alt]="product.nombre">
+                <div class="card-body">
+                    <h5 class="card-title">{{ product.nombre }}</h5>
+                    <p class="card-text">{{ product.precio | currency:'CLP':'symbol-narrow':'1.0-0' }}</p>
+                    <a [routerLink]="['/product-detail', product.id]" [queryParams]="{ from: 'product-find' }"
+                        class="btn btn-primary">
+                        Ver Detalles
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>

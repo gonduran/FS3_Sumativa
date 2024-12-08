@@ -1,37 +1,37 @@
-<!-- Main content -->
 <main class="container mt-5" *ngIf="selectedProduct">
-    <div class="row">
-      <div class="col-md-6">
-        <div class="card">
-          <img [src]="selectedProduct.image" class="card-img-top" [alt]="selectedProduct.title">
-        </div>
-      </div>
-      <div class="col-md-6">
-        <h2>{{ selectedProduct.title }}</h2>
-        <p class="text-muted">Categoria: {{ selectedProduct.category }}</p>
-        <p><strong>Precio: {{ selectedProduct.price | currency:'CLP':'symbol-narrow':'1.0-0' }}</strong></p>
-        <p>{{ selectedProduct.description }}</p>
-        <ul>
-          <li *ngFor="let feature of selectedProduct.features">{{ feature }}</li>
-        </ul>
-        <form [formGroup]="addToCartForm">
-          <div class="mb-3">
-            <label for="quantity" class="form-label">Cantidad:</label>
-            <input type="number" class="form-control" id="quantity" formControlName="quantity">
-            <div *ngIf="addToCartForm.get('quantity')?.invalid && addToCartForm.get('quantity')?.touched" class="text-danger">
-              <small *ngIf="addToCartForm.get('quantity')?.errors?.['required']">Cantidad es obligatoria.</small>
-              <small *ngIf="addToCartForm.get('quantity')?.errors?.['min']">Cantidad mínima es {{ minQuantity }}.</small>
-              <small *ngIf="addToCartForm.get('quantity')?.errors?.['max']">Cantidad máxima es {{ maxQuantity }}.</small>
-            </div>
-          </div>
-          <button class="btn btn-primary" (click)="addToCart()">Agregar al Carro</button>
-        </form>
+  <div class="row">
+    <div class="col-md-6">
+      <div class="card">
+        <img [src]="selectedProduct.imagen" class="card-img-top" [alt]="selectedProduct.nombre">
       </div>
     </div>
-    <button type="button" class="btn btn-info" (click)="goBack()">Volver</button>
-  </main>
+    <div class="col-md-6">
+      <h2>{{ selectedProduct.nombre }}</h2>
+      <p class="text-muted">
+        Categoría:
+        <span *ngFor="let category of selectedProduct.categorias; let last = last">
+          {{ category.nombre }}<span *ngIf="!last">, </span>
+        </span>
+      </p>
+      <p><strong>Precio: {{ selectedProduct.precio | currency:'CLP':'symbol-narrow':'1.0-0' }}</strong></p>
+      <p>{{ selectedProduct.descripcion }}</p>
+      <form [formGroup]="addToCartForm">
+        <div class="mb-3">
+          <label for="quantity" class="form-label">Cantidad:</label>
+          <input type="number" class="form-control" id="quantity" formControlName="quantity">
+          <div *ngIf="addToCartForm.get('quantity')?.invalid && addToCartForm.get('quantity')?.touched" class="text-danger">
+            <small *ngIf="addToCartForm.get('quantity')?.errors?.['required']">Cantidad es obligatoria.</small>
+            <small *ngIf="addToCartForm.get('quantity')?.errors?.['min']">Cantidad mínima es {{ minQuantity }}.</small>
+            <small *ngIf="addToCartForm.get('quantity')?.errors?.['max']">Cantidad máxima es {{ maxQuantity }}.</small>
+          </div>
+        </div>
+        <button class="btn btn-primary" (click)="addToCart()">Agregar al Carro</button>
+      </form>
+    </div>
+  </div>
+  <button type="button" class="btn btn-info mt-3" (click)="goBack()">Volver</button>
+</main>
 
-<!-- Loading Screen -->
 <div id="loading-screen" class="d-flex justify-content-center align-items-center">
-    <div class="loader"></div>
+  <div class="loader"></div>
 </div>

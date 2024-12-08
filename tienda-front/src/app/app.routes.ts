@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { CartComponent } from './components/cart/cart.component';
 import { HomeComponent } from './components/home/home.component';
 import { ProductCatalogComponent } from './components/product-catalog/product-catalog.component';
+import { ProductFindComponent } from './components/product-find/product-find.component';
 import { ProductDetailComponent } from './components/product-detail/product-detail.component';
 //auth
 import { LoginComponent } from './auth/login/login.component';
@@ -24,7 +25,8 @@ export const routes: Routes = [
     { path: 'cart', component: CartComponent },
     { path: 'home', component: HomeComponent },
     { path: 'product-catalog', component: ProductCatalogComponent },
-    { path: 'product-detail/:title', component: ProductDetailComponent },
+    { path: 'product-find', component: ProductFindComponent },
+    { path: 'product-detail/:id', component: ProductDetailComponent },
     //auth
     { path: 'login', component: LoginComponent },
     { path: 'logout', component: LogoutComponent },

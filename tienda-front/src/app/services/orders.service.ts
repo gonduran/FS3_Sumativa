@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 
 interface Cart {
-  product: string;
+  product: number;
   image: string;
   price: number;
   quantity: number;
@@ -55,14 +55,14 @@ export class OrdersService {
    * @description 
    * Registra un nuevo producto en el carro de compra.
    * 
-   * @param {string} product - El nombre del producto.
+   * @param {number} product - El nombre del producto.
    * @param {string} image - La URL de la imagen del producto.
    * @param {number} price - El precio del producto.
    * @param {number} quantity - La cantidad del producto.
    * @param {number} total - El total del producto.
    * @return {boolean} - Retorna true si el producto fue registrado exitosamente en el carro, de lo contrario false.
    */
-  registerCarts(product: string, image: string, price: number, quantity: number, total: number): boolean {
+  registerCarts(product: number, image: string, price: number, quantity: number, total: number): boolean {
     console.log('Intentando registrar producto en carro compra:', { product, image, price, quantity, total });
 
     const newCart: Cart = { product, image, price, quantity, total };

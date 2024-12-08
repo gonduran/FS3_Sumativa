@@ -10,6 +10,7 @@ import { environment } from '../../environments/environment';
 })
 export class ProductsService {
   private apiUrlProducts = environment.apiProductos;
+  private apiPedidosUrl = environment.apiPedidos;
 
   constructor(private http: HttpClient) { }
 
@@ -53,9 +54,11 @@ export class ProductsService {
    * @returns Observable<Product> El producto correspondiente.
    */
   getProductById(id: number): Observable<Product> {
+    console.log('Iniciando solicitud para obtener producto con ID:', id);
     return this.http.get<any>(`${this.apiUrlProducts}/productos/${id}`).pipe(
-      map(product =>
-        new ProductBuilder()
+      map((product) => {
+        console.log('Respuesta recibida del backend para el producto:', product);
+        return new ProductBuilder()
           .setId(product.id)
           .setTitle(product.nombre)
           .setDescription(product.descripcion)
@@ -63,10 +66,10 @@ export class ProductsService {
           .setCategorias(product.categorias)
           .setImage(product.imagen)
           .setStock(product.stock)
-          .build()
-      ),
-      catchError(error => {
-        console.error('Error al obtener producto:', error);
+          .build();
+      }),
+      catchError((error) => {
+        console.error('Error en la solicitud HTTP:', error);
         throw error;
       })
     );
@@ -153,5 +156,24 @@ export class ProductsService {
           return throwError(() => new Error('Error al cargar productos por categoría'));
         })
       );
+  }
+
+  /**
+   * Obtiene los productos agrupados por categoría desde el backend.
+   * @returns Observable con los productos agrupados por categoría.
+   */
+  getProductsGroupedByCategory(): Observable<any> {
+    return this.http.get<any>(`${this.apiPedidosUrl}/productos/productos-agrupados-categoria`);
+  }
+
+  /**
+   * Busca productos en el backend según el filtro proporcionado.
+   * @param filtro Término de búsqueda.
+   * @returns Observable con la lista de productos encontrados.
+   */
+  findProducts(filtro: string): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiPedidosUrl}/productos/buscar`, {
+      params: { filtro }
+    });
   }
 }
