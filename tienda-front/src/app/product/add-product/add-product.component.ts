@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { RouterModule, Router } from '@angular/router';
+import { RouterModule, Router, ActivatedRoute } from '@angular/router';
 import { ProductsService } from '../../services/products.service';
 import { ProductBuilder, Categoria } from '../../builder/product.builder';
 import { CommonModule } from '@angular/common';
@@ -42,7 +42,7 @@ export class AddProductComponent implements OnInit {
     this.productsService.getAllCategories().subscribe({
       next: (data) => {
         console.log('Categorías cargadas:', data);
-        //this.categories = data;
+        this.categories = data;
       },
       error: (err) => {
         console.error('Error al cargar categorías:', err);

@@ -125,7 +125,7 @@ export class ProductsService {
    *
    * @returns Observable<{ id: number; nombre: string }[]> Lista de categorías.
    */
-  getAllCategories(): Observable<{ id: number; nombre: string }[]> {
+  getAllCategories(): Observable<{ id: number; nombre: string; descripcion: string }[]> {
     return this.http.get<{ _embedded: { categoriaList: any[] } }>(`${this.apiUrlProducts}/categorias`).pipe(
       map((response) =>
         response._embedded.categoriaList.map((category) => ({

@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterModule, Router, ActivatedRoute } from '@angular/router';
 import { ProductsService } from '../../services/products.service';
-import { ProductBuilder } from '../../builder/product.builder';
+import { ProductBuilder, Categoria } from '../../builder/product.builder';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -14,7 +14,7 @@ import { CommonModule } from '@angular/common';
 })
 export class EditProductComponent implements OnInit {
   editProductForm: FormGroup;
-  categories: { id: number; nombre: string }[] = [];
+  categories: Categoria[] = [];
   productId: number | null = null;
 
   constructor(
