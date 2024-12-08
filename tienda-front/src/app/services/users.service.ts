@@ -69,6 +69,19 @@ export class UsersService {
   ): Observable<boolean> {
     console.log('Intentando registrar usuario:', { name, surname, email, birthdate, dispatchAddress, roleId });
 
+    const roleName = (() => {
+      switch (roleId) {
+        case 1:
+          return 'Admin';
+        case 2:
+          return 'User';
+        case 3:
+          return 'Client';
+        default:
+          return 'Client'; // Valor predeterminado
+      }
+    })();
+
     const newUser: User = new UserBuilder()
       .setNombre(name)
       .setApellido(surname)
@@ -78,7 +91,7 @@ export class UsersService {
       .setDireccion(dispatchAddress)
       .setRoles([{
         id: roleId,
-        nombre: ''
+        nombre: roleName
       }])
       .build();
 
@@ -130,6 +143,19 @@ export class UsersService {
   ): Observable<boolean> {
     console.log('Intentando actualizar usuario:', { id, name, surname, email, birthdate, dispatchAddress, roleId });
 
+    const roleName = (() => {
+      switch (roleId) {
+        case 1:
+          return 'Admin';
+        case 2:
+          return 'User';
+        case 3:
+          return 'Client';
+        default:
+          return 'Client'; // Valor predeterminado
+      }
+    })();
+    
     const updatedUser: User = new UserBuilder()
       .setId(id)
       .setNombre(name)
@@ -140,7 +166,7 @@ export class UsersService {
       .setDireccion(dispatchAddress)
       .setRoles([{
         id: roleId,
-        nombre: ''
+        nombre: roleName
       }])
       .build();
 

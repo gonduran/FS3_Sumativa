@@ -33,6 +33,23 @@ services:
       - tienda_network
     restart: always
 
+  tienda-ms-pedidos:
+    image: tienda-ms-pedidos
+    container_name: tienda_ms_pedidos
+    build:
+      context: ./tienda-ms-pedidos
+      dockerfile: Dockerfile
+    ports:
+      - "8094:8094"
+    environment:
+      # Configuraciones de base de datos
+      SPRING_DATASOURCE_URL: jdbc:oracle:thin:@vocgyi3vv1p3nvr8_tp?TNS_ADMIN=/app/wallet/
+      SPRING_DATASOURCE_USERNAME: BDFS3_PEDIDOS
+      SPRING_DATASOURCE_PASSWORD: ClaseFullStack3-
+    networks:
+      - tienda_network
+    restart: always
+
   tienda-front:
     # Configuración básica del contenedor
     image: tienda-front

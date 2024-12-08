@@ -9,12 +9,13 @@ WORKDIR /app
 
 # Copiar arhivo pom.xml al directorio de trabajo
 COPY pom.xml .
+
 # Copiar archivos fuentes al directorio de trabajo
 COPY src /app/src
 
 # Copia el wallet de oracle al contenedor
 # IMPORTANTE MODIFICAR: Wallet_? con wallet de base de datos del proyecto
-# COPY Wallet_? /app/wallet
+COPY Wallet_VOCGYI3VV1P3NVR8 /app/wallet
 
 # Definir variable de ambiente con ruta de TNS ORACLE
 ENV TNS_ADMIN=/app/wallet
@@ -27,19 +28,19 @@ FROM eclipse-temurin:22-jdk
 
 # Copia el archivo jar al contenedor desde imagen de compilación
 # IMPORTANTE MODIFICAR: nombre del JAR ?-0.0.1-SNAPSHOT.jar y ?.jar
-# COPY --from=buildstage /app/target/?-0.0.1-SNAPSHOT.jar /app/?.jar
+COPY --from=buildstage /app/target/tienda-ms-pedidos-1.0-SNAPSHOT.jar /app/tienda-ms-pedidos.jar
 
 # Copia el wallet de oracle al contenedor
 # IMPORTANTE MODIFICAR: Wallet_? CON WALLET DE BD DEL PROYECTO
-# COPY Wallet_? /app/wallet
+COPY Wallet_VOCGYI3VV1P3NVR8 /app/wallet
 
 # Definir variable de ambiente con ruta de TNS ORACLE
 ENV TNS_ADMIN=/app/wallet
 
 # Exponer el puerto del servicio
 # IMPORTANTE MODIFICAR: cambiar puerto de acuerdo a la configuracion del proyecto
-# EXPOSE 8091
+EXPOSE 8094
 
 # Ejecutar el servicio
 # IMPORTANTE MODIFICAR: nombre del JAR ?.jar
-# ENTRYPOINT [ "java", "-jar","/app/?.jar" ]
+ENTRYPOINT [ "java", "-jar","/app/tienda-ms-pedidos.jar" ]
