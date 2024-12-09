@@ -11,7 +11,6 @@ module.exports = function (config) {
       ],
       client: {
         jasmine: {
-          // Leave Jasmine Spec Runner output visible in browser
         },
         clearContext: false // leave Jasmine Spec Runner output visible in browser
       },
@@ -23,8 +22,7 @@ module.exports = function (config) {
         subdir: '.',
         reporters: [
           { type: 'html', subdir: 'html-report' },
-          { type: 'lcov', subdir: 'lcov-report' },
-          { type: 'text-summary' }
+          { type: 'lcov', subdir: 'lcov-report' }
         ]
       },
       reporters: ['progress', 'kjhtml'],
