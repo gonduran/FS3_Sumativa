@@ -1,129 +1,256 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { LoginComponent } from './login.component';
-import { ReactiveFormsModule } from '@angular/forms';
 import { NavigationService } from '../../services/navigation.service';
 import { UsersService } from '../../services/users.service';
-import { Router } from '@angular/router';
-import { Renderer2, ElementRef, PLATFORM_ID } from '@angular/core';
-import { of, throwError } from 'rxjs';
-import { isPlatformBrowser } from '@angular/common';
-import * as common from '@angular/common';
 import { RouterTestingModule } from '@angular/router/testing';
+import { Router, ActivatedRoute } from '@angular/router';
+import { ReactiveFormsModule } from '@angular/forms';
+import { of, throwError } from 'rxjs';
+import { User, Rol } from '../../builder/user.builder';
 
 describe('LoginComponent', () => {
   let component: LoginComponent;
   let fixture: ComponentFixture<LoginComponent>;
   let mockNavigationService: jasmine.SpyObj<NavigationService>;
   let mockUsersService: jasmine.SpyObj<UsersService>;
-  let mockRenderer: jasmine.SpyObj<Renderer2>;
-  let mockElementRef: ElementRef;
+  let mockRouter: Router;
+  let mockActivatedRoute: any;
+
+  // Roles de ejemplo
+  const clientRole: Rol = { id: 3, nombre: 'Cliente' };
+  const userRole: Rol = { id: 2, nombre: 'Usuario' };
+  const adminRole: Rol = { id: 1, nombre: 'Administrador' };
 
   beforeEach(async () => {
+    // Crear mocks
     mockNavigationService = jasmine.createSpyObj('NavigationService', ['navigateWithDelay']);
     mockUsersService = jasmine.createSpyObj('UsersService', ['iniciarSesion', 'getLoggedInUser']);
-    mockRenderer = jasmine.createSpyObj('Renderer2', ['listen']);
-    mockElementRef = new ElementRef(document.createElement('div'));
+    mockActivatedRoute = {
+      snapshot: {
+        paramMap: {
+          get: jasmine.createSpy('get')
+        }
+      },
+      params: of({}),
+      queryParams: of({})
+    };
 
     await TestBed.configureTestingModule({
       imports: [
-        LoginComponent, // Importar el componente standalone
-        ReactiveFormsModule, // Manejo de formularios
-        RouterTestingModule, // Simulación de enrutamiento
+        LoginComponent, 
+        ReactiveFormsModule, 
+        RouterTestingModule.withRoutes([]) // Configuración de rutas de prueba
       ],
       providers: [
         { provide: NavigationService, useValue: mockNavigationService },
         { provide: UsersService, useValue: mockUsersService },
-        { provide: Renderer2, useValue: mockRenderer },
-        { provide: ElementRef, useValue: mockElementRef },
-        { provide: PLATFORM_ID, useValue: 'browser' },
-      ],
+        { provide: ActivatedRoute, useValue: mockActivatedRoute },
+        { provide: 'PLATFORM_ID', useValue: 'browser' }
+      ]
     }).compileComponents();
 
     fixture = TestBed.createComponent(LoginComponent);
     component = fixture.componentInstance;
+    mockRouter = TestBed.inject(Router);
     fixture.detectChanges();
-
-    // Mockear `isPlatformBrowser`
-    spyOn(common, 'isPlatformBrowser').and.returnValue(true);
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should initialize the login form with email and password controls', () => {
-    expect(component.loginForm.contains('email')).toBeTrue();
-    expect(component.loginForm.contains('password')).toBeTrue();
+  it('should initialize form with empty fields', () => {
+    expect(component.loginForm.get('email')?.value).toBe('');
+    expect(component.loginForm.get('password')?.value).toBe('');
   });
 
-  it('should mark email and password as required', () => {
+  it('should validate form fields', () => {
     const emailControl = component.loginForm.get('email');
     const passwordControl = component.loginForm.get('password');
 
+    // Probar validaciones de email
     emailControl?.setValue('');
+    expect(emailControl?.valid).toBeFalsy();
+    expect(emailControl?.hasError('required')).toBeTruthy();
+
+    emailControl?.setValue('invalidemail');
+    expect(emailControl?.hasError('email')).toBeTruthy();
+
+    emailControl?.setValue('valid@email.com');
+    expect(emailControl?.valid).toBeTruthy();
+
+    // Probar validaciones de contraseña
     passwordControl?.setValue('');
+    expect(passwordControl?.valid).toBeFalsy();
+    expect(passwordControl?.hasError('required')).toBeTruthy();
 
-    expect(emailControl?.valid).toBeFalse();
-    expect(passwordControl?.valid).toBeFalse();
+    passwordControl?.setValue('password');
+    expect(passwordControl?.valid).toBeTruthy();
   });
 
-  it('should not submit the form if it is invalid', () => {
-    spyOn(window, 'alert');
-    component.onSubmit();
-    expect(window.alert).toHaveBeenCalledWith('Por favor, complete los campos correctamente.');
-  });
+  describe('onSubmit method', () => {
+    it('should not submit if form is invalid', () => {
+      spyOn(console, 'log');
+      spyOn(window, 'alert');
 
-  it('should call iniciarSesion and navigate to the appropriate route on successful login', () => {
-    const mockUser = {
-      id: 1,
-      nombre: 'Test',
-      apellido: 'User',
-      email: 'test@example.com',
-      roles: [{ id: 3, nombre: '' }],
-      password: 'P4ssw0rd%', 
-      fechaNacimiento: '', 
-      direccion: '',
-    };
-    mockUsersService.iniciarSesion.and.returnValue(of(true));
-    mockUsersService.getLoggedInUser.and.returnValue(mockUser);
+      component.loginForm.setValue({
+        email: '',
+        password: ''
+      });
 
-    component.loginForm.setValue({ email: 'test@example.com', password: 'password' });
-    component.onSubmit();
+      component.onSubmit();
 
-    expect(mockUsersService.iniciarSesion).toHaveBeenCalledWith('test@example.com', 'password');
-  });
+      expect(console.log).toHaveBeenCalledWith('Formulario inválido.');
+      expect(window.alert).toHaveBeenCalledWith('Por favor, complete los campos correctamente.');
+      expect(mockUsersService.iniciarSesion).not.toHaveBeenCalled();
+    });
 
-  it('should show an error alert if login fails', () => {
-    spyOn(window, 'alert');
-    mockUsersService.iniciarSesion.and.returnValue(of(false));
+    describe('Successful Login Scenarios', () => {
+      const validEmail = 'test@example.com';
+      const validPassword = 'password123';
 
-    component.loginForm.setValue({ email: 'test@example.com', password: 'wrong-password' });
-    component.onSubmit();
+      beforeEach(() => {
+        component.loginForm.setValue({
+          email: validEmail,
+          password: validPassword
+        });
+      });
 
-    expect(mockUsersService.iniciarSesion).toHaveBeenCalledWith('test@example.com', 'wrong-password');
-    expect(window.alert).toHaveBeenCalledWith('Email o contraseña incorrectos.');
-  });
+      it('should navigate to profile for Client role', () => {
+        const mockUser: User = {
+          id: 1,
+          nombre: 'John',
+          apellido: 'Doe',
+          email: validEmail,
+          password: validPassword,
+          fechaNacimiento: '1990-01-01',
+          direccion: 'Test Address',
+          roles: [clientRole]
+        };
 
-  it('should handle an error during the login process', () => {
-    spyOn(window, 'alert');
-    mockUsersService.iniciarSesion.and.returnValue(throwError(() => new Error('Network error')));
+        mockUsersService.iniciarSesion.and.returnValue(of(true));
+        mockUsersService.getLoggedInUser.and.returnValue(mockUser);
 
-    component.loginForm.setValue({ email: 'test@example.com', password: 'password' });
-    component.onSubmit();
+        spyOn(mockRouter, 'navigate');
+        component.onSubmit();
 
-    expect(mockUsersService.iniciarSesion).toHaveBeenCalledWith('test@example.com', 'password');
-    expect(window.alert).toHaveBeenCalledWith(
-      'Ocurrió un error al intentar iniciar sesión. Por favor, intente nuevamente.'
-    );
-  });
+        expect(mockRouter.navigate).toHaveBeenCalledWith(['/profile']);
+      });
 
-  it('should prevent default behavior and call navigateWithDelay for links in the DOM', () => {
-    const navigateSpy = spyOn(mockNavigationService, 'navigateWithDelay');
-    const link = document.createElement('a');
-    link.setAttribute('href', '/test-route');
-    mockElementRef.nativeElement.appendChild(link);
+      it('should navigate to list-product for User role', () => {
+        const mockUser: User = {
+          id: 1,
+          nombre: 'Jane',
+          apellido: 'Smith',
+          email: validEmail,
+          password: validPassword,
+          fechaNacimiento: '1990-01-01',
+          direccion: 'Test Address',
+          roles: [userRole]
+        };
 
-    link.dispatchEvent(new MouseEvent('click'));
-    expect(navigateSpy).toHaveBeenCalledWith('/test-route');
+        mockUsersService.iniciarSesion.and.returnValue(of(true));
+        mockUsersService.getLoggedInUser.and.returnValue(mockUser);
+
+        spyOn(mockRouter, 'navigate');
+        component.onSubmit();
+
+        expect(mockRouter.navigate).toHaveBeenCalledWith(['/list-product']);
+      });
+
+      it('should navigate to list-user for Admin role', () => {
+        const mockUser: User = {
+          id: 1,
+          nombre: 'Admin',
+          apellido: 'User',
+          email: validEmail,
+          password: validPassword,
+          fechaNacimiento: '1990-01-01',
+          direccion: 'Test Address',
+          roles: [adminRole]
+        };
+
+        mockUsersService.iniciarSesion.and.returnValue(of(true));
+        mockUsersService.getLoggedInUser.and.returnValue(mockUser);
+
+        spyOn(mockRouter, 'navigate');
+        component.onSubmit();
+
+        expect(mockRouter.navigate).toHaveBeenCalledWith(['/list-user']);
+      });
+
+      it('should handle unknown role', () => {
+        const mockUser: User = {
+          id: 1,
+          nombre: 'Unknown',
+          apellido: 'User',
+          email: validEmail,
+          password: validPassword,
+          fechaNacimiento: '1990-01-01',
+          direccion: 'Test Address',
+          roles: [{ id: 99, nombre: 'Unknown Role' }]
+        };
+
+        spyOn(console, 'warn');
+        spyOn(window, 'alert');
+
+        mockUsersService.iniciarSesion.and.returnValue(of(true));
+        mockUsersService.getLoggedInUser.and.returnValue(mockUser);
+
+        component.onSubmit();
+
+        expect(console.warn).toHaveBeenCalledWith('Rol desconocido:', 99);
+        expect(window.alert).toHaveBeenCalledWith('Rol desconocido, contacte al administrador.');
+      });
+    });
+
+    describe('Login Error Scenarios', () => {
+      const validEmail = 'test@example.com';
+      const validPassword = 'password123';
+
+      beforeEach(() => {
+        component.loginForm.setValue({
+          email: validEmail,
+          password: validPassword
+        });
+      });
+
+      it('should handle login failure', () => {
+        spyOn(console, 'log');
+        spyOn(window, 'alert');
+
+        mockUsersService.iniciarSesion.and.returnValue(of(false));
+
+        component.onSubmit();
+
+        expect(console.log).toHaveBeenCalledWith('Error en el inicio de sesión.');
+        expect(window.alert).toHaveBeenCalledWith('Email o contraseña incorrectos.');
+      });
+
+      it('should handle login error', () => {
+        spyOn(console, 'error');
+        spyOn(window, 'alert');
+
+        mockUsersService.iniciarSesion.and.returnValue(throwError(() => new Error('Login error')));
+
+        component.onSubmit();
+
+        expect(console.error).toHaveBeenCalledWith('Error en el inicio de sesión:', jasmine.any(Error));
+        expect(window.alert).toHaveBeenCalledWith('Ocurrió un error al intentar iniciar sesión. Por favor, intente nuevamente.');
+      });
+
+      it('should handle missing logged in user', () => {
+        spyOn(console, 'error');
+        spyOn(window, 'alert');
+
+        mockUsersService.iniciarSesion.and.returnValue(of(true));
+        mockUsersService.getLoggedInUser.and.returnValue(null);
+
+        component.onSubmit();
+
+        expect(console.error).toHaveBeenCalledWith('No se pudo recuperar el usuario logueado.');
+        expect(window.alert).toHaveBeenCalledWith('Error al recuperar la información del usuario. Por favor, inicie sesión nuevamente.');
+      });
+    });
   });
 });

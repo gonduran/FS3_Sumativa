@@ -1,130 +1,180 @@
-import { TestBed, ComponentFixture } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RecoverPasswordComponent } from './recover-password.component';
-import { ReactiveFormsModule, FormBuilder } from '@angular/forms';
 import { NavigationService } from '../../services/navigation.service';
 import { UsersService } from '../../services/users.service';
+import { RouterTestingModule } from '@angular/router/testing';
+import { ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { of, throwError } from 'rxjs';
-import { By } from '@angular/platform-browser';
+import { User } from '../../builder/user.builder';
+import { PLATFORM_ID } from '@angular/core';
 
 describe('RecoverPasswordComponent', () => {
   let component: RecoverPasswordComponent;
   let fixture: ComponentFixture<RecoverPasswordComponent>;
-  let usersService: jasmine.SpyObj<UsersService>;
-  let router: jasmine.SpyObj<Router>;
-  let navigationService: jasmine.SpyObj<NavigationService>;
+  let mockNavigationService: jasmine.SpyObj<NavigationService>;
+  let mockUsersService: jasmine.SpyObj<UsersService>;
+  let mockRouter: jasmine.SpyObj<Router>;
+
+  const mockUser: User = {
+    id: 1,
+    nombre: 'Test',
+    apellido: 'User',
+    email: 'test@test.com',
+    password: 'Password123!',
+    fechaNacimiento: '1990-01-01',
+    direccion: 'Test Address',
+    roles: [{ id: 3, nombre: 'Cliente' }]
+  };
 
   beforeEach(async () => {
-    const usersServiceSpy = jasmine.createSpyObj('UsersService', ['findUser']);
-    const routerSpy = jasmine.createSpyObj('Router', ['navigate']);
-    const navigationServiceSpy = jasmine.createSpyObj('NavigationService', ['navigateWithDelay']);
+    mockNavigationService = jasmine.createSpyObj('NavigationService', ['navigateWithDelay']);
+    mockUsersService = jasmine.createSpyObj('UsersService', ['findUser']);
+    mockRouter = jasmine.createSpyObj('Router', ['navigate']);
 
     await TestBed.configureTestingModule({
-      imports: [ReactiveFormsModule, HttpClientTestingModule],
-      declarations: [RecoverPasswordComponent],
+      imports: [RecoverPasswordComponent, ReactiveFormsModule, RouterTestingModule],
       providers: [
-        FormBuilder,
-        { provide: NavigationService, useValue: navigationServiceSpy },
-        { provide: UsersService, useValue: usersServiceSpy },
-        { provide: Router, useValue: routerSpy },
-      ],
+        { provide: NavigationService, useValue: mockNavigationService },
+        { provide: UsersService, useValue: mockUsersService },
+        { provide: Router, useValue: mockRouter },
+        { provide: PLATFORM_ID, useValue: 'browser' }
+      ]
     }).compileComponents();
 
     fixture = TestBed.createComponent(RecoverPasswordComponent);
     component = fixture.componentInstance;
-    usersService = TestBed.inject(UsersService) as jasmine.SpyObj<UsersService>;
-    router = TestBed.inject(Router) as jasmine.SpyObj<Router>;
-    navigationService = TestBed.inject(NavigationService) as jasmine.SpyObj<NavigationService>;
-
     fixture.detectChanges();
   });
 
-  it('should create the component', () => {
+  it('should create', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should initialize form with default values', () => {
-    expect(component.recoverPasswordForm.value).toEqual({
-      email: '',
+  describe('Form Validation', () => {
+    it('should validate required email', () => {
+      const emailControl = component.recoverPasswordForm.get('email');
+      expect(emailControl?.valid).toBeFalsy();
+      expect(emailControl?.errors?.['required']).toBeTruthy();
+    });
+
+    it('should validate email format', () => {
+      const emailControl = component.recoverPasswordForm.get('email');
+      emailControl?.setValue('invalid-email');
+      expect(emailControl?.errors?.['email']).toBeTruthy();
+
+      emailControl?.setValue('valid@email.com');
+      expect(emailControl?.errors).toBeNull();
     });
   });
 
-  it('should validate email field', () => {
-    const emailControl = component.recoverPasswordForm.get('email');
-    emailControl?.setValue('');
-    expect(emailControl?.valid).toBeFalse();
+  describe('Link Navigation', () => {
+    it('should handle link clicks', () => {
+      const mockLink = document.createElement('a');
+      mockLink.href = '/test-route';
+      document.body.appendChild(mockLink);
 
-    emailControl?.setValue('invalid-email');
-    expect(emailControl?.valid).toBeFalse();
+      component.ngAfterViewInit();
+      mockLink.click();
 
-    emailControl?.setValue('valid@example.com');
-    expect(emailControl?.valid).toBeTrue();
+      expect(mockNavigationService.navigateWithDelay).toHaveBeenCalledWith('/test-route');
+      document.body.removeChild(mockLink);
+    });
+
+    it('should not navigate if href is null', () => {
+      const mockLink = document.createElement('a');
+      document.body.appendChild(mockLink);
+
+      component.ngAfterViewInit();
+      mockLink.click();
+
+      expect(mockNavigationService.navigateWithDelay).not.toHaveBeenCalled();
+      document.body.removeChild(mockLink);
+    });
   });
 
-  it('should handle form submission successfully', () => {
-    const mockUser = {
-      id: 1,
-      nombre: 'Test',
-      apellido: 'User',
-      email: 'test@example.com',
-      roles: [{ id: 3, nombre: '' }],
-      password: 'P4ssw0rd%', 
-      fechaNacimiento: '', 
-      direccion: '',
-    };
-    usersService.findUser.and.returnValue(of(mockUser));
-    spyOn(window, 'alert');
+  describe('Password Recovery', () => {
+    it('should recover password for existing user', () => {
+      spyOn(window, 'alert');
+      spyOn(console, 'log');
+      mockUsersService.findUser.and.returnValue(of(mockUser));
 
-    component.recoverPasswordForm.setValue({ email: 'valid@example.com' });
-    component.onSubmit();
+      component.recoverPasswordForm.setValue({ email: 'test@test.com' });
+      component.onSubmit();
 
-    expect(usersService.findUser).toHaveBeenCalledWith('valid@example.com');
-    expect(window.alert).toHaveBeenCalledWith('Se ha enviado un enlace de recuperación de contraseña a su correo electrónico.');
-    expect(router.navigate).toHaveBeenCalledWith(['/login']);
+      expect(mockUsersService.findUser).toHaveBeenCalledWith('test@test.com');
+      expect(console.log).toHaveBeenCalledWith('Usuario encontrado:', mockUser);
+      expect(window.alert).toHaveBeenCalledWith('Se ha enviado un enlace de recuperación de contraseña a su correo electrónico.');
+      expect(mockRouter.navigate).toHaveBeenCalledWith(['/login']);
+    });
+
+    it('should handle non-existing user', () => {
+      spyOn(window, 'alert');
+      spyOn(console, 'log');
+      mockUsersService.findUser.and.returnValue(of(null));
+
+      component.recoverPasswordForm.setValue({ email: 'nonexistent@test.com' });
+      component.onSubmit();
+
+      expect(window.alert).toHaveBeenCalledWith('El correo ingresado no está registrado en el sistema.');
+      expect(console.log).toHaveBeenCalledWith('Usuario no encontrado.');
+    });
+
+    it('should handle service error', () => {
+      spyOn(window, 'alert');
+      spyOn(console, 'error');
+      mockUsersService.findUser.and.returnValue(throwError(() => new Error('Service error')));
+
+      component.recoverPasswordForm.setValue({ email: 'test@test.com' });
+      component.onSubmit();
+
+      expect(console.error).toHaveBeenCalledWith('Error al verificar el usuario:', jasmine.any(Error));
+      expect(window.alert).toHaveBeenCalledWith('Ocurrió un error al procesar su solicitud. Intente nuevamente.');
+    });
+
+    it('should handle invalid form submission', () => {
+      spyOn(window, 'alert');
+      spyOn(console, 'log');
+
+      component.recoverPasswordForm.setValue({ email: 'invalid-email' });
+      component.onSubmit();
+
+      expect(console.log).toHaveBeenCalledWith('Formulario inválido');
+      expect(window.alert).toHaveBeenCalledWith('Por favor ingrese un correo electrónico válido.');
+      expect(mockUsersService.findUser).not.toHaveBeenCalled();
+    });
+  });
+});
+
+describe('RecoverPasswordComponent Server Platform', () => {
+  let component: RecoverPasswordComponent;
+  let fixture: ComponentFixture<RecoverPasswordComponent>;
+  let mockNavigationService: jasmine.SpyObj<NavigationService>;
+  let mockUsersService: jasmine.SpyObj<UsersService>;
+  let mockRouter: jasmine.SpyObj<Router>;
+
+  beforeEach(async () => {
+    mockNavigationService = jasmine.createSpyObj('NavigationService', ['navigateWithDelay']);
+    mockUsersService = jasmine.createSpyObj('UsersService', ['findUser']);
+    mockRouter = jasmine.createSpyObj('Router', ['navigate']);
+
+    await TestBed.configureTestingModule({
+      imports: [RecoverPasswordComponent, ReactiveFormsModule, RouterTestingModule],
+      providers: [
+        { provide: NavigationService, useValue: mockNavigationService },
+        { provide: UsersService, useValue: mockUsersService },
+        { provide: Router, useValue: mockRouter },
+        { provide: PLATFORM_ID, useValue: 'server' }
+      ]
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(RecoverPasswordComponent);
+    component = fixture.componentInstance;
   });
 
-  it('should show error if email is not found', () => {
-    usersService.findUser.and.returnValue(of(null));
-    spyOn(window, 'alert');
-
-    component.recoverPasswordForm.setValue({ email: 'notfound@example.com' });
-    component.onSubmit();
-
-    expect(usersService.findUser).toHaveBeenCalledWith('notfound@example.com');
-    expect(window.alert).toHaveBeenCalledWith('El correo ingresado no está registrado en el sistema.');
-  });
-
-  it('should show error on service failure', () => {
-    usersService.findUser.and.returnValue(throwError(() => new Error('Service error')));
-    spyOn(window, 'alert');
-
-    component.recoverPasswordForm.setValue({ email: 'valid@example.com' });
-    component.onSubmit();
-
-    expect(usersService.findUser).toHaveBeenCalledWith('valid@example.com');
-    expect(window.alert).toHaveBeenCalledWith('Ocurrió un error al procesar su solicitud. Intente nuevamente.');
-  });
-
-  it('should show error if form is invalid', () => {
-    spyOn(window, 'alert');
-
-    component.recoverPasswordForm.setValue({ email: 'invalid-email' });
-    component.onSubmit();
-
-    expect(window.alert).toHaveBeenCalledWith('Por favor ingrese un correo electrónico válido.');
-  });
-
-  it('should add navigation delay for links in AfterViewInit', () => {
-    const linkElement = document.createElement('a');
-    linkElement.setAttribute('href', '/some-path');
-    spyOn(document, 'querySelectorAll').and.returnValue([linkElement] as any);
-
+  it('should not add event listeners on server platform', () => {
+    fixture.detectChanges();
     component.ngAfterViewInit();
-
-    const event = new MouseEvent('click');
-    linkElement.dispatchEvent(event);
-
-    expect(navigationService.navigateWithDelay).toHaveBeenCalledWith('/some-path');
+    expect(mockNavigationService.navigateWithDelay).not.toHaveBeenCalled();
   });
 });

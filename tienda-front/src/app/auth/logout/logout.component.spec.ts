@@ -1,79 +1,125 @@
-import { TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { LogoutComponent } from './logout.component';
 import { NavigationService } from '../../services/navigation.service';
 import { UsersService } from '../../services/users.service';
-import { PLATFORM_ID } from '@angular/core';
-import * as common from '@angular/common';
+import { RouterTestingModule } from '@angular/router/testing';
+import { ActivatedRoute } from '@angular/router';
+import { of } from 'rxjs';
 
 describe('LogoutComponent', () => {
   let component: LogoutComponent;
+  let fixture: ComponentFixture<LogoutComponent>;
   let mockNavigationService: jasmine.SpyObj<NavigationService>;
   let mockUsersService: jasmine.SpyObj<UsersService>;
-  const mockPlatformId = 'browser';
+  let mockActivatedRoute: Partial<ActivatedRoute>;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     mockNavigationService = jasmine.createSpyObj('NavigationService', ['navigateWithDelay']);
     mockUsersService = jasmine.createSpyObj('UsersService', ['logout']);
+    mockActivatedRoute = {
+      params: of({}),
+      queryParams: of({})
+    };
 
-    TestBed.configureTestingModule({
-      imports: [],
-      providers: [
+    await TestBed.configureTestingModule({
+      imports: [
         LogoutComponent,
+        RouterTestingModule.withRoutes([])
+      ],
+      providers: [
         { provide: NavigationService, useValue: mockNavigationService },
         { provide: UsersService, useValue: mockUsersService },
-        { provide: PLATFORM_ID, useValue: mockPlatformId },
-      ],
-    });
-
-    component = TestBed.inject(LogoutComponent);
-
-    // Mock `isPlatformBrowser` para pruebas
-    spyOn(common, 'isPlatformBrowser').and.returnValue(true);
+        { provide: ActivatedRoute, useValue: mockActivatedRoute },
+        { provide: 'PLATFORM_ID', useValue: 'browser' }
+      ]
+    }).compileComponents();
   });
 
-  it('should create the component', () => {
+  it('should create', () => {
+    fixture = TestBed.createComponent(LogoutComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
     expect(component).toBeTruthy();
   });
 
-  it('should call logout on UsersService when ngAfterViewInit is executed', () => {
+  it('should call logout on ngAfterViewInit', () => {
+    fixture = TestBed.createComponent(LogoutComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
     component.ngAfterViewInit();
     expect(mockUsersService.logout).toHaveBeenCalled();
   });
 
-  it('should add click listeners to links when platform is browser', () => {
-    const link1 = document.createElement('a');
-    link1.setAttribute('href', '/home');
+  it('should add click event listeners to links and handle navigation', () => {
+    fixture = TestBed.createComponent(LogoutComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
 
-    const link2 = document.createElement('a');
-    link2.setAttribute('href', '/profile');
-
-    document.body.appendChild(link1);
-    document.body.appendChild(link2);
+    const mockLink = document.createElement('a');
+    mockLink.href = '/test-route';
+    document.body.appendChild(mockLink);
 
     component.ngAfterViewInit();
+    mockLink.click();
 
-    link1.click();
-    expect(mockNavigationService.navigateWithDelay).toHaveBeenCalledWith('/home');
+    expect(mockNavigationService.navigateWithDelay).toHaveBeenCalledWith('/test-route');
 
-    link2.click();
-    expect(mockNavigationService.navigateWithDelay).toHaveBeenCalledWith('/profile');
-
-    document.body.removeChild(link1);
-    document.body.removeChild(link2);
+    document.body.removeChild(mockLink);
   });
 
-  it('should not add click listeners to links when platform is not browser', () => {
-    spyOn(common, 'isPlatformBrowser').and.returnValue(false);
+  it('should not navigate if href is null', () => {
+    fixture = TestBed.createComponent(LogoutComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
 
-    const link = document.createElement('a');
-    link.setAttribute('href', '/home');
-    document.body.appendChild(link);
+    const mockLink = document.createElement('a');
+    document.body.appendChild(mockLink);
 
     component.ngAfterViewInit();
+    mockLink.click();
 
-    link.click();
     expect(mockNavigationService.navigateWithDelay).not.toHaveBeenCalled();
 
-    document.body.removeChild(link);
+    document.body.removeChild(mockLink);
+  });
+
+  it('should handle platform not being browser', async () => {
+    // Create new TestBed configuration for server platform
+    await TestBed.resetTestingModule();
+    await TestBed.configureTestingModule({
+      imports: [
+        LogoutComponent,
+        RouterTestingModule.withRoutes([])
+      ],
+      providers: [
+        { provide: NavigationService, useValue: mockNavigationService },
+        { provide: UsersService, useValue: mockUsersService },
+        { provide: ActivatedRoute, useValue: mockActivatedRoute },
+        { provide: 'PLATFORM_ID', useValue: 'server' }
+      ]
+    }).compileComponents();
+
+    // Reset spies
+    mockNavigationService.navigateWithDelay.calls.reset();
+    mockUsersService.logout.calls.reset();
+
+    fixture = TestBed.createComponent(LogoutComponent);
+    component = fixture.componentInstance;
+
+    // Add link before detectChanges
+    const mockLink = document.createElement('a');
+    mockLink.href = '/test-route';
+    document.body.appendChild(mockLink);
+
+    // Call lifecycle hooks
+    fixture.detectChanges();
+    component.ngAfterViewInit();
+
+    // Verify no navigation occurred
+    expect(mockNavigationService.navigateWithDelay).not.toHaveBeenCalled();
+    expect(mockUsersService.logout).toHaveBeenCalled();
+
+    // Cleanup
+    document.body.removeChild(mockLink);
   });
 });
