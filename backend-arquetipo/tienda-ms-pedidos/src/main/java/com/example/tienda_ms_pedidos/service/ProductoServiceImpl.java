@@ -1,5 +1,6 @@
 package com.example.tienda_ms_pedidos.service;
 
+import com.example.tienda_ms_pedidos.exception.StockException;
 import com.example.tienda_ms_pedidos.model.Categoria;
 import com.example.tienda_ms_pedidos.model.Producto;
 import com.example.tienda_ms_pedidos.repository.ProductoRepository;
@@ -9,7 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Optional;
 import java.util.Map;
 
 @Service
@@ -23,19 +23,16 @@ public class ProductoServiceImpl implements ProductoService {
 
     @Override
     @Transactional
-    public void rebajarStock(Long idProducto, Integer cantidad) {
-        Optional<Producto> productoOpt = productoRepository.findById(idProducto);
-        if (productoOpt.isPresent()) {
-            Producto producto = productoOpt.get();
-            if (producto.getStock() >= cantidad) {
-                producto.setStock(producto.getStock() - cantidad);
-                productoRepository.save(producto);
-            } else {
-                throw new IllegalArgumentException("Stock insuficiente para el producto con ID: " + idProducto);
-            }
-        } else {
-            throw new IllegalArgumentException("Producto no encontrado con ID: " + idProducto);
+    public Producto actualizarStock(Long id, int cantidad) {
+        Producto producto = productoRepository.findById(id)
+            .orElseThrow(() -> new StockException("Producto no encontrado"));
+
+        if (producto.getStock() < cantidad) {
+            throw new StockException("Stock insuficiente");
         }
+
+        producto.setStock(producto.getStock() - cantidad);
+        return productoRepository.save(producto);
     }
 
     @Override

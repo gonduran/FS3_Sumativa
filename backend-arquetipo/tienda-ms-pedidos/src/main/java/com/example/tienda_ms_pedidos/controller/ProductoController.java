@@ -1,7 +1,10 @@
 package com.example.tienda_ms_pedidos.controller;
 
+import com.example.tienda_ms_pedidos.exception.StockException;
 import com.example.tienda_ms_pedidos.model.Producto;
 import com.example.tienda_ms_pedidos.service.ProductoService;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,10 +21,14 @@ public class ProductoController {
         this.productoService = productoService;
     }
 
-    @PutMapping("/rebajar-stock/{idProducto}")
-    public ResponseEntity<Void> rebajarStock(@PathVariable Long idProducto, @RequestParam Integer cantidad) {
-        productoService.rebajarStock(idProducto, cantidad);
-        return ResponseEntity.ok().build();
+    @PutMapping("/{id}/stock")
+    public ResponseEntity<?> actualizarStock(@PathVariable Long id, @RequestParam("cantidad") int cantidad) {
+        try {
+            Producto producto = productoService.actualizarStock(id, cantidad);
+            return ResponseEntity.ok(producto);
+        } catch (StockException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
 
     @GetMapping("/buscar")

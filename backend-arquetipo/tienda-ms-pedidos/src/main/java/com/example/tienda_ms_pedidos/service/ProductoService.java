@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface ProductoService {
-    void rebajarStock(Long idProducto, Integer cantidad);
+    Producto actualizarStock(Long id, int cantidad);
     List<Producto> buscarPorNombreOCategoria(String filtro);
     public Map<String, List<Map<String, Object>>> obtenerProductosAgrupadosConId();
 }

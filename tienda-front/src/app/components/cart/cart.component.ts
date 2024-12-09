@@ -26,7 +26,7 @@ interface CartItem {
   styleUrl: './cart.component.scss'
 })
 export class CartComponent implements OnInit, AfterViewInit {
-  idOrden : number = 0;
+  idOrden: number = 0;
 
   constructor(
     private navigationService: NavigationService,
@@ -91,15 +91,15 @@ export class CartComponent implements OnInit, AfterViewInit {
         .toString()
         .padStart(2, '0')}-${currentDate.getDate().toString().padStart(2, '0')}`;
       const estado = 1; // nueva orden
-  
+
       console.log('Iniciando proceso de checkout...');
       console.log('Carrito:', cart);
-  
+
       if (cart.length === 0) {
         alert('El carrito está vacío. Agrega productos antes de realizar el checkout.');
         return;
       }
-  
+
       // Construir la orden usando el OrderBuilder
       const order = new OrderBuilder()
         .setEmail(email)
@@ -107,15 +107,15 @@ export class CartComponent implements OnInit, AfterViewInit {
         .setFecha(formattedDate)
         .setEstado(estado)
         .build();
-  
+
       this.ordersService.registerOrders(order).subscribe({
         next: (responseOrder) => {
           console.log('Orden registrada en el backend:', responseOrder);
-  
+
           // Extraer el ID de la orden
           const idOrden = responseOrder.id;
           this.idOrden = idOrden;
-  
+
           // Recorrer los elementos del carrito e insertar uno a uno
           cart.forEach((item) => {
             const orderDetail = new OrderDetailBuilder()
@@ -127,10 +127,22 @@ export class CartComponent implements OnInit, AfterViewInit {
               .setCantidad(item.quantity)
               .setMontoTotal(item.total)
               .build();
-  
+
+            // Registrar detalle de la orden
             this.ordersService.registerOrderDetails(orderDetail).subscribe({
               next: () => {
                 console.log(`Detalle registrado para la orden ${idOrden}`);
+
+                // Llamar al servicio para actualizar el stock
+                this.ordersService.updateStock(item.idProduct, item.quantity).subscribe({
+                  next: () => {
+                    console.log(`Stock actualizado para el producto ${item.idProduct}`);
+                  },
+                  error: (err) => {
+                    console.error('Error al actualizar el stock:', err);
+                    alert('Hubo un problema al actualizar el stock del producto.');
+                  },
+                });
               },
               error: (err) => {
                 console.error('Error al registrar un detalle de la orden:', err);
@@ -138,8 +150,10 @@ export class CartComponent implements OnInit, AfterViewInit {
               },
             });
           });
-  
+
           alert('Orden completada exitosamente.');
+          this.ordersService.clearCart();
+          this.router.navigate(['/home']);
         },
         error: (err) => {
           console.error('Error al registrar la orden:', err);

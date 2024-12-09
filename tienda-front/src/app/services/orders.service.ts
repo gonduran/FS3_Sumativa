@@ -182,15 +182,13 @@ export class OrdersService {
 
   /**
    * Reduce el stock de un producto en el backend.
-   * @param productId - ID del producto a actualizar.
+   * @param idProduct - ID del producto a actualizar.
    * @param quantity - Cantidad a rebajar del stock.
    * @returns Observable indicando éxito o fallo.
    */
-  reduceProductStock(productId: number, quantity: number): Observable<void> {
-    console.log(`Reduciendo stock de producto ID: ${productId}, cantidad: ${quantity}`);
-
-    return this.http.patch<void>(`${this.apiPedidosUrl}/productos/rebajar-stock/${productId}`, {
-      quantity,
-    });
+  // Método para actualizar el stock
+  updateStock(idProduct: number, cantidad: number) {
+    const url = `${this.apiPedidosUrl}/productos/${idProduct}/stock?cantidad=${cantidad}`;
+    return this.http.put(url, null);
   }
 }
