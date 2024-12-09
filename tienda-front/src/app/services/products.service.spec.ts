@@ -1,19 +1,29 @@
 import { TestBed } from '@angular/core/testing';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { ProductsService } from './products.service';
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { Product, ProductByCategory, Categoria } from '../builder/product.builder';
 import { environment } from '../../environments/environment';
-import { ProductBuilder, Product } from '../builder/product.builder';
 
 describe('ProductsService', () => {
   let service: ProductsService;
   let httpMock: HttpTestingController;
 
+  const mockProduct: Product = {
+    id: 1,
+    nombre: 'Test Product',
+    descripcion: 'Test Description',
+    precio: 100,
+    imagen: 'test.jpg',
+    stock: 10,
+    categorias: [{ id: 1, nombre: 'Test Category', descripcion: 'Test Category Description' }]
+  };
+
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
-      providers: [ProductsService],
+      providers: [ProductsService]
     });
-
+    
     service = TestBed.inject(ProductsService);
     httpMock = TestBed.inject(HttpTestingController);
   });
@@ -26,178 +36,236 @@ describe('ProductsService', () => {
     expect(service).toBeTruthy();
   });
 
-  /*it('should get all products', () => {
-    const mockResponse = {
-      _embedded: {
-        productoList: [
-          {
-            id: 1,
-            nombre: 'Producto 1',
-            descripcion: 'Descripción 1',
-            precio: 100,
-            categorias: ['Categoría 1'],
-            imagen: 'imagen1.jpg',
-            stock: 10,
-          },
-        ],
-      },
-    };
+  describe('getAllProducts', () => {
+    it('should get all products successfully', () => {
+      const mockResponse = {
+        _embedded: {
+          productoList: [mockProduct]
+        }
+      };
 
-    service.getAllProducts().subscribe((products) => {
-      expect(products.length).toBe(1);
-      expect(products[0].id).toBe(1);
-      expect(products[0].nombre).toBe('Producto 1');
+      service.getAllProducts().subscribe(products => {
+        expect(products.length).toBe(1);
+        expect(products[0].id).toBe(mockProduct.id);
+      });
+
+      const req = httpMock.expectOne(`${environment.apiProductos}/productos`);
+      expect(req.request.method).toBe('GET');
+      req.flush(mockResponse);
     });
 
-    const req = httpMock.expectOne(`${environment.apiProductos}/productos`);
-    expect(req.request.method).toBe('GET');
-    req.flush(mockResponse);
-  });
+    it('should handle invalid response structure', () => {
+      const mockInvalidResponse = {};
 
-  it('should handle empty product response structure', () => {
-    const mockResponse = {};
+      service.getAllProducts().subscribe(products => {
+        expect(products).toEqual([]);
+      });
 
-    service.getAllProducts().subscribe((products) => {
-      expect(products.length).toBe(0);
+      const req = httpMock.expectOne(`${environment.apiProductos}/productos`);
+      req.flush(mockInvalidResponse);
     });
 
-    const req = httpMock.expectOne(`${environment.apiProductos}/productos`);
-    req.flush(mockResponse);
+    it('should handle error response', () => {
+      service.getAllProducts().subscribe(products => {
+        expect(products).toEqual([]);
+      });
+
+      const req = httpMock.expectOne(`${environment.apiProductos}/productos`);
+      req.error(new ErrorEvent('Network error'));
+    });
   });
 
-  it('should get product by ID', () => {
-    const mockProduct = {
-      id: 1,
-      nombre: 'Producto 1',
-      descripcion: 'Descripción 1',
-      precio: 100,
-      categorias: ['Categoría 1'],
-      imagen: 'imagen1.jpg',
-      stock: 10,
-    };
+  describe('getProductById', () => {
+    it('should get product by id', () => {
+      service.getProductById(1).subscribe(product => {
+        expect(product).toEqual(mockProduct);
+      });
 
-    service.getProductById(1).subscribe((product) => {
-      expect(product.id).toBe(1);
-      expect(product.nombre).toBe('Producto 1');
+      const req = httpMock.expectOne(`${environment.apiProductos}/productos/1`);
+      expect(req.request.method).toBe('GET');
+      req.flush(mockProduct);
     });
 
-    const req = httpMock.expectOne(`${environment.apiProductos}/productos/1`);
-    expect(req.request.method).toBe('GET');
-    req.flush(mockProduct);
+    it('should handle error', () => {
+      service.getProductById(1).subscribe({
+        error: error => {
+          expect(error).toBeTruthy();
+        }
+      });
+
+      const req = httpMock.expectOne(`${environment.apiProductos}/productos/1`);
+      req.error(new ErrorEvent('Network error'));
+    });
   });
 
-  it('should create a product', () => {
-    const mockProduct = new ProductBuilder()
-      .setId(1)
-      .setTitle('Producto 1')
-      .setDescription('Descripción 1')
-      .setPrice(100)
-      .setStock(10)
-      .build();
+  describe('createProduct', () => {
+    it('should create product successfully', () => {
+      service.createProduct(mockProduct).subscribe(product => {
+        expect(product).toEqual(mockProduct);
+      });
 
-    service.createProduct(mockProduct).subscribe((product) => {
-      expect(product.id).toBe(1);
-      expect(product.nombre).toBe('Producto 1');
+      const req = httpMock.expectOne(`${environment.apiProductos}/productos`);
+      expect(req.request.method).toBe('POST');
+      expect(req.request.body).toEqual(mockProduct);
+      req.flush(mockProduct);
     });
 
-    const req = httpMock.expectOne(`${environment.apiProductos}/productos`);
-    expect(req.request.method).toBe('POST');
-    req.flush(mockProduct);
+    it('should handle error', () => {
+      service.createProduct(mockProduct).subscribe({
+        error: error => {
+          expect(error).toBeTruthy();
+        }
+      });
+
+      const req = httpMock.expectOne(`${environment.apiProductos}/productos`);
+      req.error(new ErrorEvent('Network error'));
+    });
   });
 
-  it('should update a product', () => {
-    const mockProduct = new ProductBuilder()
-      .setId(1)
-      .setTitle('Producto 1 Actualizado')
-      .setDescription('Descripción Actualizada')
-      .setPrice(150)
-      .setStock(20)
-      .build();
+  describe('updateProduct', () => {
+    it('should update product successfully', () => {
+      service.updateProduct(1, mockProduct).subscribe(product => {
+        expect(product).toEqual(mockProduct);
+      });
 
-    service.updateProduct(1, mockProduct).subscribe((product) => {
-      expect(product.nombre).toBe('Producto 1 Actualizado');
+      const req = httpMock.expectOne(`${environment.apiProductos}/productos/1`);
+      expect(req.request.method).toBe('PUT');
+      expect(req.request.body).toEqual(mockProduct);
+      req.flush(mockProduct);
     });
 
-    const req = httpMock.expectOne(`${environment.apiProductos}/productos/1`);
-    expect(req.request.method).toBe('PUT');
-    req.flush(mockProduct);
+    it('should handle error', () => {
+      service.updateProduct(1, mockProduct).subscribe({
+        error: error => {
+          expect(error).toBeTruthy();
+        }
+      });
+
+      const req = httpMock.expectOne(`${environment.apiProductos}/productos/1`);
+      req.error(new ErrorEvent('Network error'));
+    });
   });
 
-  it('should delete a product', () => {
-    service.deleteProduct(1).subscribe((response) => {
-      expect(response === null || response === undefined).toBeTrue();
+  describe('deleteProduct', () => {
+    it('should delete product successfully', () => {
+      service.deleteProduct(1).subscribe(response => {
+        expect(response).toBeNull();  // Cambiado de toBeUndefined() a toBeNull()
+      });
+  
+      const req = httpMock.expectOne(`${environment.apiProductos}/productos/1`);
+      expect(req.request.method).toBe('DELETE');
+      req.flush(null);
     });
   
-    const req = httpMock.expectOne(`${environment.apiProductos}/productos/1`);
-    expect(req.request.method).toBe('DELETE');
-    req.flush(null); // Simula que el backend devuelve null
+    it('should handle error', () => {
+      service.deleteProduct(1).subscribe({
+        error: error => {
+          expect(error).toBeTruthy();
+        }
+      });
+  
+      const req = httpMock.expectOne(`${environment.apiProductos}/productos/1`);
+      const mockErrorResponse = {
+        status: 404,
+        statusText: 'Not Found'
+      };
+      req.flush('Error deleting product', mockErrorResponse);
+    });
   });
 
-  it('should get all categories', () => {
-    const mockResponse = {
-      _embedded: {
-        categoriaList: [
-          { id: 1, nombre: 'Categoría 1', descripcion: 'Descripción 1' },
-        ],
-      },
-    };
+  describe('getAllCategories', () => {
+    const mockCategories: Categoria[] = [{
+      id: 1,
+      nombre: 'Test Category',
+      descripcion: 'Test Description'
+    }];
 
-    service.getAllCategories().subscribe((categories) => {
-      expect(categories.length).toBe(1);
-      expect(categories[0].nombre).toBe('Categoría 1');
+    it('should get all categories successfully', () => {
+      const mockResponse = {
+        _embedded: {
+          categoriaList: mockCategories
+        }
+      };
+
+      service.getAllCategories().subscribe(categories => {
+        expect(categories).toEqual(mockCategories);
+      });
+
+      const req = httpMock.expectOne(`${environment.apiProductos}/categorias`);
+      expect(req.request.method).toBe('GET');
+      req.flush(mockResponse);
     });
 
-    const req = httpMock.expectOne(`${environment.apiProductos}/categorias`);
-    expect(req.request.method).toBe('GET');
-    req.flush(mockResponse);
+    it('should handle error', () => {
+      service.getAllCategories().subscribe({
+        error: error => {
+          expect(error).toBeTruthy();
+        }
+      });
+
+      const req = httpMock.expectOne(`${environment.apiProductos}/categorias`);
+      req.error(new ErrorEvent('Network error'));
+    });
   });
 
-  it('should get products by category', () => {
-    const mockResponse = [
-      { category: 'Categoría 1', products: [{ id: 1, name: 'Producto 1' }] },
-    ];
+  describe('getProductsByCategory', () => {
+    const mockProductsByCategory: ProductByCategory[] = [{
+      idCategoria: 1,
+      nombreCategoria: 'Test Category',
+      descripcionCategoria: 'Test Description',
+      idProducto: 1,
+      nombreProducto: 'Test Product',
+      imagenProducto: 'test.jpg'
+    }];
 
-    service.getProductsByCategory().subscribe((response) => {
-      expect(response.length).toBe(1);
-      expect(response[0].nombreCategoria).toBe('Categoría 1');
+    it('should get products by category successfully', () => {
+      service.getProductsByCategory().subscribe(products => {
+        expect(products).toEqual(mockProductsByCategory);
+      });
+
+      const req = httpMock.expectOne(`${environment.apiProductos}/productos/product-by-category`);
+      expect(req.request.method).toBe('GET');
+      req.flush(mockProductsByCategory);
     });
 
-    const req = httpMock.expectOne(
-      `${environment.apiProductos}/productos/product-by-category`
-    );
-    expect(req.request.method).toBe('GET');
-    req.flush(mockResponse);
+    it('should handle error', () => {
+      service.getProductsByCategory().subscribe({
+        error: error => {
+          expect(error.message).toBe('Error al cargar productos por categoría');
+        }
+      });
+
+      const req = httpMock.expectOne(`${environment.apiProductos}/productos/product-by-category`);
+      req.error(new ErrorEvent('Network error'));
+    });
   });
 
-  it('should find products by filter', () => {
-    const mockResponse = [{ id: 1, name: 'Producto 1' }];
+  describe('getProductsGroupedByCategory', () => {
+    it('should get grouped products successfully', () => {
+      const mockGroupedProducts = { category1: [mockProduct] };
 
-    service.findProducts('Producto').subscribe((products) => {
-      expect(products.length).toBe(1);
-      expect(products[0].name).toBe('Producto 1');
+      service.getProductsGroupedByCategory().subscribe(products => {
+        expect(products).toEqual(mockGroupedProducts);
+      });
+
+      const req = httpMock.expectOne(`${environment.apiPedidos}/productos/productos-agrupados-categoria`);
+      expect(req.request.method).toBe('GET');
+      req.flush(mockGroupedProducts);
     });
-
-    const req = httpMock.expectOne(
-      `${environment.apiPedidos}/productos/buscar?filtro=Producto`
-    );
-    expect(req.request.method).toBe('GET');
-    req.flush(mockResponse);
   });
 
-  it('should get products grouped by category', () => {
-    const mockResponse = [
-      { category: 'Categoría 1', products: [{ id: 1, name: 'Producto 1' }] },
-    ];
+  describe('findProducts', () => {
+    it('should find products successfully', () => {
+      const mockFoundProducts = [mockProduct];
+      const searchTerm = 'test';
 
-    service.getProductsGroupedByCategory().subscribe((response) => {
-      expect(response.length).toBe(1);
-      expect(response[0].category).toBe('Categoría 1');
+      service.findProducts(searchTerm).subscribe(products => {
+        expect(products).toEqual(mockFoundProducts);
+      });
+
+      const req = httpMock.expectOne(`${environment.apiPedidos}/productos/buscar?filtro=${searchTerm}`);
+      expect(req.request.method).toBe('GET');
+      req.flush(mockFoundProducts);
     });
-
-    const req = httpMock.expectOne(
-      `${environment.apiPedidos}/productos/productos-agrupados-categoria`
-    );
-    expect(req.request.method).toBe('GET');
-    req.flush(mockResponse);
-  });*/
+  });
 });

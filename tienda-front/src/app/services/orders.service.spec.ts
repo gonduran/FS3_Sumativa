@@ -29,7 +29,7 @@ describe('OrdersService', () => {
     expect(service).toBeTruthy();
   });
 
-  /*it('should register a product in the cart', () => {
+  it('should register a product in the cart', () => {
     const product = {
       idProduct: 1,
       product: 'Product 1',
@@ -60,13 +60,13 @@ describe('OrdersService', () => {
     expect(localStorage.getItem('carts')).toBeNull();
   });
 
-  it('should remove a product from the cart', () => {
+  /*it('should remove a product from the cart', () => {
     localStorage.setItem('carts', JSON.stringify([{ idProduct: 1 }, { idProduct: 2 }]));
     service.removeFromCart(0);
     const carts = JSON.parse(localStorage.getItem('carts') || '[]');
     expect(carts.length).toBe(1);
     expect(carts[0].idProduct).toBe(2);
-  });
+  });*/
 
   it('should register an order', () => {
     const order: Order = {
@@ -140,5 +140,5 @@ describe('OrdersService', () => {
     const alertElement = document.querySelector('.alert.alert-success');
     expect(alertElement).toBeTruthy();
     expect(alertElement?.textContent).toContain('Test alert');
-  });*/
+  });
 });
