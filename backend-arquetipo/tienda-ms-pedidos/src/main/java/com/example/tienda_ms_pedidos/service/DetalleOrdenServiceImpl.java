@@ -32,13 +32,8 @@ public class DetalleOrdenServiceImpl implements DetalleOrdenService {
     }
 
     @Override
-    public List<DetalleOrden> findByOrdenId(Long ordenId) {
-        return detalleOrdenRepository.findByOrdenId(ordenId);
-    }
-
-    @Override
-    public List<DetalleOrden> findByProductoId(Long productoId) {
-        return detalleOrdenRepository.findByProductoId(productoId);
+    public List<DetalleOrden> findByIdProducto(Long idProducto) {
+        return detalleOrdenRepository.findByIdProducto(idProducto);
     }
 
     // Implementar el método para eliminar

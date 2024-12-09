@@ -4,35 +4,50 @@ import jakarta.persistence.*;
 import java.util.Date;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 @Entity
 @Table(name = "ordenes")
 public class Orden {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "idOrden", nullable = false)
+    @Column(name = "ID_ORDEN", nullable = false)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(name = "EMAIL", nullable = false, length = 100)
     private String email;
-
-    @Column(name = "monto_total", nullable = false)
-    private Double montoTotal;
 
     /*
      * 1 -> Nueva.
-	 * 2 -> En proceso.
-	 * 3 -> Despachada.
-	 * 4 -> Entregada.
+     * 2 -> En proceso.
+     * 3 -> Despachada.
+     * 4 -> Entregada.
      */
-    @Column(nullable = false)
-    private int estado;
+    @Column(name = "ESTADO", nullable = false)
+    private Integer estado;
 
-    @Column(nullable = false)
+    @Column(name = "FECHA")
     private Date fecha;
 
+    @Column(name = "MONTO_TOTAL", nullable = false)
+    private Double montoTotal;
+
+    // Relación con DetalleOrden
+    @JsonManagedReference
     @OneToMany(mappedBy = "orden", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<DetalleOrden> detalles;
+
+    // Métodos auxiliares para gestionar la relación bidireccional
+    public void addDetalle(DetalleOrden detalle) {
+        detalles.add(detalle);
+        detalle.setOrden(this);
+    }
+
+    public void removeDetalle(DetalleOrden detalle) {
+        detalles.remove(detalle);
+        detalle.setOrden(null);
+    }
 
     // Getters y Setters
     public Long getId() {
@@ -51,11 +66,11 @@ public class Orden {
         this.email = email;
     }
 
-    public int getEstado() {
+    public Integer getEstado() {
         return estado;
     }
 
-    public void setEstado(int estado) {
+    public void setEstado(Integer estado) {
         this.estado = estado;
     }
 
@@ -65,6 +80,14 @@ public class Orden {
 
     public void setFecha(Date fecha) {
         this.fecha = fecha;
+    }
+
+    public Double getMontoTotal() {
+        return montoTotal;
+    }
+
+    public void setMontoTotal(Double montoTotal) {
+        this.montoTotal = montoTotal;
     }
 
     public List<DetalleOrden> getDetalles() {

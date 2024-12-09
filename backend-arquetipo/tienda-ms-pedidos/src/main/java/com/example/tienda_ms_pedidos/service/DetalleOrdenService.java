@@ -31,20 +31,12 @@ public interface DetalleOrdenService {
     List<DetalleOrden> findAll();
 
     /**
-     * Encuentra detalles de orden por el ID de la orden.
-     * 
-     * @param ordenId ID de la orden.
-     * @return Lista de detalles asociados a la orden.
-     */
-    List<DetalleOrden> findByOrdenId(Long ordenId);
-
-    /**
      * Encuentra detalles de orden por el ID del producto.
      * 
-     * @param productoId ID del producto.
+     * @param idProducto ID del producto.
      * @return Lista de detalles asociados al producto.
      */
-    List<DetalleOrden> findByProductoId(Long productoId);
+    List<DetalleOrden> findByIdProducto(Long idProducto);
 
     // Agregar el método para eliminar
     void deleteById(Long id);

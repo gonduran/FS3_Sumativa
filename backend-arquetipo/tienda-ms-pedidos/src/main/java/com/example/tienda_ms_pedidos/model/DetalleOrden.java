@@ -1,5 +1,7 @@
 package com.example.tienda_ms_pedidos.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.*;
 
 @Entity
@@ -8,23 +10,24 @@ public class DetalleOrden {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "idDetalleOrden", nullable = false)
+    @Column(name = "ID_DETALLE_ORDEN", nullable = false)
     private Long id;
 
+    @JsonBackReference
     @ManyToOne
-    @JoinColumn(name = "id_orden", nullable = false)
+    @JoinColumn(name = "id_orden")
     private Orden orden;
 
-    @Column(name = "id_producto", nullable = false)
-    private Long productoId;
+    @Column(name = "ID_PRODUCTO", nullable = false)
+    private Long idProducto;
 
-    @Column(nullable = false)
+    @Column(name = "PRECIO", nullable = false)
     private Double precio;
 
-    @Column(nullable = false)
+    @Column(name = "CANTIDAD", nullable = false)
     private Integer cantidad;
 
-    @Column(name = "monto_total", nullable = false)
+    @Column(name = "MONTO_TOTAL", nullable = false)
     private Double montoTotal;
 
     // Getters y Setters
@@ -44,12 +47,12 @@ public class DetalleOrden {
         this.orden = orden;
     }
 
-    public Long getProductoId() {
-        return productoId;
+    public Long getIdProducto() {
+        return idProducto;
     }
 
-    public void setProductoId(Long productoId) {
-        this.productoId = productoId;
+    public void setIdProducto(Long idProducto) {
+        this.idProducto = idProducto;
     }
 
     public Double getPrecio() {

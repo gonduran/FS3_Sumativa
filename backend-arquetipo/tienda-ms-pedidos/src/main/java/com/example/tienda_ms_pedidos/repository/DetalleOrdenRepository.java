@@ -10,18 +10,10 @@ import java.util.List;
 public interface DetalleOrdenRepository extends JpaRepository<DetalleOrden, Long> {
 
     /**
-     * Encuentra todos los detalles de orden por el ID de la orden.
-     * 
-     * @param ordenId ID de la orden.
-     * @return Lista de detalles asociados a la orden.
-     */
-    List<DetalleOrden> findByOrdenId(Long ordenId);
-
-    /**
      * Encuentra todos los detalles de orden por el ID del producto.
      * 
-     * @param productoId ID del producto.
+     * @param idProducto ID del producto.
      * @return Lista de detalles asociados al producto.
      */
-    List<DetalleOrden> findByProductoId(Long productoId);
+    List<DetalleOrden> findByIdProducto(Long idProducto);
 }

@@ -7,13 +7,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/pedidos/detalles")
 public class DetalleOrdenController {
+
+    private static final Logger log = LoggerFactory.getLogger(DetalleOrdenController.class);
 
     @Autowired
     private DetalleOrdenService detalleOrdenService;
@@ -26,6 +29,11 @@ public class DetalleOrdenController {
      */
     @PostMapping
     public ResponseEntity<DetalleOrden> createDetalleOrden(@RequestBody DetalleOrden detalleOrden) {
+        if (detalleOrden.getIdProducto() == null) {
+            throw new IllegalArgumentException("Producto ID es nulo");
+        }
+        log.info("Recibiendo detalle de orden: {}", detalleOrden);
+
         DetalleOrden nuevoDetalleOrden = detalleOrdenService.saveDetalleOrden(detalleOrden);
         return ResponseEntity.status(HttpStatus.CREATED).body(nuevoDetalleOrden);
     }
@@ -51,18 +59,6 @@ public class DetalleOrdenController {
     public ResponseEntity<DetalleOrden> getDetalleOrdenById(@PathVariable Long id) {
         Optional<DetalleOrden> detalleOrden = detalleOrdenService.findById(id);
         return detalleOrden.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
-    }
-
-    /**
-     * Obtiene todos los detalles de una orden específica.
-     * 
-     * @param idOrden ID de la orden a consultar.
-     * @return Lista de detalles de esa orden.
-     */
-    @GetMapping("/orden/{idOrden}")
-    public ResponseEntity<List<DetalleOrden>> getDetallesByOrdenId(@PathVariable Long idOrden) {
-        List<DetalleOrden> detallesOrden = detalleOrdenService.findByOrdenId(idOrden);
-        return ResponseEntity.ok(detallesOrden);
     }
 
     /**
