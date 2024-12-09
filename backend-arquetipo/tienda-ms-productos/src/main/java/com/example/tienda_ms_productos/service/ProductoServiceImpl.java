@@ -7,11 +7,15 @@ import com.example.tienda_ms_productos.model.Categoria;
 import com.example.tienda_ms_productos.model.Producto;
 import com.example.tienda_ms_productos.repository.CategoriaRepository;
 import com.example.tienda_ms_productos.repository.ProductoRepository;
+import main.java.com.example.tienda_ms_productos.DTO.ProductoPorCategoriaDTO;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Servicio de implementación para la gestión de productos en la tienda.
@@ -136,5 +140,25 @@ public class ProductoServiceImpl implements ProductoService {
 
         // Retornar los productos asociados a la categoría
         return productoRepository.findByCategorias_Id(idCategoria);
+    }
+
+    @Override
+    public List<ProductoPorCategoriaDTO> getFirstProductByCategory() {
+        List<Object[]> results = productoRepository.getFirstProductByCategory();
+        List<ProductoPorCategoriaDTO> dtoList = new ArrayList<>();
+
+        for (Object[] row : results) {
+            ProductoPorCategoriaDTO dto = new ProductoPorCategoriaDTO(
+                ((BigDecimal) row[0]).longValue(),  // idCategoria
+                (String) row[1],                   // categoriaNombre
+                (String) row[2],                   // categoriaDescripcion
+                ((BigDecimal) row[3]).longValue(), // idProducto
+                (String) row[4],                   // productoNombre
+                (String) row[5]                    // productoImagen
+            );
+            dtoList.add(dto);
+        }
+
+        return dtoList;
     }
 }

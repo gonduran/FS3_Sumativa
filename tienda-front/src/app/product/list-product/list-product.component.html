@@ -1,16 +1,29 @@
 <div class="container mt-5">
   <h2>Lista de Productos</h2>
 
-  <!-- Botón para agregar un producto -->
-  <div class="text-end mb-3">
-    <button class="btn btn-primary" [routerLink]="['/add-product']">Agregar Producto</button>
+  <!-- Filtros -->
+  <div class="row mb-3">
+    <div class="col-md-6">
+      <input
+        type="text"
+        class="form-control"
+        placeholder="Filtrar por categoría"
+        [(ngModel)]="filterCategory"
+        (input)="applyFilter()"
+      />
+    </div>
+    <div class="col-md-6 text-end">
+      <button class="btn btn-primary" [routerLink]="['/add-product']">
+        <i class="bi bi-box-seam"></i> Agregar Producto
+      </button>
+    </div>
   </div>
 
   <!-- Tabla de productos -->
   <table class="table table-hover">
     <thead>
       <tr>
-        <th>#</th>
+        <th>Id</th>
         <th>Imagen</th>
         <th>Nombre</th>
         <th>Categoría</th>
@@ -20,30 +33,46 @@
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let product of products; let i = index">
-        <td>{{ i + 1 }}</td>
-        <td>
-          <img [src]="product.image" alt="{{ product.title }}" class="product-image">
-        </td>
-        <td>{{ product.title }}</td>
-        <td>{{ product.category }}</td>
-        <td>{{ product.price | currency:'CLP':'symbol-narrow':'1.0-0' }}</td>
+      <tr *ngFor="let product of filteredProducts.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)">
+        <td>{{ product.id }}</td>
+        <td><img [src]="product.imagen" alt="{{ product.nombre }}" class="product-image" /></td>
+        <td>{{ product.nombre }}</td>
+        <td>{{ product.categorias[0].nombre }}</td>
+        <td>{{ product.precio | currency:'CLP':'symbol-narrow':'1.0-0' }}</td>
         <td>{{ product.stock }}</td>
         <td>
           <button class="btn btn-sm btn-info me-2" [routerLink]="['/edit-product', product.id]">
-          <i class="bi bi-pencil"></i> Editar
-        </button>
-
-        <button class="btn btn-sm btn-danger" (click)="deleteProduct(product.id)">
-        <i class="bi bi-trash"></i> Eliminar
-      </button>
-    </td>
+            <i class="bi bi-pencil"></i> Editar
+          </button>
+          <button class="btn btn-sm btn-danger" (click)="deleteProduct(product.id)">
+            <i class="bi bi-trash"></i> Eliminar
+          </button>
+        </td>
       </tr>
     </tbody>
   </table>
 
+  <!-- Paginación -->
+  <nav *ngIf="totalPages > 1" aria-label="Page navigation">
+    <ul class="pagination justify-content-center">
+      <li class="page-item" [class.disabled]="currentPage === 1">
+        <button class="page-link" (click)="goToPage(currentPage - 1)">Anterior</button>
+      </li>
+      <li
+        class="page-item"
+        *ngFor="let page of [].constructor(totalPages); let i = index"
+        [class.active]="currentPage === i + 1"
+      >
+        <button class="page-link" (click)="goToPage(i + 1)">{{ i + 1 }}</button>
+      </li>
+      <li class="page-item" [class.disabled]="currentPage === totalPages">
+        <button class="page-link" (click)="goToPage(currentPage + 1)">Siguiente</button>
+      </li>
+    </ul>
+  </nav>
+
   <!-- Mensaje cuando no hay productos -->
-  <div *ngIf="products.length === 0" class="text-center text-muted mt-4">
+  <div *ngIf="filteredProducts.length === 0" class="text-center text-muted mt-4">
     <p>No hay productos disponibles.</p>
   </div>
 </div>

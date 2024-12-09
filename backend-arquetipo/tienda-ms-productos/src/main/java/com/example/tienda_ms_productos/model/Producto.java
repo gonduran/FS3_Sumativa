@@ -31,7 +31,7 @@ public class Producto extends RepresentationModel<Producto> {
 
     @NotBlank(message = "No puede ingresar un descripcion vacio")
     @NotNull(message = "Descripcion obligatorio")
-    @Column(name= "descripcion", nullable = false, unique = true)
+    @Column(name= "descripcion", nullable = false)
     private String descripcion;
 
     @NotNull(message = "Precio obligatorio")

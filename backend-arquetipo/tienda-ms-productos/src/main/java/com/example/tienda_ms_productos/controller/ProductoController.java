@@ -12,6 +12,9 @@ import com.example.tienda_ms_productos.model.Producto;
 import com.example.tienda_ms_productos.exception.BadRequestException;
 import com.example.tienda_ms_productos.exception.NotFoundException;
 import com.example.tienda_ms_productos.service.ProductoService;
+
+import main.java.com.example.tienda_ms_productos.DTO.ProductoPorCategoriaDTO;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,6 +28,7 @@ import java.util.stream.Collectors;
  */
 @RestController
 @RequestMapping("/api/productos")
+@CrossOrigin(origins = "*")
 public class ProductoController {
     private static final Logger log = LoggerFactory.getLogger(ProductoController.class);
 
@@ -151,6 +155,16 @@ public class ProductoController {
 
         return CollectionModel.of(productosResources,
                 WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(this.getClass()).getAllProductos()).withRel("all-productos"));
+    }
+
+    @GetMapping("/product-by-category")
+    public ResponseEntity<List<ProductoPorCategoriaDTO>> getFirstProductByCategory() {
+        try {
+            List<ProductoPorCategoriaDTO> productos = productoService.getFirstProductByCategory();
+            return ResponseEntity.ok(productos);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
     }
 
     /**

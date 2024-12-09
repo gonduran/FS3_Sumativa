@@ -1,30 +1,41 @@
-// user.builder.ts
+export interface Rol {
+    id: number;
+    nombre: string;
+}
+
 export interface User {
-    name: string;
-    surname: string;
+    id: number;
+    nombre: string;
+    apellido: string;
     email: string;
     password: string;
-    birthdate: string;
-    dispatchAddress: string;
-    rol: string;
+    fechaNacimiento: string;
+    direccion: string;
+    roles: Rol[];
 }
 
 export class UserBuilder {
-    private name: string = '';
-    private surname: string = '';
+    private id: number = 0;
+    private nombre: string = '';
+    private apellido: string = '';
     private email: string = '';
     private password: string = '';
-    private birthdate: string = '';
-    private dispatchAddress: string = '';
-    private rol: string = '';
+    private fechaNacimiento: string = '';
+    private direccion: string = '';
+    private roles: Rol[] = [];
 
-    public setName(name: string): UserBuilder {
-        this.name = name;
+    public setId(id: number): UserBuilder {
+        this.id = id;
         return this;
     }
 
-    public setSurname(surname: string): UserBuilder {
-        this.surname = surname;
+    public setNombre(nombre: string): UserBuilder {
+        this.nombre = nombre;
+        return this;
+    }
+
+    public setApellido(apellido: string): UserBuilder {
+        this.apellido = apellido;
         return this;
     }
 
@@ -38,30 +49,31 @@ export class UserBuilder {
         return this;
     }
 
-    public setBirthdate(birthdate: string): UserBuilder {
-        this.birthdate = birthdate;
+    public setFechaNacimiento(fechaNacimiento: string): UserBuilder {
+        this.fechaNacimiento = fechaNacimiento;
         return this;
     }
 
-    public setDispatchAddress(dispatchAddress: string): UserBuilder {
-        this.dispatchAddress = dispatchAddress;
+    public setDireccion(direccion: string): UserBuilder {
+        this.direccion = direccion;
         return this;
     }
 
-    public setRol(rol: string): UserBuilder {
-        this.rol = rol;
+    public setRoles(roles: Rol[]): UserBuilder {
+        this.roles = roles;
         return this;
     }
 
     public build(): User {
         return {
-            name: this.name,
-            surname: this.surname,
+            id: this.id,
+            nombre: this.nombre,
+            apellido: this.apellido,
             email: this.email,
             password: this.password,
-            birthdate: this.birthdate,
-            dispatchAddress: this.dispatchAddress,
-            rol: this.rol,
+            fechaNacimiento: this.fechaNacimiento,
+            direccion: this.direccion,
+            roles: this.roles,
         };
     }
 }

@@ -2,15 +2,14 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterModule, Router } from '@angular/router';
 import { UsersService } from '../../services/users.service';
-import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { CryptoService } from '../../services/crypto.service';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-add-user',
   standalone: true,
   imports: [CommonModule, RouterModule, ReactiveFormsModule],
   templateUrl: './add-user.component.html',
-  styleUrl: './add-user.component.scss'
+  styleUrls: ['./add-user.component.scss'],
 })
 export class AddUserComponent implements OnInit {
   addUserForm: FormGroup;
@@ -18,8 +17,7 @@ export class AddUserComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private usersService: UsersService,
-    private router: Router,
-    private cryptoService: CryptoService
+    private router: Router
   ) {
     this.addUserForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(2)]],
@@ -34,37 +32,54 @@ export class AddUserComponent implements OnInit {
           Validators.pattern(/^(?=.*[A-Z])(?=.*\d)(?=.*[#$!%*?&])[A-Za-z\d$!%*?&]{6,18}$/),
         ],
       ],
-      rol: ['user', Validators.required]
+      birthdate: [''], // Opcional
+      dispatchAddress: [''], // Opcional
+      rol: ['1', Validators.required], // Predeterminado a Cliente
     });
   }
 
   ngOnInit(): void {}
 
+  /**
+   * Maneja el envío del formulario para registrar un usuario.
+   */
   onSubmit(): void {
     if (this.addUserForm.valid) {
       const formData = this.addUserForm.value;
-      const userAdded = this.usersService.registerUser(
-        formData.name,
-        formData.surname,
-        formData.email,
-        this.cryptoService.encrypt(formData.password),
-        '',
-        '',
-        formData.rol
-      );
 
-      if (userAdded) {
-        alert('Usuario registrado exitosamente');
-        this.addUserForm.reset();
-        this.router.navigate(['/list-user']);
-      } else {
-        alert('Error: el correo ya está registrado');
-      }
+      this.usersService
+        .registerUser(
+          formData.name,
+          formData.surname,
+          formData.email,
+          formData.password,
+          '', // Si no se proporciona, se envía como cadena vacía
+          '', // Si no se proporciona, se envía como cadena vacía
+          Number(formData.rol) // Convertir rol a número
+        )
+        .subscribe({
+          next: (success: boolean) => {
+            if (success) {
+              alert('Usuario registrado exitosamente');
+              this.addUserForm.reset();
+              this.router.navigate(['/list-user']);
+            } else {
+              alert('Error: el correo ya está registrado.');
+            }
+          },
+          error: (err) => {
+            console.error('Error inesperado al registrar el usuario:', err);
+            alert('Ocurrió un error inesperado. Intente nuevamente.');
+          },
+        });
     } else {
       alert('Por favor complete todos los campos correctamente.');
     }
   }
 
+  /**
+   * Regresa a la lista de usuarios.
+   */
   goBack(): void {
     this.router.navigate(['/list-user']);
   }

@@ -6,7 +6,6 @@ import { NavigationService } from '../../services/navigation.service';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { UsersService } from '../../services/users.service';
 import { Renderer2, ElementRef } from '@angular/core';
-import { CryptoService } from '../../services/crypto.service';
 import { Router } from '@angular/router';
 
 @Component({
@@ -39,9 +38,8 @@ export class RegisterComponent implements OnInit, AfterViewInit {
     private usersService: UsersService,
     private renderer: Renderer2,
     private el: ElementRef,
-    private cryptoService: CryptoService,
-    private router: Router) { 
-      this.registerForm = this.fb.group({
+    private router: Router) {
+    this.registerForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(2)]],
       surname: ['', [Validators.required, Validators.minLength(2)]],
       email: ['', [Validators.required, Validators.email]],
@@ -57,7 +55,7 @@ export class RegisterComponent implements OnInit, AfterViewInit {
       confirmPassword: ['', Validators.required],
       birthdate: ['', Validators.required],
       dispatchAddress: ['']
-      }, { validator: this.passwordMatchValidator });
+    }, { validator: this.passwordMatchValidator });
   }
 
   /**
@@ -67,7 +65,7 @@ export class RegisterComponent implements OnInit, AfterViewInit {
    * @return {void}
    */
   ngOnInit(): void {
-    
+
   }
 
   /**
@@ -138,20 +136,31 @@ export class RegisterComponent implements OnInit, AfterViewInit {
       const name = this.registerForm.value.name;
       const surname = this.registerForm.value.surname;
       const email = this.registerForm.value.email;
-      const password = this.cryptoService.encrypt(this.registerForm.value.password);
-      const birthdate = this.formatToStorageDate(this.registerForm.value.birthdate);
+      const password = this.registerForm.value.password;
+      const birthdate = this.formatToFormDate(this.registerForm.value.birthdate);
       const dispatchAddress = this.registerForm.value.dispatchAddress;
 
-      const registroExitoso = this.usersService.registerUser(name, surname, email, password, birthdate, dispatchAddress, 'client');
-      if (registroExitoso) {
-        console.log('Registro exitoso:', { name, surname, email, password, birthdate, dispatchAddress });
-        alert('Registro exitoso!');
-        this.registerForm.reset();
-      } else {
-        console.log('Error en el registro.');
-      }
+      this.usersService
+        .registerUser(name, surname, email, password, birthdate, dispatchAddress, 3)
+        .subscribe({
+          next: (registroExitoso: boolean) => {
+            if (registroExitoso) {
+              console.log('Registro exitoso:', { name, surname, email, password, birthdate, dispatchAddress });
+              alert('Registro exitoso!');
+              this.registerForm.reset();
+            } else {
+              console.log('Error en el registro.');
+              alert('Error en el registro. Es posible que el usuario ya exista.');
+            }
+          },
+          error: (error) => {
+            console.error('Error inesperado en el registro:', error);
+            alert('Ocurrió un error inesperado. Inténtelo nuevamente.');
+          },
+        });
     } else {
-      console.log('Formulario invalido');
+      alert('Por favor complete todos los campos correctamente.');
+      console.log('Formulario inválido');
     }
   }
 

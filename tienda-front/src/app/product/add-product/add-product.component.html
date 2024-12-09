@@ -1,69 +1,60 @@
 <div class="container mt-5">
     <h2>Agregar Producto</h2>
     <form [formGroup]="addProductForm" (ngSubmit)="onSubmit()">
-        <div class="mb-3">
-            <label for="title" class="form-label">Nombre del Producto</label>
-            <input type="text" id="title" class="form-control" formControlName="title" required />
-            <div *ngIf="addProductForm.get('title')?.invalid && addProductForm.get('title')?.touched"
-                class="text-danger">
-                <small *ngIf="addProductForm.get('title')?.errors?.['required']">El nombre del producto es
-                    obligatorio.</small>
-                <small *ngIf="addProductForm.get('title')?.errors?.['minlength']">El nombre debe tener al menos 3
-                    caracteres.</small>
-            </div>
+      <div class="mb-3">
+        <label for="title" class="form-label">Nombre del Producto</label>
+        <input type="text" id="title" class="form-control" formControlName="title" required />
+        <div *ngIf="addProductForm.get('title')?.invalid && addProductForm.get('title')?.touched" class="text-danger">
+          <small *ngIf="addProductForm.get('title')?.errors?.['required']">El nombre del producto es obligatorio.</small>
+          <small *ngIf="addProductForm.get('title')?.errors?.['minlength']">El nombre debe tener al menos 3 caracteres.</small>
         </div>
-
-        <div class="mb-3">
-            <label for="category" class="form-label">Categoría</label>
-            <input type="text" id="category" class="form-control" formControlName="category" required />
-            <div *ngIf="addProductForm.get('category')?.invalid && addProductForm.get('category')?.touched"
-                class="text-danger">
-                <small>La categoría es obligatoria.</small>
-            </div>
+      </div>
+  
+      <div class="mb-3">
+        <label for="category" class="form-label">Categoría</label>
+        <select id="category" class="form-control" formControlName="category" required>
+          <option *ngFor="let category of categories" [value]="category.id">
+            {{ category.nombre }}
+          </option>
+        </select>
+        <div *ngIf="addProductForm.get('category')?.invalid && addProductForm.get('category')?.touched" class="text-danger">
+          <small>La categoría es obligatoria.</small>
         </div>
-
-        <div class="mb-3">
-            <label for="price" class="form-label">Precio</label>
-            <input type="number" id="price" class="form-control" formControlName="price" required />
-            <div *ngIf="addProductForm.get('price')?.invalid && addProductForm.get('price')?.touched"
-                class="text-danger">
-                <small>El precio debe ser un valor positivo.</small>
-            </div>
+      </div>
+  
+      <div class="mb-3">
+        <label for="price" class="form-label">Precio</label>
+        <input type="number" id="price" class="form-control" formControlName="price" required />
+        <div *ngIf="addProductForm.get('price')?.invalid && addProductForm.get('price')?.touched" class="text-danger">
+          <small>El precio debe ser un valor positivo.</small>
         </div>
-
-        <div class="mb-3">
-            <label for="stock" class="form-label">Stock</label>
-            <input type="number" id="stock" class="form-control" formControlName="stock" required />
-            <div *ngIf="addProductForm.get('stock')?.invalid && addProductForm.get('stock')?.touched"
-                class="text-danger">
-                <small>El stock debe ser un valor positivo.</small>
-            </div>
+      </div>
+  
+      <div class="mb-3">
+        <label for="stock" class="form-label">Stock</label>
+        <input type="number" id="stock" class="form-control" formControlName="stock" required />
+        <div *ngIf="addProductForm.get('stock')?.invalid && addProductForm.get('stock')?.touched" class="text-danger">
+          <small>El stock debe ser un valor positivo.</small>
         </div>
-
-        <div class="mb-3">
-            <label for="image" class="form-label">URL de la Imagen</label>
-            <input type="text" id="image" class="form-control" formControlName="image" />
-            <div *ngIf="addProductForm.get('image')?.invalid && addProductForm.get('image')?.touched"
-                class="text-danger">
-                <small>Debe ser una URL válida.</small>
-            </div>
+      </div>
+  
+      <div class="mb-3">
+        <label for="image" class="form-label">URL de la Imagen</label>
+        <input type="text" id="image" class="form-control" formControlName="image" />
+        <div *ngIf="addProductForm.get('image')?.invalid && addProductForm.get('image')?.touched" class="text-danger">
+          <small>Debe ser una URL válida.</small>
         </div>
-
-        <div class="mb-3">
-            <label for="description" class="form-label">Descripción</label>
-            <textarea id="description" class="form-control" formControlName="description" rows="4" required></textarea>
-            <div *ngIf="addProductForm.get('description')?.invalid && addProductForm.get('description')?.touched"
-                class="text-danger">
-                <small>La descripción es obligatoria y debe tener al menos 10 caracteres.</small>
-            </div>
+      </div>
+  
+      <div class="mb-3">
+        <label for="description" class="form-label">Descripción</label>
+        <textarea id="description" class="form-control" formControlName="description" rows="4" required></textarea>
+        <div *ngIf="addProductForm.get('description')?.invalid && addProductForm.get('description')?.touched" class="text-danger">
+          <small>La descripción es obligatoria y debe tener al menos 10 caracteres.</small>
         </div>
-
-        <button type="submit" class="btn btn-primary" [disabled]="addProductForm.invalid">Agregar Producto</button>
-        <button type="button" class="btn btn-secondary" (click)="goBack()">Cancelar</button>
+      </div>
+  
+      <button type="submit" class="btn btn-primary" [disabled]="addProductForm.invalid">Agregar Producto</button>
+      <button type="button" class="btn btn-secondary" (click)="goBack()">Cancelar</button>
     </form>
-</div>
-
-<!-- Loading Screen -->
-<div id="loading-screen" class="d-flex justify-content-center align-items-center">
-    <div class="loader"></div>
-</div>
+  </div>

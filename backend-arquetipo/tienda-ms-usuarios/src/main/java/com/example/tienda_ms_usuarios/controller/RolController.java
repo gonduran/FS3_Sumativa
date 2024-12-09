@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
  */
 @RestController
 @RequestMapping("/api/roles")
+@CrossOrigin(origins = "*")
 public class RolController {
     
     private static final Logger log = LoggerFactory.getLogger(RolController.class);

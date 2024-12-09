@@ -1,162 +1,179 @@
 import { Injectable } from '@angular/core';
-import { ProductBuilder, Product } from '../builder/product.builder';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { Observable, of, throwError } from 'rxjs';
+import { map, catchError, tap } from 'rxjs/operators';
+import { Product, ProductBuilder, ProductByCategory } from '../builder/product.builder';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ProductsService {
-  private storageKey = 'products';
-  private products: Product[] = [];
+  private apiUrlProducts = environment.apiProductos;
+  private apiPedidosUrl = environment.apiPedidos;
+
+  constructor(private http: HttpClient) { }
 
   /**
-   * @description Constructor del servicio. Carga los productos desde localStorage.
+   * Obtiene todos los productos desde el backend.
+   * 
+   * @returns Observable<Product[]> Lista de productos.
    */
-  constructor() {
-    if (this.isLocalStorageAvailable()) {
-      const productsSaved = localStorage.getItem(this.storageKey);
-      this.products = productsSaved ? JSON.parse(productsSaved) : [];
-    } else {
-      this.products = [];
-    }
-    // Cargar productos iniciales si no existen
-    //this.initializeSampleProducts();
+  getAllProducts(): Observable<Product[]> {
+    return this.http.get<{ _embedded?: { productoList?: any[] } }>(`${this.apiUrlProducts}/productos`).pipe(
+      map(response => {
+        // Validar si la estructura es la esperada
+        if (response && response._embedded && Array.isArray(response._embedded.productoList)) {
+          return response._embedded.productoList.map(product =>
+            new ProductBuilder()
+              .setId(product.id)
+              .setTitle(product.nombre)
+              .setDescription(product.descripcion)
+              .setPrice(product.precio)
+              .setCategorias(product.categorias)
+              .setImage(product.imagen)
+              .setStock(product.stock)
+              .build()
+          );
+        } else {
+          console.error('Estructura inesperada en la respuesta del backend:', response);
+          return []; // Retornar un arreglo vacío si la estructura no es válida
+        }
+      }),
+      catchError(error => {
+        console.error('Error al obtener productos:', error);
+        return of([]); // Retornar un arreglo vacío en caso de error
+      })
+    );
   }
 
   /**
-   * @description Verifica si localStorage está disponible.
-   * @return {boolean} Retorna true si localStorage está disponible, de lo contrario false.
+   * Obtiene un producto por su ID.
+   * 
+   * @param id ID del producto.
+   * @returns Observable<Product> El producto correspondiente.
    */
-  private isLocalStorageAvailable(): boolean {
-    try {
-      const testKey = '__test__';
-      localStorage.setItem(testKey, testKey);
-      localStorage.removeItem(testKey);
-      return true;
-    } catch (error) {
-      return false;
-    }
+  getProductById(id: number): Observable<Product> {
+    console.log('Iniciando solicitud para obtener producto con ID:', id);
+    return this.http.get<any>(`${this.apiUrlProducts}/productos/${id}`).pipe(
+      map((product) => {
+        console.log('Respuesta recibida del backend para el producto:', product);
+        return new ProductBuilder()
+          .setId(product.id)
+          .setTitle(product.nombre)
+          .setDescription(product.descripcion)
+          .setPrice(product.precio)
+          .setCategorias(product.categorias)
+          .setImage(product.imagen)
+          .setStock(product.stock)
+          .build();
+      }),
+      catchError((error) => {
+        console.error('Error en la solicitud HTTP:', error);
+        throw error;
+      })
+    );
   }
 
   /**
-   * @description Obtiene todos los productos.
-   * @return {Product[]} Array de productos.
+   * Crea un nuevo producto.
+   * 
+   * @param product Datos del producto a crear.
+   * @returns Observable<Product> El producto creado.
    */
-  getProducts(): Product[] {
-    return [...this.products];
+  createProduct(product: Product): Observable<Product> {
+    return this.http.post<Product>(`${this.apiUrlProducts}/productos`, product).pipe(
+      map(response => response),
+      catchError(error => {
+        console.error('Error al crear producto:', error);
+        throw error;
+      })
+    );
   }
 
   /**
-   * @description Obtiene un producto por su ID.
-   * @param id - ID del producto.
-   * @return {Product | undefined} El producto encontrado o undefined si no existe.
+   * Actualiza un producto existente.
+   * 
+   * @param id ID del producto a actualizar.
+   * @param product Datos actualizados del producto.
+   * @returns Observable<Product> El producto actualizado.
    */
-  getProductById(id: string): Product | undefined {
-    return this.products.find(product => product.id === id);
+  updateProduct(id: number, product: Product): Observable<Product> {
+    return this.http.put<Product>(`${this.apiUrlProducts}/productos/${id}`, product).pipe(
+      map(response => response),
+      catchError(error => {
+        console.error('Error al actualizar producto:', error);
+        throw error;
+      })
+    );
   }
 
   /**
-   * @description Agrega un nuevo producto.
-   * @param title - Título del producto.
-   * @param description - Descripción del producto.
-   * @param price - Precio del producto.
-   * @param category - Categoría del producto.
-   * @param stock - Stock disponible del producto.
-   * @param image - URL de la imagen del producto.
+   * Elimina un producto por su ID.
+   * 
+   * @param id ID del producto a eliminar.
+   * @returns Observable<void> Indica si la operación fue exitosa.
    */
-  addProduct(
-    title: string,
-    description: string,
-    price: number,
-    category: string,
-    stock: number,
-    image: string
-  ): void {
-    const newProduct = new ProductBuilder()
-      .setId(this.generateProductId())
-      .setTitle(title)
-      .setDescription(description)
-      .setPrice(price)
-      .setCategory(category)
-      .setStock(stock)
-      .setImage(image)
-      .build();
-
-    this.products.push(newProduct);
-    this.saveProductsToStorage();
+  deleteProduct(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrlProducts}/productos/${id}`).pipe(
+      catchError(error => {
+        console.error('Error al eliminar producto:', error);
+        throw error;
+      })
+    );
   }
 
   /**
-   * @description Actualiza un producto existente.
-   * @param updatedProduct - Producto actualizado.
-   * @return {boolean} Retorna true si el producto fue actualizado exitosamente.
+   * Obtiene todas las categorías desde el backend.
+   *
+   * @returns Observable<{ id: number; nombre: string }[]> Lista de categorías.
    */
-  updateProduct(updatedProduct: Product): boolean {
-    const index = this.products.findIndex(product => product.id === updatedProduct.id);
-    if (index !== -1) {
-      this.products[index] = updatedProduct;
-      this.saveProductsToStorage();
-      return true;
-    } else {
-      console.warn(`Producto con ID ${updatedProduct.id} no encontrado.`);
-      return false;
-    }
+  getAllCategories(): Observable<{ id: number; nombre: string; descripcion: string }[]> {
+    return this.http.get<{ _embedded: { categoriaList: any[] } }>(`${this.apiUrlProducts}/categorias`).pipe(
+      map((response) =>
+        response._embedded.categoriaList.map((category) => ({
+          id: category.id,
+          nombre: category.nombre,
+          descripcion: category.descripcion,
+        }))
+      ),
+      catchError((error) => {
+        console.error('Error al obtener categorías:', error);
+        throw error;
+      })
+    );
+  }
+
+  getProductsByCategory(): Observable<ProductByCategory[]> {
+    return this.http
+      .get<ProductByCategory[]>(`${this.apiUrlProducts}/productos/product-by-category`)
+      .pipe(
+        tap((response) => {
+          console.log('Respuesta del backend:', response);
+        }),
+        catchError((error: HttpErrorResponse) => {
+          console.error('Error al obtener productos por categoría:', error);
+          return throwError(() => new Error('Error al cargar productos por categoría'));
+        })
+      );
   }
 
   /**
-   * @description Elimina un producto por su ID.
-   * @param id - ID del producto a eliminar.
+   * Obtiene los productos agrupados por categoría desde el backend.
+   * @returns Observable con los productos agrupados por categoría.
    */
-  deleteProduct(id: string): void {
-    this.products = this.products.filter(product => product.id !== id);
-    this.saveProductsToStorage();
+  getProductsGroupedByCategory(): Observable<any> {
+    return this.http.get<any>(`${this.apiPedidosUrl}/productos/productos-agrupados-categoria`);
   }
 
   /**
-   * @description Genera un ID único para un producto.
-   * @return {string} ID único.
+   * Busca productos en el backend según el filtro proporcionado.
+   * @param filtro Término de búsqueda.
+   * @returns Observable con la lista de productos encontrados.
    */
-  private generateProductId(): string {
-    return Math.random().toString(36).substr(2, 9);
-  }
-
-  /**
-   * @description Guarda los productos en localStorage.
-   */
-  private saveProductsToStorage(): void {
-    if (this.isLocalStorageAvailable()) {
-      localStorage.setItem(this.storageKey, JSON.stringify(this.products));
-    }
-  }
-
-  /**
-   * @description Inicializa productos de ejemplo en localStorage si está vacío.
-   */
-  private initializeSampleProducts(): void {
-    if (this.products.length === 0) {
-      const sampleProducts = [
-        new ProductBuilder()
-          .setId(this.generateProductId())
-          .setTitle('Producto A')
-          .setDescription('Descripción del producto A')
-          .setPrice(1500)
-          .setCategory('Categoría 1')
-          .setStock(100)
-          .setImage('assets/images/product-a.jpg')
-          .build(),
-        new ProductBuilder()
-          .setId(this.generateProductId())
-          .setTitle('Producto B')
-          .setDescription('Descripción del producto B')
-          .setPrice(2500)
-          .setCategory('Categoría 2')
-          .setStock(50)
-          .setImage('assets/images/product-b.jpg')
-          .build(),
-      ];
-
-      this.products = sampleProducts;
-      this.saveProductsToStorage();
-      console.log('Productos de ejemplo inicializados.');
-    }
+  findProducts(filtro: string): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiPedidosUrl}/productos/buscar`, {
+      params: { filtro }
+    });
   }
 }

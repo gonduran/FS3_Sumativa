@@ -1,67 +1,81 @@
-// product.builder.ts
+export interface ProductByCategory {
+  idCategoria: number;
+  nombreCategoria: string;
+  descripcionCategoria: string;
+  idProducto: number;
+  nombreProducto: string;
+  imagenProducto: string;
+}
+
+export interface Categoria {
+  id: number;
+  nombre: string;
+  descripcion: string;
+}
+
 export interface Product {
-    id: string;
-    title: string;
-    description: string;
-    price: number;
-    category: string;
-    image: string;
-    stock: number;
+  id: number;
+  nombre: string;
+  descripcion: string;
+  precio: number;
+  imagen: string;
+  stock: number;
+  categorias: Categoria[];
+}
+
+export class ProductBuilder {
+  private id: number = 0;
+  private nombre: string = '';
+  private descripcion: string = '';
+  private precio: number = 0;
+  private imagen: string = '';
+  private stock: number = 0;
+  private categorias: Categoria[] = [];
+
+  public setId(id: number): ProductBuilder {
+    this.id = id;
+    return this;
   }
-  
-  export class ProductBuilder {
-    private id: string = '';
-    private title: string = '';
-    private description: string = '';
-    private price: number = 0;
-    private category: string = '';
-    private image: string = '';
-    private stock: number = 0;
-  
-    public setId(id: string): ProductBuilder {
-      this.id = id;
-      return this;
-    }
-  
-    public setTitle(title: string): ProductBuilder {
-      this.title = title;
-      return this;
-    }
-  
-    public setDescription(description: string): ProductBuilder {
-      this.description = description;
-      return this;
-    }
-  
-    public setPrice(price: number): ProductBuilder {
-      this.price = price;
-      return this;
-    }
-  
-    public setCategory(category: string): ProductBuilder {
-      this.category = category;
-      return this;
-    }
-  
-    public setImage(image: string): ProductBuilder {
-      this.image = image;
-      return this;
-    }
-  
-    public setStock(stock: number): ProductBuilder {
-      this.stock = stock;
-      return this;
-    }
-  
-    public build(): Product {
-      return {
-        id: this.id,
-        title: this.title,
-        description: this.description,
-        price: this.price,
-        category: this.category,
-        image: this.image,
-        stock: this.stock,
-      };
-    }
+
+  public setTitle(nombre: string): ProductBuilder {
+    this.nombre = nombre;
+    return this;
   }
+
+  public setDescription(descripcion: string): ProductBuilder {
+    this.descripcion = descripcion;
+    return this;
+  }
+
+  public setPrice(precio: number): ProductBuilder {
+    this.precio = precio;
+    return this;
+  }
+
+  public setImage(imagen: string): ProductBuilder {
+    this.imagen = imagen;
+    return this;
+  }
+
+  public setStock(stock: number): ProductBuilder {
+    this.stock = stock;
+    return this;
+  }
+
+  public setCategorias(categorias: Categoria[]): ProductBuilder {
+    this.categorias = categorias;
+    return this;
+  }
+
+  public build(): Product {
+    return {
+      id: this.id,
+      nombre: this.nombre,
+      descripcion: this.descripcion,
+      precio: this.precio,
+      imagen: this.imagen,
+      stock: this.stock,
+      categorias: this.categorias,
+    };
+  }
+}

@@ -20,6 +20,9 @@
                         Catálogo</a>
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link" routerLink="/product-find">Buscar</a>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link" routerLink="/cart">Carro de Compra</a>
                 </li>
 
@@ -30,22 +33,17 @@
                 <li class="nav-item" *ngIf="!isLoggedIn">
                     <a class="nav-link" routerLink="/register">Registro Cliente</a>
                 </li>
-                <!-- 
-                <li class="nav-item" *ngIf="!isLoggedIn">
-                <a class="nav-link" routerLink="/recover-password">Recuperar Contraseña</a>
-                </li>
-                -->
 
                 <!-- User-Only Links -->
-                <li class="nav-item" *ngIf="isLoggedIn && userRole === 'client'">
+                <li class="nav-item" *ngIf="isLoggedIn && userRole === 3">
                     <a class="nav-link" routerLink="/profile">Perfil Cliente</a>
                 </li>
 
                 <!-- Admin-Only Links -->
-                <li class="nav-item" *ngIf="isLoggedIn && userRole === 'admin'">
+                <li class="nav-item" *ngIf="isLoggedIn && userRole === 1">
                     <a class="nav-link" routerLink="/list-user">Usuarios</a>
                 </li>
-                <li class="nav-item" *ngIf="isLoggedIn && (userRole === 'user' || userRole === 'admin')">
+                <li class="nav-item" *ngIf="isLoggedIn && (userRole === 2 || userRole === 1)">
                     <a class="nav-link" routerLink="/list-product">Productos</a>
                 </li>
 

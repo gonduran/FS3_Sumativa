@@ -1,70 +1,37 @@
 <!-- Main content -->
 <main class="container mt-5">
-    <h2>Catálogo de Productos</h2>
-    
-    <!-- Filtro de productos -->
-    <div class="row mb-4">
-        <div class="col-md-12">
-            <input 
-                type="text" 
-                class="form-control" 
-                placeholder="Filtrar productos por nombre o categoría" 
-                [(ngModel)]="filterText" 
-                (input)="filterProducts()" 
-            />
-        </div>
-    </div>
+  <h2>Catálogo de Productos</h2>
 
-    <!-- Categorías de productos -->
-    <div class="row">
-        <!-- Categoría: Papelería -->
-        <div class="col-md-12">
-            <h3>Papelería</h3>
-        </div>
-        <div *ngFor="let product of filteredProducts['Papelería']" class="col-md-3 mb-4">
-            <div class="card">
-                <img [src]="product.image" class="card-img-top" [alt]="product.title">
-                <div class="card-body">
-                    <h5 class="card-title">{{ product.title }}</h5>
-                    <p class="card-text">{{ product.price | currency:'CLP':'symbol-narrow':'1.0-0' }}</p>
-                    <a [routerLink]="['/product-detail', product.title]" class="btn btn-primary">Ver Detalles</a>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Categoría: Oficina -->
-        <div class="col-md-12">
-            <h3>Oficina</h3>
-        </div>
-        <div *ngFor="let product of filteredProducts['Oficina']" class="col-md-3 mb-4">
-            <div class="card">
-                <img [src]="product.image" class="card-img-top" [alt]="product.title">
-                <div class="card-body">
-                    <h5 class="card-title">{{ product.title }}</h5>
-                    <p class="card-text">{{ product.price | currency:'CLP':'symbol-narrow':'1.0-0' }}</p>
-                    <a [routerLink]="['/product-detail', product.title]" class="btn btn-primary">Ver Detalles</a>
-                </div>
-            </div>
-        </div>
-
-        <!-- Categoría: Impresión -->
-        <div class="col-md-12">
-            <h3>Impresión</h3>
-        </div>
-        <div *ngFor="let product of filteredProducts['Impresión']" class="col-md-3 mb-4">
-            <div class="card">
-                <img [src]="product.image" class="card-img-top" [alt]="product.title">
-                <div class="card-body">
-                    <h5 class="card-title">{{ product.title }}</h5>
-                    <p class="card-text">{{ product.price | currency:'CLP':'symbol-narrow':'1.0-0' }}</p>
-                    <a [routerLink]="['/product-detail', product.title]" class="btn btn-primary">Ver Detalles</a>
-                </div>
-            </div>
-        </div>
+  <!-- Filtro de productos -->
+  <div class="row mb-4">
+    <div class="col-md-12">
+      <input type="text" class="form-control" placeholder="Filtrar productos por nombre o categoría"
+        [(ngModel)]="filterText" (input)="filterProducts()" />
     </div>
+  </div>
+
+  <!-- Categorías de productos -->
+  <div *ngFor="let category of filteredProducts | keyvalue" class="row">
+    <div class="col-md-12">
+      <h3>{{ category.key }}</h3>
+    </div>
+    <div *ngFor="let product of category.value" class="col-md-3 mb-4">
+      <div class="card">
+        <img [src]="product.image" class="card-img-top" [alt]="product.title" />
+        <div class="card-body">
+          <h5 class="card-title">{{ product.title }}</h5>
+          <p class="card-text">{{ product.price | currency: 'CLP':'symbol-narrow':'1.0-0' }}</p>
+          <a [routerLink]="['/product-detail', product.id]" [queryParams]="{ from: 'product-catalog' }"
+            class="btn btn-primary">
+            Ver Detalles
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
 </main>
 
 <!-- Loading Screen -->
 <div id="loading-screen" class="d-flex justify-content-center align-items-center">
-    <div class="loader"></div>
+  <div class="loader"></div>
 </div>
