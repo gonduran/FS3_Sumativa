@@ -45,9 +45,9 @@
     "karma-jasmine-html-reporter": "~2.1.0",
     "sonarqube-scanner": "^4.2.6",
     "typescript": "~5.5.2",
-    "@angular/core": "^latest",
-    "@angular/router": "^latest",
-    "@types/jasmine": "^latest",
-    "jasmine-core": "^latest"
+    "@angular/core": "^18.2.0",
+    "@angular/router": "^18.2.0",
+    "@types/jasmine": "~5.1.0",
+    "jasmine-core": "~5.2.0"
   }
 }
