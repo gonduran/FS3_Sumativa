@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Categoria.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">tienda-ms-pedidos</a> &gt; <a href="index.source.html" class="el_package">com.example.tienda_ms_pedidos.model</a> &gt; <span class="el_source">Categoria.java</span></div><h1>Categoria.java</h1><pre class="source lang-java linenums">package com.example.tienda_ms_pedidos.model;
+
+import java.util.HashSet;
+import java.util.Set;
+import org.springframework.hateoas.RepresentationModel;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.*;
+
+@Entity
+@Table(name = &quot;Categoria&quot;)
+@JsonIgnoreProperties(&quot;productos&quot;)
+<span class="fc" id="L20">public class Categoria extends RepresentationModel&lt;Categoria&gt; {</span>
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = &quot;idCategoria&quot;, nullable = false)
+    private Long id;
+
+    @NotBlank(message = &quot;No puede ingresar nombre vacio&quot;)
+    @NotNull(message = &quot;Nombre obligatorio&quot;)
+    @Column(name = &quot;nombre&quot;, nullable = false, unique = true)
+    private String nombre;
+
+    @NotBlank(message = &quot;No puede ingresar un descripcion vacio&quot;)
+    @NotNull(message = &quot;Descripcion obligatorio&quot;)
+    @Column(name= &quot;descripcion&quot;, nullable = false)
+    private String descripcion;
+
+<span class="fc" id="L37">    @ManyToMany(mappedBy = &quot;categorias&quot;, fetch = FetchType.EAGER)</span>
+    private Set&lt;Producto&gt; productos = new HashSet&lt;&gt;();
+
+    // Getters y setters
+
+    public Long getId() {
+<span class="fc" id="L43">        return id;</span>
+    }
+
+    public String getNombre() {
+<span class="fc" id="L47">        return nombre;</span>
+    }
+
+    public String getDescripcion() {
+<span class="fc" id="L51">        return descripcion;</span>
+    }
+
+    public void setId(Long id) {
+<span class="fc" id="L55">        this.id = id;</span>
+<span class="fc" id="L56">    }</span>
+
+    public void setNombre(String nombre) {
+<span class="fc" id="L59">        this.nombre = nombre;</span>
+<span class="fc" id="L60">    }</span>
+
+    public void setDescripcion(String descripcion) {
+<span class="fc" id="L63">        this.descripcion = descripcion;</span>
+<span class="fc" id="L64">    }</span>
+
+    public Set&lt;Producto&gt; getProductos() {
+<span class="fc" id="L67">        return productos;</span>
+    }
+
+    public void setProductos(Set&lt;Producto&gt; productos) {
+<span class="fc" id="L71">        this.productos = productos;</span>
+<span class="fc" id="L72">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

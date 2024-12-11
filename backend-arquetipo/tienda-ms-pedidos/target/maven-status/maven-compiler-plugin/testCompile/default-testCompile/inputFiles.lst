@@ -1,0 +1,16 @@
+/Users/gonzaloduranadasme/Documents/GitHub/FS3_Sumativa/backend-arquetipo/tienda-ms-pedidos/src/test/java/com/example/tienda_ms_pedidos/AppTest.java
+/Users/gonzaloduranadasme/Documents/GitHub/FS3_Sumativa/backend-arquetipo/tienda-ms-pedidos/src/test/java/com/example/tienda_ms_pedidos/config/WebConfigTest.java
+/Users/gonzaloduranadasme/Documents/GitHub/FS3_Sumativa/backend-arquetipo/tienda-ms-pedidos/src/test/java/com/example/tienda_ms_pedidos/controller/DetalleOrdenControllerTest.java
+/Users/gonzaloduranadasme/Documents/GitHub/FS3_Sumativa/backend-arquetipo/tienda-ms-pedidos/src/test/java/com/example/tienda_ms_pedidos/controller/OrdenControllerTest.java
+/Users/gonzaloduranadasme/Documents/GitHub/FS3_Sumativa/backend-arquetipo/tienda-ms-pedidos/src/test/java/com/example/tienda_ms_pedidos/controller/ProductoControllerTest.java
+/Users/gonzaloduranadasme/Documents/GitHub/FS3_Sumativa/backend-arquetipo/tienda-ms-pedidos/src/test/java/com/example/tienda_ms_pedidos/exception/StockExceptionTest.java
+/Users/gonzaloduranadasme/Documents/GitHub/FS3_Sumativa/backend-arquetipo/tienda-ms-pedidos/src/test/java/com/example/tienda_ms_pedidos/model/CategoriaTest.java
+/Users/gonzaloduranadasme/Documents/GitHub/FS3_Sumativa/backend-arquetipo/tienda-ms-pedidos/src/test/java/com/example/tienda_ms_pedidos/model/DetalleOrdenTest.java
+/Users/gonzaloduranadasme/Documents/GitHub/FS3_Sumativa/backend-arquetipo/tienda-ms-pedidos/src/test/java/com/example/tienda_ms_pedidos/model/OrdenTest.java
+/Users/gonzaloduranadasme/Documents/GitHub/FS3_Sumativa/backend-arquetipo/tienda-ms-pedidos/src/test/java/com/example/tienda_ms_pedidos/model/ProductoTest.java
+/Users/gonzaloduranadasme/Documents/GitHub/FS3_Sumativa/backend-arquetipo/tienda-ms-pedidos/src/test/java/com/example/tienda_ms_pedidos/repository/DetalleOrdenRepositoryTest.java
+/Users/gonzaloduranadasme/Documents/GitHub/FS3_Sumativa/backend-arquetipo/tienda-ms-pedidos/src/test/java/com/example/tienda_ms_pedidos/repository/OrdenRepositoryTest.java
+/Users/gonzaloduranadasme/Documents/GitHub/FS3_Sumativa/backend-arquetipo/tienda-ms-pedidos/src/test/java/com/example/tienda_ms_pedidos/repository/ProductoRepositoryTest.java
+/Users/gonzaloduranadasme/Documents/GitHub/FS3_Sumativa/backend-arquetipo/tienda-ms-pedidos/src/test/java/com/example/tienda_ms_pedidos/service/DetalleOrdenServiceImplTest.java
+/Users/gonzaloduranadasme/Documents/GitHub/FS3_Sumativa/backend-arquetipo/tienda-ms-pedidos/src/test/java/com/example/tienda_ms_pedidos/service/OrdenServiceImplTest.java
+/Users/gonzaloduranadasme/Documents/GitHub/FS3_Sumativa/backend-arquetipo/tienda-ms-pedidos/src/test/java/com/example/tienda_ms_pedidos/service/ProductoServiceImplTest.java

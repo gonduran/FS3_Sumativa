@@ -1,0 +1,16 @@
+com/example/tienda_ms_pedidos/config/WebConfigTest.class
+com/example/tienda_ms_pedidos/controller/DetalleOrdenControllerTest.class
+com/example/tienda_ms_pedidos/model/DetalleOrdenTest.class
+com/example/tienda_ms_pedidos/repository/OrdenRepositoryTest.class
+com/example/tienda_ms_pedidos/controller/ProductoControllerTest.class
+com/example/tienda_ms_pedidos/exception/StockExceptionTest.class
+com/example/tienda_ms_pedidos/controller/OrdenControllerTest.class
+com/example/tienda_ms_pedidos/model/CategoriaTest.class
+com/example/tienda_ms_pedidos/repository/ProductoRepositoryTest.class
+com/example/tienda_ms_pedidos/AppTest.class
+com/example/tienda_ms_pedidos/service/DetalleOrdenServiceImplTest.class
+com/example/tienda_ms_pedidos/service/OrdenServiceImplTest.class
+com/example/tienda_ms_pedidos/repository/DetalleOrdenRepositoryTest.class
+com/example/tienda_ms_pedidos/service/ProductoServiceImplTest.class
+com/example/tienda_ms_pedidos/model/OrdenTest.class
+com/example/tienda_ms_pedidos/model/ProductoTest.class

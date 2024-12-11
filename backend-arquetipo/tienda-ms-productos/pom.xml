@@ -15,7 +15,7 @@
 	<properties>
 		<java.version>21</java.version>
 		<sonar.host.url>http://localhost:9000</sonar.host.url>
-		<sonar.projectKey>tienda-ms-usuarios</sonar.projectKey>
+		<sonar.projectKey>tienda-ms-productos</sonar.projectKey>
 		<sonar.organization>your-organization</sonar.organization>
 	</properties>
 	<dependencies>
