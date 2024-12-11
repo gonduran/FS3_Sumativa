@@ -1,4 +1,4 @@
-package main.java.com.example.tienda_ms_productos.DTO;
+package com.example.tienda_ms_productos.DTO;
 
 public class ProductoPorCategoriaDTO {
     private Long idCategoria;
