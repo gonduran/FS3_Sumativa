@@ -14,6 +14,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/pedidos/detalles")
+@CrossOrigin(origins = "*")
 public class DetalleOrdenController {
 
     private static final Logger log = LoggerFactory.getLogger(DetalleOrdenController.class);
