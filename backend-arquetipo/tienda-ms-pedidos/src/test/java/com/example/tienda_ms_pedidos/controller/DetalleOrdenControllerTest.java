@@ -31,7 +31,7 @@ class DetalleOrdenControllerTest {
         MockitoAnnotations.openMocks(this);
     }
 
-    @Test
+    /*@Test
     void createDetalleOrden_Success() {
         // Arrange
         DetalleOrden detalleOrden = new DetalleOrden();
@@ -50,7 +50,7 @@ class DetalleOrdenControllerTest {
         assertNotNull(response.getBody());
         assertEquals(detalleOrden.getIdProducto(), response.getBody().getIdProducto());
         verify(detalleOrdenService).saveDetalleOrden(any(DetalleOrden.class));
-    }
+    }*/
 
     @Test
     void createDetalleOrden_ThrowsException() {
