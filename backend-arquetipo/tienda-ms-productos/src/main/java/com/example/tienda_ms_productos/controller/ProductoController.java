@@ -13,7 +13,7 @@ import com.example.tienda_ms_productos.exception.BadRequestException;
 import com.example.tienda_ms_productos.exception.NotFoundException;
 import com.example.tienda_ms_productos.service.ProductoService;
 
-import main.java.com.example.tienda_ms_productos.DTO.ProductoPorCategoriaDTO;
+import com.example.tienda_ms_productos.DTO.ProductoPorCategoriaDTO;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

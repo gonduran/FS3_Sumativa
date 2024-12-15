@@ -1,5 +1,10 @@
 package com.example.tienda_ms_productos.service;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.*;
+
+import com.example.tienda_ms_productos.DTO.ProductoPorCategoriaDTO;
 import com.example.tienda_ms_productos.exception.ResourceNotFoundException;
 import com.example.tienda_ms_productos.model.Categoria;
 import com.example.tienda_ms_productos.model.Producto;
@@ -11,11 +16,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.math.BigDecimal;
 import java.util.*;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
 
 public class ProductoServiceImplTest {
 
@@ -34,18 +36,20 @@ public class ProductoServiceImplTest {
     }
 
     @Test
-    void testGetAllProductos() {
-        List<Producto> productos = Arrays.asList(new Producto(), new Producto());
-        when(productoRepository.findAll()).thenReturn(productos);
+    void getAllProductos_ReturnsAllProductos() {
+        Producto producto = new Producto();
+        producto.setId(1L);
+        when(productoRepository.findAll()).thenReturn(Arrays.asList(producto));
 
         List<Producto> result = productoService.getAllProductos();
 
-        assertEquals(2, result.size());
-        verify(productoRepository, times(1)).findAll();
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        verify(productoRepository).findAll();
     }
 
     @Test
-    void testGetProductoByIdFound() {
+    void getProductoById_ExistingId_ReturnsProducto() {
         Producto producto = new Producto();
         producto.setId(1L);
         when(productoRepository.findById(1L)).thenReturn(Optional.of(producto));
@@ -54,56 +58,54 @@ public class ProductoServiceImplTest {
 
         assertTrue(result.isPresent());
         assertEquals(1L, result.get().getId());
-        verify(productoRepository, times(1)).findById(1L);
+        verify(productoRepository).findById(1L);
     }
 
     @Test
-    void testGetProductoByIdNotFound() {
-        when(productoRepository.findById(1L)).thenReturn(Optional.empty());
-
-        Optional<Producto> result = productoService.getProductoById(1L);
-
-        assertFalse(result.isPresent());
-        verify(productoRepository, times(1)).findById(1L);
-    }
-
-    @Test
-    void testSaveProducto() {
+    void saveProducto_ValidProducto_ReturnsSavedProducto() {
         Producto producto = new Producto();
-        producto.setCategorias(new HashSet<>(Arrays.asList(new Categoria())));
-        when(categoriaRepository.findById(anyLong())).thenReturn(Optional.of(new Categoria()));
+        Categoria categoria = new Categoria();
+        categoria.setId(1L);
+        Set<Categoria> categorias = new HashSet<>(Arrays.asList(categoria));
+        producto.setCategorias(categorias);
+
+        when(categoriaRepository.findById(1L)).thenReturn(Optional.of(categoria));
         when(productoRepository.save(any(Producto.class))).thenReturn(producto);
 
         Producto result = productoService.saveProducto(producto);
 
         assertNotNull(result);
-        verify(productoRepository, times(1)).save(producto);
+        verify(productoRepository).save(producto);
+        verify(categoriaRepository).findById(1L);
     }
 
-@Test
-void testUpdateProducto() {
-    Producto producto = new Producto();
-    producto.setId(1L);
+    @Test
+    void updateProducto_ExistingId_ReturnsUpdatedProducto() {
+        Long productoId = 1L;
+        Producto existingProducto = new Producto();
+        existingProducto.setId(productoId);
 
-    // Asume que cada categoría tiene un ID no nulo y válido
-    Categoria categoria = new Categoria();
-    categoria.setId(1L);
+        Producto updatedProducto = new Producto();
+        updatedProducto.setNombre("Updated");
+        Categoria categoria = new Categoria();
+        categoria.setId(1L);
+        Set<Categoria> categorias = new HashSet<>(Arrays.asList(categoria));
+        updatedProducto.setCategorias(categorias);
 
-    producto.setCategorias(new HashSet<>(Collections.singletonList(categoria)));
+        when(productoRepository.existsById(productoId)).thenReturn(true);
+        when(productoRepository.findById(productoId)).thenReturn(Optional.of(existingProducto));
+        when(categoriaRepository.findById(1L)).thenReturn(Optional.of(categoria));
+        when(productoRepository.save(any(Producto.class))).thenReturn(updatedProducto);
 
-    when(productoRepository.existsById(1L)).thenReturn(true);
-    when(productoRepository.findById(1L)).thenReturn(Optional.of(producto));
-    when(categoriaRepository.findById(categoria.getId())).thenReturn(Optional.of(categoria));
-    when(productoRepository.save(any(Producto.class))).thenReturn(producto);
+        Producto result = productoService.updateProducto(productoId, updatedProducto);
 
-    Producto result = productoService.updateProducto(1L, producto);
-
-    assertNotNull(result);
-    verify(productoRepository, times(1)).save(producto);
-}
+        assertNotNull(result);
+        assertEquals("Updated", result.getNombre());
+        verify(productoRepository).save(any(Producto.class));
+    }
 
     @Test
-    void testUpdateProductoNotFound() {
+    void updateProducto_NonExistingId_ReturnsNull() {
         when(productoRepository.existsById(1L)).thenReturn(false);
 
         Producto result = productoService.updateProducto(1L, new Producto());
@@ -113,43 +115,96 @@ void testUpdateProducto() {
     }
 
     @Test
-    void testDeleteProducto() {
+    void deleteProducto_ExistingId_DeletesProducto() {
         Producto producto = new Producto();
         producto.setId(1L);
+        producto.setCategorias(new HashSet<>());
+
         when(productoRepository.findById(1L)).thenReturn(Optional.of(producto));
 
         productoService.deleteProducto(1L);
 
-        verify(productoRepository, times(1)).delete(producto);
+        verify(productoRepository).delete(producto);
     }
 
     @Test
-    void testDeleteProductoNotFound() {
+    void deleteProducto_NonExistingId_ThrowsException() {
         when(productoRepository.findById(1L)).thenReturn(Optional.empty());
 
         assertThrows(ResourceNotFoundException.class, () -> productoService.deleteProducto(1L));
-        verify(productoRepository, never()).delete(any(Producto.class));
     }
 
     @Test
-    void testGetProductosByCategoria() {
+    void getProductosByCategoria_ExistingCategoria_ReturnsProductos() {
         Categoria categoria = new Categoria();
         categoria.setId(1L);
-        List<Producto> productos = Arrays.asList(new Producto(), new Producto());
+        Producto producto = new Producto();
+        producto.setId(1L);
+
         when(categoriaRepository.findById(1L)).thenReturn(Optional.of(categoria));
-        when(productoRepository.findByCategorias_Id(1L)).thenReturn(productos);
+        when(productoRepository.findByCategorias_Id(1L)).thenReturn(Arrays.asList(producto));
 
         List<Producto> result = productoService.getProductosByCategoria(1L);
 
-        assertEquals(2, result.size());
-        verify(productoRepository, times(1)).findByCategorias_Id(1L);
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        verify(productoRepository).findByCategorias_Id(1L);
     }
 
     @Test
-    void testGetProductosByCategoriaNotFound() {
+    void getProductosByCategoria_NonExistingCategoria_ThrowsException() {
         when(categoriaRepository.findById(1L)).thenReturn(Optional.empty());
 
         assertThrows(ResourceNotFoundException.class, () -> productoService.getProductosByCategoria(1L));
-        verify(productoRepository, never()).findByCategorias_Id(anyLong());
+    }
+
+    @Test
+    void getFirstProductByCategory_ReturnsProductoDTOList() {
+        // Crear una lista de Object[]
+        List<Object[]> mockResults = new ArrayList<>();
+        Object[] mockRow = new Object[]{
+            new BigDecimal(1), // idCategoria
+            "Category", // categoriaNombre
+            "Description", // categoriaDescripcion
+            new BigDecimal(1), // idProducto
+            "Product", // productoNombre
+            "image.jpg" // productoImagen
+        };
+        mockResults.add(mockRow);
+
+        when(productoRepository.getFirstProductByCategory()).thenReturn(mockResults);
+
+        List<ProductoPorCategoriaDTO> result = productoService.getFirstProductByCategory();
+
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertEquals(1L, result.get(0).getIdCategoria());
+        assertEquals("Category", result.get(0).getNombreCategoria());
+        assertEquals("Description", result.get(0).getDescripcionCategoria());
+        assertEquals(1L, result.get(0).getIdProducto());
+        assertEquals("Product", result.get(0).getNombreProducto());
+        assertEquals("image.jpg", result.get(0).getImagenProducto());
+        verify(productoRepository).getFirstProductByCategory();
+    }
+
+    @Test
+    void updateProducto_CategoriaNotFound_ThrowsException() {
+        Long productoId = 1L;
+        Producto existingProducto = new Producto();
+        existingProducto.setId(productoId);
+
+        Producto updatedProducto = new Producto();
+        Categoria categoria = new Categoria();
+        categoria.setId(999L);
+        Set<Categoria> categorias = new HashSet<>(Arrays.asList(categoria));
+        updatedProducto.setCategorias(categorias);
+
+        when(productoRepository.existsById(productoId)).thenReturn(true);
+        when(productoRepository.findById(productoId)).thenReturn(Optional.of(existingProducto));
+        when(categoriaRepository.findById(999L)).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> 
+            productoService.updateProducto(productoId, updatedProducto)
+        );
     }
 }

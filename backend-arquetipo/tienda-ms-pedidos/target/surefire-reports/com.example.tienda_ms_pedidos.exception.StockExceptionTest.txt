@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.example.tienda_ms_pedidos.exception.StockExceptionTest
+-------------------------------------------------------------------------------
+Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.004 s -- in com.example.tienda_ms_pedidos.exception.StockExceptionTest

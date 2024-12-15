@@ -14,6 +14,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/pedidos/detalles")
+@CrossOrigin(origins = "*")
 public class DetalleOrdenController {
 
     private static final Logger log = LoggerFactory.getLogger(DetalleOrdenController.class);
@@ -32,7 +33,13 @@ public class DetalleOrdenController {
         if (detalleOrden.getIdProducto() == null) {
             throw new IllegalArgumentException("Producto ID es nulo");
         }
-        log.info("Recibiendo detalle de orden: {}", detalleOrden);
+        log.info("Recibiendo detalle de orden: ID={}, idProducto={}, precio={}, cantidad={}, montoTotal={}, ordenId={}", 
+            detalleOrden.getId(), 
+            detalleOrden.getIdProducto(),
+            detalleOrden.getPrecio(),
+            detalleOrden.getCantidad(),
+            detalleOrden.getMontoTotal(),
+            detalleOrden.getOrden().getId());
 
         DetalleOrden nuevoDetalleOrden = detalleOrdenService.saveDetalleOrden(detalleOrden);
         return ResponseEntity.status(HttpStatus.CREATED).body(nuevoDetalleOrden);

@@ -7,8 +7,13 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @Service
 public class OrdenServiceImpl implements OrdenService {
+
+    private static final Logger log = LoggerFactory.getLogger(OrdenServiceImpl.class);
 
     private final OrdenRepository ordenRepository;
 
@@ -18,7 +23,32 @@ public class OrdenServiceImpl implements OrdenService {
 
     @Override
     public Orden saveOrden(Orden orden) {
-        return ordenRepository.save(orden);
+        log.info("Orden original recibida: ID={}, email={}, montoTotal={}, fecha={}, estado={}", 
+            orden.getId(), 
+            orden.getEmail(), 
+            orden.getMontoTotal(), 
+            orden.getFecha(), 
+            orden.getEstado());
+
+        // Crear una nueva orden con los datos, ignorando el id
+        Orden nuevaOrden = new Orden();
+        nuevaOrden.setEmail(orden.getEmail());
+        nuevaOrden.setMontoTotal(orden.getMontoTotal());
+        nuevaOrden.setFecha(orden.getFecha());
+        nuevaOrden.setEstado(orden.getEstado());
+        
+        log.info("Nueva orden a guardar: ID={}, email={}, montoTotal={}, fecha={}, estado={}", 
+            nuevaOrden.getId(), 
+            nuevaOrden.getEmail(), 
+            nuevaOrden.getMontoTotal(), 
+            nuevaOrden.getFecha(), 
+            nuevaOrden.getEstado());
+        
+        Orden ordenGuardada = ordenRepository.save(nuevaOrden);
+        
+        log.info("Orden guardada exitosamente con ID: {}", ordenGuardada.getId());
+        
+        return ordenGuardada;
     }
 
     @Override

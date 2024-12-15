@@ -1,7 +1,7 @@
 package com.example.tienda_ms_productos.service;
 
 import com.example.tienda_ms_productos.model.Producto;
-import main.java.com.example.tienda_ms_productos.DTO.ProductoPorCategoriaDTO;
+import com.example.tienda_ms_productos.DTO.ProductoPorCategoriaDTO;
 import java.util.List;
 import java.util.Optional;
 

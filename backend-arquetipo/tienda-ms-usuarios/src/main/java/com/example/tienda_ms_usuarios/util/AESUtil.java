@@ -1,4 +1,4 @@
-package main.java.com.example.tienda_ms_usuarios.util;
+package com.example.tienda_ms_usuarios.util;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;

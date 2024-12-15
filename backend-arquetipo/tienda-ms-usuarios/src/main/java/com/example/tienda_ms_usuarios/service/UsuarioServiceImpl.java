@@ -9,7 +9,7 @@ import com.example.tienda_ms_usuarios.model.Usuario;
 import com.example.tienda_ms_usuarios.repository.RolRepository;
 import com.example.tienda_ms_usuarios.repository.UsuarioRepository;
 
-import main.java.com.example.tienda_ms_usuarios.util.AESUtil;
+import com.example.tienda_ms_usuarios.util.AESUtil;
 
 import java.util.HashSet;
 import java.util.List;

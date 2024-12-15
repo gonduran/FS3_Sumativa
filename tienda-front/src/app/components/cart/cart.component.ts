@@ -140,13 +140,13 @@ export class CartComponent implements OnInit, AfterViewInit {
                   },
                   error: (err) => {
                     console.error('Error al actualizar el stock:', err);
-                    alert('Hubo un problema al actualizar el stock del producto.');
+                    //alert('Hubo un problema al actualizar el stock del producto.');
                   },
                 });
               },
               error: (err) => {
                 console.error('Error al registrar un detalle de la orden:', err);
-                alert('Hubo un problema al registrar un detalle de la orden.');
+                //alert('Hubo un problema al registrar un detalle de la orden.');
               },
             });
           });

@@ -13,6 +13,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/pedidos")
+@CrossOrigin(origins = "*")
 public class OrdenController {
 
     @Autowired

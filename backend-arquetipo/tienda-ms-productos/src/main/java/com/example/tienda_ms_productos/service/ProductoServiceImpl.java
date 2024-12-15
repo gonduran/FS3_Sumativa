@@ -7,7 +7,7 @@ import com.example.tienda_ms_productos.model.Categoria;
 import com.example.tienda_ms_productos.model.Producto;
 import com.example.tienda_ms_productos.repository.CategoriaRepository;
 import com.example.tienda_ms_productos.repository.ProductoRepository;
-import main.java.com.example.tienda_ms_productos.DTO.ProductoPorCategoriaDTO;
+import com.example.tienda_ms_productos.DTO.ProductoPorCategoriaDTO;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;

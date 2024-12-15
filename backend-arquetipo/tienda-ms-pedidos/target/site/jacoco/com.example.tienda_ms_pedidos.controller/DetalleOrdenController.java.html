@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DetalleOrdenController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">tienda-ms-pedidos</a> &gt; <a href="index.source.html" class="el_package">com.example.tienda_ms_pedidos.controller</a> &gt; <span class="el_source">DetalleOrdenController.java</span></div><h1>DetalleOrdenController.java</h1><pre class="source lang-java linenums">package com.example.tienda_ms_pedidos.controller;
+
+import com.example.tienda_ms_pedidos.model.DetalleOrden;
+import com.example.tienda_ms_pedidos.service.DetalleOrdenService;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import java.util.List;
+import java.util.Optional;
+
+@RestController
+@RequestMapping(&quot;/api/pedidos/detalles&quot;)
+@CrossOrigin(origins = &quot;*&quot;)
+<span class="fc" id="L18">public class DetalleOrdenController {</span>
+
+<span class="fc" id="L20">    private static final Logger log = LoggerFactory.getLogger(DetalleOrdenController.class);</span>
+
+    @Autowired
+    private DetalleOrdenService detalleOrdenService;
+
+    /**
+     * Crea un nuevo detalle de orden.
+     * 
+     * @param detalleOrden Objeto del detalle de orden a crear.
+     * @return El detalle de orden creado.
+     */
+    @PostMapping
+    public ResponseEntity&lt;DetalleOrden&gt; createDetalleOrden(@RequestBody DetalleOrden detalleOrden) {
+<span class="pc bpc" id="L33" title="1 of 2 branches missed.">        if (detalleOrden.getIdProducto() == null) {</span>
+<span class="fc" id="L34">            throw new IllegalArgumentException(&quot;Producto ID es nulo&quot;);</span>
+        }
+<span class="nc" id="L36">        log.info(&quot;Recibiendo detalle de orden: ID={}, idProducto={}, precio={}, cantidad={}, montoTotal={}, ordenId={}&quot;, </span>
+<span class="nc" id="L37">            detalleOrden.getId(), </span>
+<span class="nc" id="L38">            detalleOrden.getIdProducto(),</span>
+<span class="nc" id="L39">            detalleOrden.getPrecio(),</span>
+<span class="nc" id="L40">            detalleOrden.getCantidad(),</span>
+<span class="nc" id="L41">            detalleOrden.getMontoTotal(),</span>
+<span class="nc" id="L42">            detalleOrden.getOrden().getId());</span>
+
+<span class="nc" id="L44">        DetalleOrden nuevoDetalleOrden = detalleOrdenService.saveDetalleOrden(detalleOrden);</span>
+<span class="nc" id="L45">        return ResponseEntity.status(HttpStatus.CREATED).body(nuevoDetalleOrden);</span>
+    }
+
+    /**
+     * Obtiene todos los detalles de órdenes.
+     * 
+     * @return Lista de detalles de órdenes.
+     */
+    @GetMapping
+    public ResponseEntity&lt;List&lt;DetalleOrden&gt;&gt; getAllDetallesOrdenes() {
+<span class="fc" id="L55">        List&lt;DetalleOrden&gt; detallesOrdenes = detalleOrdenService.findAll();</span>
+<span class="fc" id="L56">        return ResponseEntity.ok(detallesOrdenes);</span>
+    }
+
+    /**
+     * Obtiene un detalle de orden por su ID.
+     * 
+     * @param id ID del detalle de orden.
+     * @return El detalle de orden encontrado o un 404 si no se encuentra.
+     */
+    @GetMapping(&quot;/{id}&quot;)
+    public ResponseEntity&lt;DetalleOrden&gt; getDetalleOrdenById(@PathVariable Long id) {
+<span class="fc" id="L67">        Optional&lt;DetalleOrden&gt; detalleOrden = detalleOrdenService.findById(id);</span>
+<span class="fc" id="L68">        return detalleOrden.map(ResponseEntity::ok).orElseGet(() -&gt; ResponseEntity.status(HttpStatus.NOT_FOUND).build());</span>
+    }
+
+    /**
+     * Elimina un detalle de orden por su ID.
+     * 
+     * @param id ID del detalle de orden.
+     * @return Un 204 si se eliminó correctamente.
+     */
+    @DeleteMapping(&quot;/{id}&quot;)
+    public ResponseEntity&lt;Void&gt; deleteDetalleOrden(@PathVariable Long id) {
+<span class="fc" id="L79">        detalleOrdenService.deleteById(id);</span>
+<span class="fc" id="L80">        return ResponseEntity.noContent().build();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

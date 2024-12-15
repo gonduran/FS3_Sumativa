@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DetalleOrdenServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">tienda-ms-pedidos</a> &gt; <a href="index.source.html" class="el_package">com.example.tienda_ms_pedidos.service</a> &gt; <span class="el_source">DetalleOrdenServiceImpl.java</span></div><h1>DetalleOrdenServiceImpl.java</h1><pre class="source lang-java linenums">package com.example.tienda_ms_pedidos.service;
+
+import com.example.tienda_ms_pedidos.model.DetalleOrden;
+import com.example.tienda_ms_pedidos.repository.DetalleOrdenRepository;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Optional;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+@Service
+public class DetalleOrdenServiceImpl implements DetalleOrdenService {
+
+<span class="fc" id="L16">    private static final Logger log = LoggerFactory.getLogger(DetalleOrdenServiceImpl.class);</span>
+
+    private final DetalleOrdenRepository detalleOrdenRepository;
+
+<span class="fc" id="L20">    public DetalleOrdenServiceImpl(DetalleOrdenRepository detalleOrdenRepository) {</span>
+<span class="fc" id="L21">        this.detalleOrdenRepository = detalleOrdenRepository;</span>
+<span class="fc" id="L22">    }</span>
+
+    @Override
+    public DetalleOrden saveDetalleOrden(DetalleOrden detalleOrden) {
+<span class="fc" id="L26">        log.info(&quot;Detalle orden original recibido: ID={}, idProducto={}, precio={}, cantidad={}, montoTotal={}, ordenId={}&quot;, </span>
+<span class="fc" id="L27">            detalleOrden.getId(), </span>
+<span class="fc" id="L28">            detalleOrden.getIdProducto(),</span>
+<span class="fc" id="L29">            detalleOrden.getPrecio(),</span>
+<span class="fc" id="L30">            detalleOrden.getCantidad(),</span>
+<span class="fc" id="L31">            detalleOrden.getMontoTotal(),</span>
+<span class="fc" id="L32">            detalleOrden.getOrden().getId());</span>
+
+        // Crear nuevo detalle orden con los datos, ignorando solo el id del detalle
+<span class="fc" id="L35">        DetalleOrden nuevoDetalle = new DetalleOrden();</span>
+<span class="fc" id="L36">        nuevoDetalle.setOrden(detalleOrden.getOrden()); </span>
+<span class="fc" id="L37">        nuevoDetalle.setIdProducto(detalleOrden.getIdProducto());</span>
+<span class="fc" id="L38">        nuevoDetalle.setPrecio(detalleOrden.getPrecio());</span>
+<span class="fc" id="L39">        nuevoDetalle.setCantidad(detalleOrden.getCantidad());</span>
+<span class="fc" id="L40">        nuevoDetalle.setMontoTotal(detalleOrden.getMontoTotal());</span>
+        
+<span class="fc" id="L42">        log.info(&quot;Nuevo detalle orden a guardar: ID={}, idProducto={}, precio={}, cantidad={}, montoTotal={}, ordenId={}&quot;, </span>
+<span class="fc" id="L43">            nuevoDetalle.getId(), </span>
+<span class="fc" id="L44">            nuevoDetalle.getIdProducto(),</span>
+<span class="fc" id="L45">            nuevoDetalle.getPrecio(),</span>
+<span class="fc" id="L46">            nuevoDetalle.getCantidad(),</span>
+<span class="fc" id="L47">            nuevoDetalle.getMontoTotal(),</span>
+<span class="fc" id="L48">            nuevoDetalle.getOrden().getId());</span>
+        
+<span class="fc" id="L50">        DetalleOrden detalleGuardado = detalleOrdenRepository.save(nuevoDetalle);</span>
+        
+<span class="fc" id="L52">        log.info(&quot;Detalle orden guardado exitosamente con ID: {}&quot;, detalleGuardado.getId());</span>
+        
+<span class="fc" id="L54">        return detalleGuardado;</span>
+    }
+
+    @Override
+    public Optional&lt;DetalleOrden&gt; findById(Long id) {
+<span class="fc" id="L59">        return detalleOrdenRepository.findById(id);</span>
+    }
+
+    @Override
+    public List&lt;DetalleOrden&gt; findAll() {
+<span class="fc" id="L64">        return detalleOrdenRepository.findAll();</span>
+    }
+
+    @Override
+    public List&lt;DetalleOrden&gt; findByIdProducto(Long idProducto) {
+<span class="fc" id="L69">        return detalleOrdenRepository.findByIdProducto(idProducto);</span>
+    }
+
+    // Implementar el método para eliminar
+    @Override
+    public void deleteById(Long id) {
+<span class="fc" id="L75">        detalleOrdenRepository.deleteById(id);</span>
+<span class="fc" id="L76">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

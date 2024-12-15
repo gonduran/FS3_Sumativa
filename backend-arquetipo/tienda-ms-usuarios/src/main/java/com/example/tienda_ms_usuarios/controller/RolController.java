@@ -6,13 +6,16 @@ import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import com.example.tienda_ms_usuarios.exception.BadRequestException;
 import com.example.tienda_ms_usuarios.exception.NotFoundException;
 import com.example.tienda_ms_usuarios.model.Rol;
 import com.example.tienda_ms_usuarios.service.RolService;
 import java.util.stream.Collectors;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import org.slf4j.Logger;
@@ -25,8 +28,9 @@ import org.slf4j.LoggerFactory;
 @RestController
 @RequestMapping("/api/roles")
 @CrossOrigin(origins = "*")
+@Validated
 public class RolController {
-    
+
     private static final Logger log = LoggerFactory.getLogger(RolController.class);
 
     @Autowired
@@ -34,9 +38,11 @@ public class RolController {
 
     /**
      * Devuelve una lista de todos los roles disponibles en la base de datos.
-     * Proporciona enlaces HATEOAS para cada rol individual y un enlace de eliminación.
+     * Proporciona enlaces HATEOAS para cada rol individual y un enlace de
+     * eliminación.
      * 
-     * @return CollectionModel<EntityModel<Rol>> - Lista de roles con enlaces HATEOAS.
+     * @return CollectionModel<EntityModel<Rol>> - Lista de roles con enlaces
+     *         HATEOAS.
      */
     @GetMapping
     public CollectionModel<EntityModel<Rol>> getAllRoles() {
@@ -44,11 +50,12 @@ public class RolController {
         log.info("GET /api/roles - Devuelve la información de todos los roles");
 
         List<EntityModel<Rol>> rolesResources = roles.stream()
-            .map(rol -> EntityModel.of(rol,
-                WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(this.getClass()).getRolById(rol.getId())).withSelfRel(),
-                WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(this.getClass()).deleteRol(rol.getId())).withRel("delete")
-            ))
-            .collect(Collectors.toList());
+                .map(rol -> EntityModel.of(rol,
+                        WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(this.getClass()).getRolById(rol.getId()))
+                                .withSelfRel(),
+                        WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(this.getClass()).deleteRol(rol.getId()))
+                                .withRel("delete")))
+                .collect(Collectors.toList());
 
         WebMvcLinkBuilder linkTo = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(this.getClass()).getAllRoles());
         CollectionModel<EntityModel<Rol>> resources = CollectionModel.of(rolesResources, linkTo.withRel("roles"));
@@ -71,9 +78,12 @@ public class RolController {
         if (rol.isPresent()) {
             log.info("Se encontró el rol con ID {}", idRol);
             return EntityModel.of(rol.get(),
-                WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(this.getClass()).getRolById(idRol)).withSelfRel(),
-                WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(this.getClass()).deleteRol(idRol)).withRel("delete"),
-                WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(this.getClass()).getAllRoles()).withRel("all-roles"));
+                    WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(this.getClass()).getRolById(idRol))
+                            .withSelfRel(),
+                    WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(this.getClass()).deleteRol(idRol))
+                            .withRel("delete"),
+                    WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(this.getClass()).getAllRoles())
+                            .withRel("all-roles"));
         } else {
             log.error("No se encontró el rol con ID {}", idRol);
             throw new NotFoundException("No se encontró el rol con ID: " + idRol);
@@ -98,8 +108,10 @@ public class RolController {
         }
 
         return EntityModel.of(createRol,
-            WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(this.getClass()).getRolById(createRol.getId())).withSelfRel(),
-            WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(this.getClass()).getAllRoles()).withRel("all-roles"));
+                WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(this.getClass()).getRolById(createRol.getId()))
+                        .withSelfRel(),
+                WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(this.getClass()).getAllRoles())
+                        .withRel("all-roles"));
     }
 
     /**
@@ -107,7 +119,7 @@ public class RolController {
      * Si el rol no existe, lanza una excepción NotFoundException.
      *
      * @param idRol ID del rol a actualizar.
-     * @param rol Rol con los datos actualizados.
+     * @param rol   Rol con los datos actualizados.
      * @return EntityModel<Rol> - Rol actualizado con enlaces HATEOAS.
      */
     @PutMapping("/{idRol}")
@@ -124,8 +136,9 @@ public class RolController {
         Rol updateRol = rolService.updateRol(idRol, rol);
 
         return EntityModel.of(updateRol,
-            WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(this.getClass()).getRolById(idRol)).withSelfRel(),
-            WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(this.getClass()).getAllRoles()).withRel("all-roles"));
+                WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(this.getClass()).getRolById(idRol)).withSelfRel(),
+                WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(this.getClass()).getAllRoles())
+                        .withRel("all-roles"));
     }
 
     /**
@@ -142,7 +155,8 @@ public class RolController {
 
         if (rolFind.isEmpty()) {
             log.error("No se encontró el rol con ID {}", idRol);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse("No se encontró el rol con ID " + idRol));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new ErrorResponse("No se encontró el rol con ID " + idRol));
         }
 
         log.info("Se encontró y eliminó el rol con ID {}", idRol);
@@ -159,7 +173,7 @@ public class RolController {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> handleException(Exception e) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-            .body("Error en el servidor: " + e.getMessage());
+                .body("Error en el servidor: " + e.getMessage());
     }
 
     /**
@@ -171,7 +185,7 @@ public class RolController {
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<String> handleRolNotFoundException(NotFoundException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
-            .body(e.getMessage());
+                .body(e.getMessage());
     }
 
     /**
@@ -183,21 +197,41 @@ public class RolController {
     @ExceptionHandler(BadRequestException.class)
     public ResponseEntity<String> handleRolBadRequestException(BadRequestException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-            .body(e.getMessage());
+                .body(e.getMessage());
+    }
+/* 
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<Object> handleValidationExceptions(MethodArgumentNotValidException ex) {
+        Map<String, String> errors = new HashMap<>();
+        ex.getBindingResult().getAllErrors().forEach((error) -> {
+            String fieldName = ((FieldError) error).getField();
+            String errorMessage = error.getDefaultMessage();
+            errors.put(fieldName, errorMessage);
+        });
+        return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<Object> handleConstraintViolation(ConstraintViolationException ex) {
+        Map<String, String> errors = new HashMap<>();
+        ex.getConstraintViolations().forEach(violation -> {
+            errors.put(violation.getPropertyPath().toString(), violation.getMessage());
+        });
+        return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+    }
+*/
     /**
      * Clase interna para encapsular el mensaje de error en la respuesta.
      */
     static class ErrorResponse {
         private final String message;
-    
+
         public ErrorResponse(String message) {
             this.message = message;
         }
-    
+
         public String getMessage() {
             return message;
         }
-    }  
+    }
 }

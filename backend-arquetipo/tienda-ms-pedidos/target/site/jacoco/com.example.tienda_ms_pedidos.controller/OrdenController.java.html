@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>OrdenController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">tienda-ms-pedidos</a> &gt; <a href="index.source.html" class="el_package">com.example.tienda_ms_pedidos.controller</a> &gt; <span class="el_source">OrdenController.java</span></div><h1>OrdenController.java</h1><pre class="source lang-java linenums">package com.example.tienda_ms_pedidos.controller;
+
+import com.example.tienda_ms_pedidos.model.Orden;
+import com.example.tienda_ms_pedidos.service.OrdenService;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Optional;
+
+@RestController
+@RequestMapping(&quot;/api/pedidos&quot;)
+@CrossOrigin(origins = &quot;*&quot;)
+<span class="fc" id="L17">public class OrdenController {</span>
+
+    @Autowired
+    private OrdenService ordenService;
+
+    /**
+     * Crea una nueva orden.
+     * 
+     * @param orden Objeto de la orden a crear.
+     * @return La orden creada.
+     */
+    @PostMapping
+    public ResponseEntity&lt;Orden&gt; createOrden(@RequestBody Orden orden) {
+<span class="fc" id="L30">        Orden nuevaOrden = ordenService.saveOrden(orden);</span>
+<span class="fc" id="L31">        return ResponseEntity.status(HttpStatus.CREATED).body(nuevaOrden);</span>
+    }
+
+    /**
+     * Obtiene todas las órdenes.
+     * 
+     * @return Lista de órdenes.
+     */
+    @GetMapping
+    public ResponseEntity&lt;List&lt;Orden&gt;&gt; getAllOrdenes() {
+<span class="fc" id="L41">        List&lt;Orden&gt; ordenes = ordenService.findAll();</span>
+<span class="fc" id="L42">        return ResponseEntity.ok(ordenes);</span>
+    }
+
+    /**
+     * Obtiene una orden por su ID.
+     * 
+     * @param id ID de la orden.
+     * @return La orden encontrada o un 404 si no se encuentra.
+     */
+    @GetMapping(&quot;/{id}&quot;)
+    public ResponseEntity&lt;Orden&gt; getOrdenById(@PathVariable Long id) {
+<span class="fc" id="L53">        Optional&lt;Orden&gt; orden = ordenService.findById(id);</span>
+<span class="fc" id="L54">        return orden.map(ResponseEntity::ok).orElseGet(() -&gt; ResponseEntity.status(HttpStatus.NOT_FOUND).build());</span>
+    }
+
+    /**
+     * Obtiene órdenes por el estado.
+     * 
+     * @param estado Estado de las órdenes.
+     * @return Lista de órdenes en ese estado.
+     */
+    @GetMapping(&quot;/estado/{estado}&quot;)
+    public ResponseEntity&lt;List&lt;Orden&gt;&gt; getOrdenesByEstado(@PathVariable int estado) {
+<span class="fc" id="L65">        List&lt;Orden&gt; ordenes = ordenService.findByEstado(estado);</span>
+<span class="fc" id="L66">        return ResponseEntity.ok(ordenes);</span>
+    }
+
+    /**
+     * Actualiza el estado de una orden.
+     * 
+     * @param id ID de la orden a actualizar.
+     * @param estado Nuevo estado de la orden.
+     * @return Un 204 si se actualizó correctamente.
+     */
+    @PutMapping(&quot;/{id}/estado&quot;)
+    public ResponseEntity&lt;Void&gt; updateEstado(@PathVariable Long id, @RequestParam int estado) {
+<span class="fc" id="L78">        ordenService.updateEstado(id, estado);</span>
+<span class="fc" id="L79">        return ResponseEntity.noContent().build();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
