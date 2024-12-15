@@ -11,8 +11,8 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**") 
-                .allowedOrigins("http://localhost")
-                .allowedMethods("GET", "POST", "PUT", "DELETE") 
+                .allowedOrigins("http://ip172-18-0-10-ctfe98q91nsg00cmpnh0-80.direct.labs.play-with-docker.com")
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS") 
                 .allowedHeaders("*");
     }
 }

@@ -14,9 +14,10 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping(&quot;/api/pedidos/detalles&quot;)
-<span class="fc" id="L17">public class DetalleOrdenController {</span>
+@CrossOrigin(origins = &quot;*&quot;)
+<span class="fc" id="L18">public class DetalleOrdenController {</span>
 
-<span class="fc" id="L19">    private static final Logger log = LoggerFactory.getLogger(DetalleOrdenController.class);</span>
+<span class="fc" id="L20">    private static final Logger log = LoggerFactory.getLogger(DetalleOrdenController.class);</span>
 
     @Autowired
     private DetalleOrdenService detalleOrdenService;
@@ -29,13 +30,13 @@ import java.util.Optional;
      */
     @PostMapping
     public ResponseEntity&lt;DetalleOrden&gt; createDetalleOrden(@RequestBody DetalleOrden detalleOrden) {
-<span class="fc bfc" id="L32" title="All 2 branches covered.">        if (detalleOrden.getIdProducto() == null) {</span>
-<span class="fc" id="L33">            throw new IllegalArgumentException(&quot;Producto ID es nulo&quot;);</span>
+<span class="fc bfc" id="L33" title="All 2 branches covered.">        if (detalleOrden.getIdProducto() == null) {</span>
+<span class="fc" id="L34">            throw new IllegalArgumentException(&quot;Producto ID es nulo&quot;);</span>
         }
-<span class="fc" id="L35">        log.info(&quot;Recibiendo detalle de orden: {}&quot;, detalleOrden);</span>
+<span class="fc" id="L36">        log.info(&quot;Recibiendo detalle de orden: {}&quot;, detalleOrden);</span>
 
-<span class="fc" id="L37">        DetalleOrden nuevoDetalleOrden = detalleOrdenService.saveDetalleOrden(detalleOrden);</span>
-<span class="fc" id="L38">        return ResponseEntity.status(HttpStatus.CREATED).body(nuevoDetalleOrden);</span>
+<span class="fc" id="L38">        DetalleOrden nuevoDetalleOrden = detalleOrdenService.saveDetalleOrden(detalleOrden);</span>
+<span class="fc" id="L39">        return ResponseEntity.status(HttpStatus.CREATED).body(nuevoDetalleOrden);</span>
     }
 
     /**
@@ -45,8 +46,8 @@ import java.util.Optional;
      */
     @GetMapping
     public ResponseEntity&lt;List&lt;DetalleOrden&gt;&gt; getAllDetallesOrdenes() {
-<span class="fc" id="L48">        List&lt;DetalleOrden&gt; detallesOrdenes = detalleOrdenService.findAll();</span>
-<span class="fc" id="L49">        return ResponseEntity.ok(detallesOrdenes);</span>
+<span class="fc" id="L49">        List&lt;DetalleOrden&gt; detallesOrdenes = detalleOrdenService.findAll();</span>
+<span class="fc" id="L50">        return ResponseEntity.ok(detallesOrdenes);</span>
     }
 
     /**
@@ -57,8 +58,8 @@ import java.util.Optional;
      */
     @GetMapping(&quot;/{id}&quot;)
     public ResponseEntity&lt;DetalleOrden&gt; getDetalleOrdenById(@PathVariable Long id) {
-<span class="fc" id="L60">        Optional&lt;DetalleOrden&gt; detalleOrden = detalleOrdenService.findById(id);</span>
-<span class="fc" id="L61">        return detalleOrden.map(ResponseEntity::ok).orElseGet(() -&gt; ResponseEntity.status(HttpStatus.NOT_FOUND).build());</span>
+<span class="fc" id="L61">        Optional&lt;DetalleOrden&gt; detalleOrden = detalleOrdenService.findById(id);</span>
+<span class="fc" id="L62">        return detalleOrden.map(ResponseEntity::ok).orElseGet(() -&gt; ResponseEntity.status(HttpStatus.NOT_FOUND).build());</span>
     }
 
     /**
@@ -69,8 +70,8 @@ import java.util.Optional;
      */
     @DeleteMapping(&quot;/{id}&quot;)
     public ResponseEntity&lt;Void&gt; deleteDetalleOrden(@PathVariable Long id) {
-<span class="fc" id="L72">        detalleOrdenService.deleteById(id);</span>
-<span class="fc" id="L73">        return ResponseEntity.noContent().build();</span>
+<span class="fc" id="L73">        detalleOrdenService.deleteById(id);</span>
+<span class="fc" id="L74">        return ResponseEntity.noContent().build();</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

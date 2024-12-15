@@ -7,43 +7,73 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @Service
 public class OrdenServiceImpl implements OrdenService {
 
+<span class="fc" id="L16">    private static final Logger log = LoggerFactory.getLogger(OrdenServiceImpl.class);</span>
+
     private final OrdenRepository ordenRepository;
 
-<span class="fc" id="L15">    public OrdenServiceImpl(OrdenRepository ordenRepository) {</span>
-<span class="fc" id="L16">        this.ordenRepository = ordenRepository;</span>
-<span class="fc" id="L17">    }</span>
+<span class="fc" id="L20">    public OrdenServiceImpl(OrdenRepository ordenRepository) {</span>
+<span class="fc" id="L21">        this.ordenRepository = ordenRepository;</span>
+<span class="fc" id="L22">    }</span>
 
     @Override
     public Orden saveOrden(Orden orden) {
-<span class="fc" id="L21">        return ordenRepository.save(orden);</span>
+<span class="fc" id="L26">        log.info(&quot;Orden original recibida: ID={}, email={}, montoTotal={}, fecha={}, estado={}&quot;, </span>
+<span class="fc" id="L27">            orden.getId(), </span>
+<span class="fc" id="L28">            orden.getEmail(), </span>
+<span class="fc" id="L29">            orden.getMontoTotal(), </span>
+<span class="fc" id="L30">            orden.getFecha(), </span>
+<span class="fc" id="L31">            orden.getEstado());</span>
+
+        // Crear una nueva orden con los datos, ignorando el id
+<span class="fc" id="L34">        Orden nuevaOrden = new Orden();</span>
+<span class="fc" id="L35">        nuevaOrden.setEmail(orden.getEmail());</span>
+<span class="fc" id="L36">        nuevaOrden.setMontoTotal(orden.getMontoTotal());</span>
+<span class="fc" id="L37">        nuevaOrden.setFecha(orden.getFecha());</span>
+<span class="fc" id="L38">        nuevaOrden.setEstado(orden.getEstado());</span>
+        
+<span class="fc" id="L40">        log.info(&quot;Nueva orden a guardar: ID={}, email={}, montoTotal={}, fecha={}, estado={}&quot;, </span>
+<span class="fc" id="L41">            nuevaOrden.getId(), </span>
+<span class="fc" id="L42">            nuevaOrden.getEmail(), </span>
+<span class="fc" id="L43">            nuevaOrden.getMontoTotal(), </span>
+<span class="fc" id="L44">            nuevaOrden.getFecha(), </span>
+<span class="fc" id="L45">            nuevaOrden.getEstado());</span>
+        
+<span class="fc" id="L47">        Orden ordenGuardada = ordenRepository.save(nuevaOrden);</span>
+        
+<span class="fc" id="L49">        log.info(&quot;Orden guardada exitosamente con ID: {}&quot;, ordenGuardada.getId());</span>
+        
+<span class="fc" id="L51">        return ordenGuardada;</span>
     }
 
     @Override
     public Optional&lt;Orden&gt; findById(Long id) {
-<span class="fc" id="L26">        return ordenRepository.findById(id);</span>
+<span class="fc" id="L56">        return ordenRepository.findById(id);</span>
     }
 
     @Override
     public List&lt;Orden&gt; findAll() {
-<span class="fc" id="L31">        return ordenRepository.findAll();</span>
+<span class="fc" id="L61">        return ordenRepository.findAll();</span>
     }
 
     @Override
     public List&lt;Orden&gt; findByEmail(String email) {
-<span class="fc" id="L36">        return ordenRepository.findByEmail(email);</span>
+<span class="fc" id="L66">        return ordenRepository.findByEmail(email);</span>
     }
 
     @Override
     public List&lt;Orden&gt; findByEstado(int estado) {
-<span class="fc" id="L41">        return ordenRepository.findByEstado(estado);</span>
+<span class="fc" id="L71">        return ordenRepository.findByEstado(estado);</span>
     }
 
     @Override
     public void updateEstado(Long id, int estado) {
-<span class="fc" id="L46">        ordenRepository.updateEstado(id, estado);</span>
-<span class="fc" id="L47">    }</span>
+<span class="fc" id="L76">        ordenRepository.updateEstado(id, estado);</span>
+<span class="fc" id="L77">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

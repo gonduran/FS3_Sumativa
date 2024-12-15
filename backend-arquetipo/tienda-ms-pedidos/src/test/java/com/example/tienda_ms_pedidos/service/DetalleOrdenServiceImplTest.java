@@ -1,6 +1,7 @@
 package com.example.tienda_ms_pedidos.service;
 
 import com.example.tienda_ms_pedidos.model.DetalleOrden;
+import com.example.tienda_ms_pedidos.model.Orden;
 import com.example.tienda_ms_pedidos.repository.DetalleOrdenRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,6 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 class DetalleOrdenServiceImplTest {
@@ -31,15 +33,31 @@ class DetalleOrdenServiceImplTest {
     @Test
     void saveDetalleOrden_Success() {
         // Arrange
-        DetalleOrden detalleOrden = new DetalleOrden();
-        when(detalleOrdenRepository.save(any(DetalleOrden.class))).thenReturn(detalleOrden);
+        Orden orden = new Orden();
+        orden.setId(65L);
+
+        DetalleOrden detalleOriginal = new DetalleOrden();
+        detalleOriginal.setId(1L);
+        detalleOriginal.setOrden(orden);
+        detalleOriginal.setIdProducto(3L);
+        detalleOriginal.setPrecio(6990.0);
+        detalleOriginal.setCantidad(1);
+        detalleOriginal.setMontoTotal(6990.0);
+
+        when(detalleOrdenRepository.save(any(DetalleOrden.class))).thenReturn(detalleOriginal);
 
         // Act
-        DetalleOrden result = detalleOrdenService.saveDetalleOrden(detalleOrden);
+        DetalleOrden result = detalleOrdenService.saveDetalleOrden(detalleOriginal);
 
         // Assert
         assertNotNull(result);
-        verify(detalleOrdenRepository).save(detalleOrden);
+        verify(detalleOrdenRepository).save(any(DetalleOrden.class));
+        assertNotNull(result.getId());
+        assertEquals(detalleOriginal.getOrden().getId(), result.getOrden().getId());
+        assertEquals(detalleOriginal.getIdProducto(), result.getIdProducto());
+        assertEquals(detalleOriginal.getPrecio(), result.getPrecio());
+        assertEquals(detalleOriginal.getCantidad(), result.getCantidad());
+        assertEquals(detalleOriginal.getMontoTotal(), result.getMontoTotal());
     }
 
     @Test

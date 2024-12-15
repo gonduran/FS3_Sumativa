@@ -11,8 +11,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
     @Override
     public void addCorsMappings(CorsRegistry registry) {
 <span class="fc" id="L13">        registry.addMapping(&quot;/**&quot;) </span>
-<span class="fc" id="L14">                .allowedOrigins(&quot;http://localhost&quot;)</span>
-<span class="fc" id="L15">                .allowedMethods(&quot;GET&quot;, &quot;POST&quot;, &quot;PUT&quot;, &quot;DELETE&quot;) </span>
+<span class="fc" id="L14">                .allowedOrigins(&quot;http://ip172-18-0-10-ctfe98q91nsg00cmpnh0-80.direct.labs.play-with-docker.com&quot;)</span>
+<span class="fc" id="L15">                .allowedMethods(&quot;GET&quot;, &quot;POST&quot;, &quot;PUT&quot;, &quot;DELETE&quot;, &quot;OPTIONS&quot;) </span>
 <span class="fc" id="L16">                .allowedHeaders(&quot;*&quot;);</span>
 <span class="fc" id="L17">    }</span>
 }

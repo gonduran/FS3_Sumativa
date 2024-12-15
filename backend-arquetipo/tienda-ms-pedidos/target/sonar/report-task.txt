@@ -2,5 +2,5 @@ projectKey=tienda-ms-pedidos
 serverUrl=http://localhost:9000
 serverVersion=10.7.0.96327
 dashboardUrl=http://localhost:9000/dashboard?id=tienda-ms-pedidos
-ceTaskId=1d3a9ff2-3256-4d7b-b403-58ea75b03915
-ceTaskUrl=http://localhost:9000/api/ce/task?id=1d3a9ff2-3256-4d7b-b403-58ea75b03915
+ceTaskId=f64a4bd5-8589-4c17-b21a-1d8ee5a2f683
+ceTaskUrl=http://localhost:9000/api/ce/task?id=f64a4bd5-8589-4c17-b21a-1d8ee5a2f683

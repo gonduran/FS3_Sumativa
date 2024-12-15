@@ -4,15 +4,18 @@ import com.example.tienda_ms_pedidos.model.Orden;
 import com.example.tienda_ms_pedidos.repository.OrdenRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 class OrdenServiceImplTest {
@@ -31,17 +34,28 @@ class OrdenServiceImplTest {
     @Test
     void saveOrden_Success() {
         // Arrange
-        Orden orden = new Orden();
-        when(ordenRepository.save(any(Orden.class))).thenReturn(orden);
-
+        Orden ordenOriginal = new Orden();
+        ordenOriginal.setId(1L);
+        ordenOriginal.setEmail("test@example.com");
+        ordenOriginal.setMontoTotal(1000.0);
+        ordenOriginal.setFecha(new Date());
+        ordenOriginal.setEstado(1);
+    
+        when(ordenRepository.save(any(Orden.class))).thenReturn(ordenOriginal);
+    
         // Act
-        Orden result = ordenService.saveOrden(orden);
-
+        Orden result = ordenService.saveOrden(ordenOriginal);
+    
         // Assert
         assertNotNull(result);
-        verify(ordenRepository).save(orden);
+        verify(ordenRepository).save(any(Orden.class));
+        assertNotNull(result.getId());
+        assertEquals(ordenOriginal.getEmail(), result.getEmail());
+        assertEquals(ordenOriginal.getMontoTotal(), result.getMontoTotal());
+        assertEquals(ordenOriginal.getFecha(), result.getFecha());
+        assertEquals(ordenOriginal.getEstado(), result.getEstado());
     }
-
+    
     @Test
     void findById_WhenExists() {
         // Arrange

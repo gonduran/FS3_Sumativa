@@ -8,7 +8,7 @@ tienda-ms-pedidos,com.example.tienda_ms_pedidos.model,Categoria,0,36,0,0,0,14,0,
 tienda-ms-pedidos,com.example.tienda_ms_pedidos.model,Producto,0,57,0,0,0,23,0,15,0,15
 tienda-ms-pedidos,com.example.tienda_ms_pedidos.exception,StockException,0,4,0,0,0,2,0,1,0,1
 tienda-ms-pedidos,com.example.tienda_ms_pedidos.service,ProductoServiceImpl,0,123,0,6,0,29,0,9,0,6
-tienda-ms-pedidos,com.example.tienda_ms_pedidos.service,DetalleOrdenServiceImpl,0,31,0,0,0,9,0,6,0,6
-tienda-ms-pedidos,com.example.tienda_ms_pedidos.service,OrdenServiceImpl,0,37,0,0,0,10,0,7,0,7
-tienda-ms-pedidos,com.example.tienda_ms_pedidos.config,WebConfig,0,41,0,0,0,6,0,2,0,2
+tienda-ms-pedidos,com.example.tienda_ms_pedidos.service,DetalleOrdenServiceImpl,0,138,0,0,0,32,0,7,0,7
+tienda-ms-pedidos,com.example.tienda_ms_pedidos.service,OrdenServiceImpl,0,128,0,0,0,30,0,8,0,8
+tienda-ms-pedidos,com.example.tienda_ms_pedidos.config,WebConfig,0,45,0,0,0,6,0,2,0,2
 tienda-ms-pedidos,com.example.tienda_ms_pedidos,App,0,8,0,0,0,3,0,2,0,2

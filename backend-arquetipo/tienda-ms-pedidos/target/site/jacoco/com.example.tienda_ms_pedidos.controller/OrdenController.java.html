@@ -13,7 +13,8 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping(&quot;/api/pedidos&quot;)
-<span class="fc" id="L16">public class OrdenController {</span>
+@CrossOrigin(origins = &quot;*&quot;)
+<span class="fc" id="L17">public class OrdenController {</span>
 
     @Autowired
     private OrdenService ordenService;
@@ -26,8 +27,8 @@ import java.util.Optional;
      */
     @PostMapping
     public ResponseEntity&lt;Orden&gt; createOrden(@RequestBody Orden orden) {
-<span class="fc" id="L29">        Orden nuevaOrden = ordenService.saveOrden(orden);</span>
-<span class="fc" id="L30">        return ResponseEntity.status(HttpStatus.CREATED).body(nuevaOrden);</span>
+<span class="fc" id="L30">        Orden nuevaOrden = ordenService.saveOrden(orden);</span>
+<span class="fc" id="L31">        return ResponseEntity.status(HttpStatus.CREATED).body(nuevaOrden);</span>
     }
 
     /**
@@ -37,8 +38,8 @@ import java.util.Optional;
      */
     @GetMapping
     public ResponseEntity&lt;List&lt;Orden&gt;&gt; getAllOrdenes() {
-<span class="fc" id="L40">        List&lt;Orden&gt; ordenes = ordenService.findAll();</span>
-<span class="fc" id="L41">        return ResponseEntity.ok(ordenes);</span>
+<span class="fc" id="L41">        List&lt;Orden&gt; ordenes = ordenService.findAll();</span>
+<span class="fc" id="L42">        return ResponseEntity.ok(ordenes);</span>
     }
 
     /**
@@ -49,8 +50,8 @@ import java.util.Optional;
      */
     @GetMapping(&quot;/{id}&quot;)
     public ResponseEntity&lt;Orden&gt; getOrdenById(@PathVariable Long id) {
-<span class="fc" id="L52">        Optional&lt;Orden&gt; orden = ordenService.findById(id);</span>
-<span class="fc" id="L53">        return orden.map(ResponseEntity::ok).orElseGet(() -&gt; ResponseEntity.status(HttpStatus.NOT_FOUND).build());</span>
+<span class="fc" id="L53">        Optional&lt;Orden&gt; orden = ordenService.findById(id);</span>
+<span class="fc" id="L54">        return orden.map(ResponseEntity::ok).orElseGet(() -&gt; ResponseEntity.status(HttpStatus.NOT_FOUND).build());</span>
     }
 
     /**
@@ -61,8 +62,8 @@ import java.util.Optional;
      */
     @GetMapping(&quot;/estado/{estado}&quot;)
     public ResponseEntity&lt;List&lt;Orden&gt;&gt; getOrdenesByEstado(@PathVariable int estado) {
-<span class="fc" id="L64">        List&lt;Orden&gt; ordenes = ordenService.findByEstado(estado);</span>
-<span class="fc" id="L65">        return ResponseEntity.ok(ordenes);</span>
+<span class="fc" id="L65">        List&lt;Orden&gt; ordenes = ordenService.findByEstado(estado);</span>
+<span class="fc" id="L66">        return ResponseEntity.ok(ordenes);</span>
     }
 
     /**
@@ -74,8 +75,8 @@ import java.util.Optional;
      */
     @PutMapping(&quot;/{id}/estado&quot;)
     public ResponseEntity&lt;Void&gt; updateEstado(@PathVariable Long id, @RequestParam int estado) {
-<span class="fc" id="L77">        ordenService.updateEstado(id, estado);</span>
-<span class="fc" id="L78">        return ResponseEntity.noContent().build();</span>
+<span class="fc" id="L78">        ordenService.updateEstado(id, estado);</span>
+<span class="fc" id="L79">        return ResponseEntity.noContent().build();</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

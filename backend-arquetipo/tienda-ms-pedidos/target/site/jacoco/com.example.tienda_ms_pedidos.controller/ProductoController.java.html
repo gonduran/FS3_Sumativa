@@ -13,33 +13,34 @@ import java.util.Map;
 
 @RestController
 @RequestMapping(&quot;/api/productos&quot;)
+@CrossOrigin(origins = &quot;*&quot;)
 public class ProductoController {
 
     private final ProductoService productoService;
 
-<span class="fc" id="L20">    public ProductoController(ProductoService productoService) {</span>
-<span class="fc" id="L21">        this.productoService = productoService;</span>
-<span class="fc" id="L22">    }</span>
+<span class="fc" id="L21">    public ProductoController(ProductoService productoService) {</span>
+<span class="fc" id="L22">        this.productoService = productoService;</span>
+<span class="fc" id="L23">    }</span>
 
     @PutMapping(&quot;/{id}/stock&quot;)
     public ResponseEntity&lt;?&gt; actualizarStock(@PathVariable Long id, @RequestParam(&quot;cantidad&quot;) int cantidad) {
         try {
-<span class="fc" id="L27">            Producto producto = productoService.actualizarStock(id, cantidad);</span>
-<span class="fc" id="L28">            return ResponseEntity.ok(producto);</span>
-<span class="fc" id="L29">        } catch (StockException e) {</span>
-<span class="fc" id="L30">            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());</span>
+<span class="fc" id="L28">            Producto producto = productoService.actualizarStock(id, cantidad);</span>
+<span class="fc" id="L29">            return ResponseEntity.ok(producto);</span>
+<span class="fc" id="L30">        } catch (StockException e) {</span>
+<span class="fc" id="L31">            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());</span>
         }
     }
 
     @GetMapping(&quot;/buscar&quot;)
     public ResponseEntity&lt;List&lt;Producto&gt;&gt; buscarPorNombreOCategoria(@RequestParam(&quot;filtro&quot;) String filtro) {
-<span class="fc" id="L36">        List&lt;Producto&gt; productos = productoService.buscarPorNombreOCategoria(filtro);</span>
-<span class="fc" id="L37">        return ResponseEntity.ok(productos);</span>
+<span class="fc" id="L37">        List&lt;Producto&gt; productos = productoService.buscarPorNombreOCategoria(filtro);</span>
+<span class="fc" id="L38">        return ResponseEntity.ok(productos);</span>
     }
 
     @GetMapping(&quot;/productos-agrupados-categoria&quot;)
     public ResponseEntity&lt;Map&lt;String, List&lt;Map&lt;String, Object&gt;&gt;&gt;&gt; obtenerProductosAgrupadosConId() {
-<span class="fc" id="L42">        return ResponseEntity.ok(productoService.obtenerProductosAgrupadosConId());</span>
+<span class="fc" id="L43">        return ResponseEntity.ok(productoService.obtenerProductosAgrupadosConId());</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
